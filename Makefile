@@ -6,19 +6,20 @@
 #    By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/22 14:41:53 by ledelbec          #+#    #+#              #
-#    Updated: 2024/03/22 16:36:05 by ledelbec         ###   ########.fr        #
+#    Updated: 2024/03/22 18:46:53 by ledelbec         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 SRCS=\
 	src/main.c \
-	src/prompt.c
+	src/prompt.c \
+	src/signal.c
 
 OBJS=$(SRCS:.c=.o)
 DEPS=$(OBJS:.o=.d)
 
 CC=clang
-CFLAGS=-Ilibft -O2 -fno-builtin -Wall -Wextra #-Werror
+CFLAGS=-Ilibft -MMD -O2 -fno-builtin -Wall -Wextra #-Werror
 NAME=minishell
 
 all: $(NAME)

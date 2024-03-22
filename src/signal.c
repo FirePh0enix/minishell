@@ -1,44 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   prompt.c                                           :+:      :+:    :+:   */
+/*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/22 16:22:50 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/22 18:59:22 by ledelbec         ###   ########.fr       */
+/*   Created: 2024/03/22 18:31:08 by ledelbec          #+#    #+#             */
+/*   Updated: 2024/03/22 19:00:11 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "minishell.h"
 #include <stdio.h>
 #include <readline/readline.h>
-#include <unistd.h>
 #include <signal.h>
-#include "libft.h"
-#include "minishell.h"
+#include <stdlib.h>
 
-void	print_prompt_prefix()
+int	g_signum;
+
+void	signal_handler(int signum, siginfo_t *si, void *p)
 {
-	char	cwd[64];
-
-	getcwd(cwd, 64);
-	printf("%s $ ", cwd);
+	(void) si;
+	(void) p;
+	g_signum = signum;
+	printf("\n");
+	print_prompt_prefix();
+	rl_on_new_line();
 }
 
-void	prompt(t_minishell *minishell)
+void	init_signals(t_minishell *minishell)
 {
-	char	*line;
+	struct sigaction	sa;
 
-	while (1)
-	{
-		if (g_signum == SIGINT)
-		{
-			g_signum = -1;;
-			minishell->exit_code = 130;
-		}
-		print_prompt_prefix();
-		line = readline(NULL);
-		if (line == NULL || line[0] == '\0')
-			break ;
-	}
+	sa.sa_flags = SA_SIGINFO;
+	sa.sa_sigaction = (void *) signal_handler;
+	sigemptyset(&sa.sa_mask);
+	sigaction(SIGINT, &sa, NULL);
 }
