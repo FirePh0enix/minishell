@@ -1,23 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/22 14:41:09 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/22 15:34:03 by ledelbec         ###   ########.fr       */
+/*   Created: 2024/03/22 15:24:39 by ledelbec          #+#    #+#             */
+/*   Updated: 2024/03/22 15:25:47 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#ifndef MINISHELL_H
+# define MINISHELL_H
 
-int	main(int argc, char *argv[], char *envp[])
-{
-	char	*args[] = {"/usr/bin"};
-	t_node		node;
+# include "parser.h"
 
-	node.cmd.cmd = "ls";
-	node.cmd.argv = args;
-	node.cmd.argc = 1;
-}
+#endif
