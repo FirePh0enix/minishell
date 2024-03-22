@@ -1,0 +1,4 @@
+-Ilibft
+-Wall
+-Wextra
+
