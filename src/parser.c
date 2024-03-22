@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/22 20:07:00 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/22 20:11:44 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ static char	**split_into_tokens(char *line)
 	char	**tokens;
 	char	*tok;
 
-	tokens = ft_vector(sizeof(t_tok), 0);
+	tokens = ft_vector(sizeof(char *), 0);
 	if (!tokens)
 		return (NULL);
 	index = 0;
