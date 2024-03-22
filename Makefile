@@ -6,12 +6,13 @@
 #    By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/22 14:41:53 by ledelbec          #+#    #+#              #
-#    Updated: 2024/03/22 14:46:30 by ledelbec         ###   ########.fr        #
+#    Updated: 2024/03/22 16:36:05 by ledelbec         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 SRCS=\
-	src/main.c
+	src/main.c \
+	src/prompt.c
 
 OBJS=$(SRCS:.c=.o)
 DEPS=$(OBJS:.o=.d)
@@ -23,7 +24,7 @@ NAME=minishell
 all: $(NAME)
 
 $(NAME): $(OBJS) libft/libft.a
-	$(CC) -o $(NAME) $(OBJS) libft/libft.a
+	$(CC) -o $(NAME) $(OBJS) libft/libft.a -lreadline
 
 libft/libft.a:
 	make -C libft
