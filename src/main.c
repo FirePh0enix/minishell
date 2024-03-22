@@ -6,10 +6,13 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 14:41:09 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/22 15:14:11 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/03/22 15:21:08 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdio.h>
+
 int	main(int argc, char *argv[], char *envp[])
 {
+	printf("Hello world!\n");
 }
