@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 16:22:50 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/22 18:59:22 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/22 20:04:08 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <signal.h>
 #include "libft.h"
 #include "minishell.h"
+#include "parser.h"
 
 void	print_prompt_prefix()
 {
@@ -28,6 +29,7 @@ void	print_prompt_prefix()
 void	prompt(t_minishell *minishell)
 {
 	char	*line;
+	t_node	*node;
 
 	while (1)
 	{
@@ -40,5 +42,7 @@ void	prompt(t_minishell *minishell)
 		line = readline(NULL);
 		if (line == NULL || line[0] == '\0')
 			break ;
+		node = parse_line(line);
+		// Do something with the binary tree here !
 	}
 }

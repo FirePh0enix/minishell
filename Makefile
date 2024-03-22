@@ -6,14 +6,15 @@
 #    By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/22 14:41:53 by ledelbec          #+#    #+#              #
-#    Updated: 2024/03/22 18:46:53 by ledelbec         ###   ########.fr        #
+#    Updated: 2024/03/22 19:35:37 by ledelbec         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 SRCS=\
 	src/main.c \
 	src/prompt.c \
-	src/signal.c
+	src/signal.c \
+	src/parser.c
 
 OBJS=$(SRCS:.c=.o)
 DEPS=$(OBJS:.o=.d)
