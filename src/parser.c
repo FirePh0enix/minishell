@@ -6,11 +6,12 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/22 20:11:44 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/23 00:55:01 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parser.h"
+#include "minishell.h"
 #include "libft.h"
 #include <stddef.h>
 #include <stdio.h>
@@ -26,6 +27,7 @@ static char	*next_token(char *line, size_t *index)
 	s = NULL;
 	while (line[i] == ' ')
 		i++;
+	size = 0;
 	if (line[i] == '|')
 	{
 		s = ft_calloc(1, 2);
@@ -34,10 +36,26 @@ static char	*next_token(char *line, size_t *index)
 		*index = i;
 		return (s);
 	}
-	size = 0;
+	else if (line[i] == '"' || line[i] == '\'')
+	{
+		*index = i;
+		while (line[i] && ((line[*index] == '"' && line[i] != '"') || (line[*index] == '\'' && line[i] != '\'')))
+		{
+			s = ft_realloc(s, size + 1, size + 2);
+			s[size++] = line[i];
+			s[size] = '\0';
+			i++;
+		}
+		s = ft_realloc(s, size + 1, size + 2);
+		s[size++] = line[*index];
+		s[size] = '\0';
+		*index = i;
+		return (s);
+	}
 	while (i < ft_strlen(line))
 	{
-		if (line[i] == ' ' || line[i] == '|')
+		if (line[i] == ' ' || line[i] == '|' || line[i] == '"'
+			|| line[i] == '\'')
 			break ;
 		s = ft_realloc(s, size + 1, size + 2);
 		s[size++] = line[i];
@@ -69,6 +87,100 @@ static char	**split_into_tokens(char *line)
 	return (tokens);
 }
 
+static int	ispathend(int c)
+{
+	return (c == '"' || c == '|' || c == '(' || c == ')' || c == '{'
+		|| c == '}' || c == '[' || c == ']' || c == '+' || c == '-' || c == '*'
+		|| c == '/');
+}
+
+static char	*ft_strndup(char *s, size_t n)
+{
+	char	*s2;
+
+	s2 = ft_calloc(1, n + 1);
+	if (!s2)
+		return (NULL);
+	ft_memcpy(s2, s, n);
+	return (s2);
+}
+
+static char	*expand_dquotes(t_minishell *minishell, char *tok)
+{
+	char	*tok2;
+	size_t	start;
+	size_t	i;
+	size_t	size;
+
+	tok2 = ft_calloc(1, 1);
+	i = 1;
+	size = 0;
+	while (1)
+	{
+		start = i;
+		while (tok[i] != '$')
+			i++;
+		tok2 = ft_realloc(tok2, size + 1, size + 1 + (i - start));
+		ft_memcpy(tok2 + size, tok + start, i - start);
+		size += i - start;
+		if (tok[i] == '$')
+		{
+			start = i + 1;
+			while (tok[i] && !ispathend(tok[i]))
+				i++;
+			tok2 = ft_realloc(tok2, size + 1, size + 1 + (i - start));
+			char	*env = getourenv(minishell, ft_strndup(tok + start, i - start));
+			ft_memcpy(tok2 + size, env, ft_strlen(env));
+			size += i - start;
+		}
+		else
+			break ;
+	}
+	return (tok2);
+}
+
+/*
+ * Expand metacharacters like * and $
+ */
+static char	**expand_tokens(t_minishell *minishell, char **tokens)
+{
+	size_t	i;
+	size_t	j;
+	char	**tokens2;
+	char	**files;
+	char	*s;
+
+	tokens2 = ft_vector(sizeof(char *), 0);
+	i = 0;
+	while (i < ft_vector_size(tokens))
+	{
+		if (strcmp(tokens[i], "*") == 0)
+		{
+			files = wildcard();
+			j = 0;
+			while (j < ft_vector_size(files))
+				ft_vector_add(&tokens2, &files[j++]);
+		}
+		else if (tokens[i][0] == '"')
+		{
+			s = expand_dquotes(minishell, tokens[i]);
+			ft_vector_add(&tokens2, &s);
+			free(tokens[i]);
+		}
+		else if (tokens[i][0] == '$')
+		{
+			char	*env = getourenv(minishell, tokens[i] + 1);
+			ft_vector_add(&tokens2, &env);
+		}
+		else
+		{
+			ft_vector_add(&tokens2, &tokens[i]);
+		}
+		i++;
+	}
+	return (tokens2);
+}
+
 static t_node	*parse_expr(char **tokens, size_t start, size_t end)
 {
 	int		i;
@@ -92,18 +204,21 @@ static t_node	*parse_expr(char **tokens, size_t start, size_t end)
 	if (i < 0)
 	{
 		node->type = TY_CMD;
-		node->cmd.argv = malloc(sizeof(char *));
+		node->cmd.argv = ft_vector(sizeof(char *), 0);
 		for (size_t j = 0; j < end - start; j++)
-			node->cmd.argv[j] = tokens[j + start];
-		node->cmd.argc = end - start;
+			ft_vector_add(&node->cmd.argv, &tokens[j + start]);
+		node->cmd.argc = ft_vector_size(node->cmd.argv);
 	}
 	return (node);
 }
 
-t_node	*parse_line(char *line)
+t_node	*parse_line(t_minishell *minishell, char *line)
 {
 	char	**tokens;
 
 	tokens = split_into_tokens(line);
+	tokens = expand_tokens(minishell, tokens);
+	for (size_t i = 0; i < ft_vector_size(tokens); i++)
+		printf("%s\n", tokens[i]);
 	return (parse_expr(tokens, 0, ft_vector_size(tokens)));
 }

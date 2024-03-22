@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 18:31:08 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/22 19:00:11 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/22 22:52:54 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,9 @@ void	signal_handler(int signum, siginfo_t *si, void *p)
 	(void) p;
 	g_signum = signum;
 	printf("\n");
-	print_prompt_prefix();
+	rl_replace_line("", 0);
 	rl_on_new_line();
+	rl_redisplay();
 }
 
 void	init_signals(t_minishell *minishell)

@@ -6,7 +6,7 @@
 #    By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/22 14:41:53 by ledelbec          #+#    #+#              #
-#    Updated: 2024/03/22 19:35:37 by ledelbec         ###   ########.fr        #
+#    Updated: 2024/03/23 00:51:06 by ledelbec         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,13 +14,15 @@ SRCS=\
 	src/main.c \
 	src/prompt.c \
 	src/signal.c \
-	src/parser.c
+	src/parser.c \
+	src/wildcard.c \
+	src/env.c
 
 OBJS=$(SRCS:.c=.o)
 DEPS=$(OBJS:.o=.d)
 
 CC=clang
-CFLAGS=-Ilibft -MMD -O2 -fno-builtin -Wall -Wextra #-Werror
+CFLAGS=-Ilibft -MMD -O2 -fno-builtin -g -Wall -Wextra #-Werror
 NAME=minishell
 
 all: $(NAME)
