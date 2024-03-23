@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/23 00:55:01 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/23 15:18:55 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,31 @@
 #include <stdio.h>
 #include <string.h>
 
+static char	*next_string(char *line, size_t *index)
+{
+	size_t	i;
+	size_t	size;
+	char	*s;
+
+	i = *index;
+	s = ft_calloc(1, 1);
+	size = 0;
+	while (i < ft_strlen(line))
+	{
+		s = ft_realloc(s, size + 1, size + 2);
+		s[size++] = line[i];
+		s[size] = '\0';
+		i++;
+		if ((line[*index] == '"' && line[i] == '"') || (line[*index] == '\'' && line[i] == '\''))
+		{
+			i++;
+			break ;
+		}
+	}
+	*index = i;
+	return (s);
+}
+
 static char	*next_token(char *line, size_t *index)
 {
 	char	*s;
@@ -25,6 +50,8 @@ static char	*next_token(char *line, size_t *index)
 
 	i = *index;
 	s = NULL;
+	if (line[i] == '\0')
+		return (NULL);
 	while (line[i] == ' ')
 		i++;
 	size = 0;
@@ -36,26 +63,11 @@ static char	*next_token(char *line, size_t *index)
 		*index = i;
 		return (s);
 	}
-	else if (line[i] == '"' || line[i] == '\'')
-	{
-		*index = i;
-		while (line[i] && ((line[*index] == '"' && line[i] != '"') || (line[*index] == '\'' && line[i] != '\'')))
-		{
-			s = ft_realloc(s, size + 1, size + 2);
-			s[size++] = line[i];
-			s[size] = '\0';
-			i++;
-		}
-		s = ft_realloc(s, size + 1, size + 2);
-		s[size++] = line[*index];
-		s[size] = '\0';
-		*index = i;
-		return (s);
-	}
+	else if (line[i] == '"' || line[i] == '"')
+		return (next_string(line, index));
 	while (i < ft_strlen(line))
 	{
-		if (line[i] == ' ' || line[i] == '|' || line[i] == '"'
-			|| line[i] == '\'')
+		if (line[i] == ' ' || line[i] == '|' || line[i] == '"')
 			break ;
 		s = ft_realloc(s, size + 1, size + 2);
 		s[size++] = line[i];
@@ -91,7 +103,7 @@ static int	ispathend(int c)
 {
 	return (c == '"' || c == '|' || c == '(' || c == ')' || c == '{'
 		|| c == '}' || c == '[' || c == ']' || c == '+' || c == '-' || c == '*'
-		|| c == '/');
+		|| c == '/' || c == ' ');
 }
 
 static char	*ft_strndup(char *s, size_t n)
@@ -118,7 +130,7 @@ static char	*expand_dquotes(t_minishell *minishell, char *tok)
 	while (1)
 	{
 		start = i;
-		while (tok[i] != '$')
+		while (tok[i] && tok[i] != '$')
 			i++;
 		tok2 = ft_realloc(tok2, size + 1, size + 1 + (i - start));
 		ft_memcpy(tok2 + size, tok + start, i - start);
@@ -130,8 +142,10 @@ static char	*expand_dquotes(t_minishell *minishell, char *tok)
 				i++;
 			tok2 = ft_realloc(tok2, size + 1, size + 1 + (i - start));
 			char	*env = getourenv(minishell, ft_strndup(tok + start, i - start));
+			if (!env)
+				continue ;
 			ft_memcpy(tok2 + size, env, ft_strlen(env));
-			size += i - start;
+			size += ft_strlen(env);
 		}
 		else
 			break ;
@@ -218,7 +232,7 @@ t_node	*parse_line(t_minishell *minishell, char *line)
 
 	tokens = split_into_tokens(line);
 	tokens = expand_tokens(minishell, tokens);
-	for (size_t i = 0; i < ft_vector_size(tokens); i++)
-		printf("%s\n", tokens[i]);
+	//for (size_t i = 0; i < ft_vector_size(tokens); i++)
+	//	printf("tok: %s\n", tokens[i]);
 	return (parse_expr(tokens, 0, ft_vector_size(tokens)));
 }
