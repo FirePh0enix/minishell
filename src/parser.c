@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/23 15:18:55 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/23 17:25:50 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,9 +168,9 @@ static char	**expand_tokens(t_minishell *minishell, char **tokens)
 	i = 0;
 	while (i < ft_vector_size(tokens))
 	{
-		if (strcmp(tokens[i], "*") == 0)
+		if (ft_strchr(tokens[i], '*'))
 		{
-			files = wildcard();
+			files = wildcard(ft_strchr(tokens[i], '*') + 1);
 			j = 0;
 			while (j < ft_vector_size(files))
 				ft_vector_add(&tokens2, &files[j++]);
@@ -232,7 +232,7 @@ t_node	*parse_line(t_minishell *minishell, char *line)
 
 	tokens = split_into_tokens(line);
 	tokens = expand_tokens(minishell, tokens);
-	//for (size_t i = 0; i < ft_vector_size(tokens); i++)
-	//	printf("tok: %s\n", tokens[i]);
+	for (size_t i = 0; i < ft_vector_size(tokens); i++)
+		printf("tok: %s\n", tokens[i]);
 	return (parse_expr(tokens, 0, ft_vector_size(tokens)));
 }

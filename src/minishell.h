@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:24:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/22 23:49:02 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/23 17:26:09 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void	prompt(t_minishell *minishell);
 void	print_prompt_prefix();
 void	init_signals(t_minishell *minishell);
 
-char	**wildcard();
+char	**wildcard(char *suffix);
 
 void	copy_env(t_minishell *minishell, char *envp[]);
 char	*getourenv(t_minishell *minishell, char *name);
