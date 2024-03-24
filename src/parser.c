@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/23 17:25:50 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/23 23:06:45 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,11 +55,21 @@ static char	*next_token(char *line, size_t *index)
 	while (line[i] == ' ')
 		i++;
 	size = 0;
-	if (line[i] == '|')
+	if (line[i] == '|' || line[i] == '&' || line[i] == '>' || line[i] == '<')
 	{
-		s = ft_calloc(1, 2);
-		s[0] = line[i];
-		i++;
+		if (i + 1 < ft_strlen(line)
+			&& (!ft_strncmp(&line[i], "&&", 2) || !ft_strncmp(&line[i], "||", 2) || !ft_strncmp(&line[i], ">>", 2) || !ft_strncmp(&line[i], "<<", 2)))
+		{
+			s = ft_calloc(1, 3);
+			ft_memcpy(s, &line[i], 2);
+			i += 2;
+		}
+		else
+		{
+			s = ft_calloc(1, 2);
+			s[0] = line[i];
+			i++;
+		}
 		*index = i;
 		return (s);
 	}
@@ -67,7 +77,7 @@ static char	*next_token(char *line, size_t *index)
 		return (next_string(line, index));
 	while (i < ft_strlen(line))
 	{
-		if (line[i] == ' ' || line[i] == '|' || line[i] == '"')
+		if (line[i] == ' ' || line[i] == '|' || line[i] == '"' || line[i] == '>' || line[i] == '<')
 			break ;
 		s = ft_realloc(s, size + 1, size + 2);
 		s[size++] = line[i];
@@ -98,6 +108,9 @@ static char	**split_into_tokens(char *line)
 	}
 	return (tokens);
 }
+
+// -----------------------------------------------------------------------------
+// Wildcard and env expansion
 
 static int	ispathend(int c)
 {
@@ -195,6 +208,27 @@ static char	**expand_tokens(t_minishell *minishell, char **tokens)
 	return (tokens2);
 }
 
+// -----------------------------------------------------------------------------
+// Expression parsing
+
+static int	isop(char *s)
+{
+	return (!strcmp(s, "|") || !strcmp(s, ">"));
+}
+
+static int	get_op_priority(char *s)
+{
+	if (!strcmp(s, "|"))
+		return (1);
+	else if (!strcmp(s, ">"))
+		return (2);
+	return (-1);
+}
+
+static size_t	get_op(char **tokens, size_t start, size_t end)
+{
+}
+
 static t_node	*parse_expr(char **tokens, size_t start, size_t end)
 {
 	int		i;
@@ -225,6 +259,9 @@ static t_node	*parse_expr(char **tokens, size_t start, size_t end)
 	}
 	return (node);
 }
+
+// -----------------------------------------------------------------------------
+// Line parsing
 
 t_node	*parse_line(t_minishell *minishell, char *line)
 {

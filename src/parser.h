@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:25:25 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/23 00:49:53 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/23 23:00:46 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,19 @@
 
 typedef struct s_minishell	t_minishell;
 
-typedef enum
+typedef enum e_type
 {
 	TY_CMD,
 	TY_PIPE,
 	TY_RED
 }	t_type;
+
+typedef enum e_dir
+{
+	IN,
+	OUT,
+	OUT_APPEND
+}	t_dir;
 
 typedef struct s_node
 {
@@ -40,7 +47,8 @@ typedef struct s_node
 		struct
 		{
 			struct s_node	*cmd;
-			char			*name;
+			char			*filename;
+			t_dir			dir;
 		}	red;
 	};
 }	t_node;
