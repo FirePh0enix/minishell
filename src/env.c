@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 23:45:53 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/25 13:37:22 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/25 13:41:02 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	copy_env(t_minishell *minishell, char *envp[])
 		envp++;
 	}
 	s = NULL;
-	ft_vector_add(&minishell->env, NULL);
+	ft_vector_add(&minishell->env, &s);
 }
 
 char	*getourenv(t_minishell *minishell, char *name)
