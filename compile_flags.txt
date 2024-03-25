@@ -1,4 +1,5 @@
 -Ilibft
+-Isrc
 -Wall
 -Wextra
 

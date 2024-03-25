@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/03/25 14:20:02 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/03/25 15:15:44 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,14 @@ int	exec_cmd(t_minishell *msh, t_node *node)
 
 	if (node->type == TY_CMD)
 	{
+		if (strcmp(node->cmd.argv[0], "cd") == 0)
+			return (builtin_cd(node->cmd.argc, node->cmd.argv));
+		else if (strcmp(node->cmd.argv[0], "pwd") == 0)
+			return (builtin_pwd(node->cmd.argc, node->cmd.argv));
+		else if (strcmp(node->cmd.argv[0], "echo") == 0)
+			return (builtin_echo(node->cmd.argc, node->cmd.argv));
+		else if (strcmp(node->cmd.argv[0], "exit") == 0)
+			return (builtin_exit(node->cmd.argc, node->cmd.argv));
 		pid = fork();
 		if (pid == -1)
 			return (-1);

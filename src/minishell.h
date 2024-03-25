@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:24:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/25 14:13:46 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/03/25 15:16:48 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,12 @@
 # include <fcntl.h>
 # include <stdlib.h>
 # include <unistd.h>
+# include <string.h>
+# include <stdbool.h>
+# include <stdio.h>
+# include <errno.h>
+
+
 
 typedef struct s_minishell
 {
@@ -39,5 +45,10 @@ char	**wildcard(char *suffix);
 
 void	copy_env(t_minishell *minishell, char *envp[]);
 char	*getourenv(t_minishell *minishell, char *name);
+
+int		builtin_cd(int ac, char **av);
+int		builtin_pwd(int ac, char **av);
+int		builtin_echo(int ac, char **av);
+int		builtin_exit(int ac, char **av);
 
 #endif
