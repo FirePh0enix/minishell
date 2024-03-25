@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/23 23:06:45 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/25 13:38:45 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -233,6 +233,7 @@ static t_node	*parse_expr(char **tokens, size_t start, size_t end)
 {
 	int		i;
 	t_node	*node;
+	char	*s;
 
 	node = malloc(sizeof(t_node));
 	if (!node)
@@ -256,6 +257,8 @@ static t_node	*parse_expr(char **tokens, size_t start, size_t end)
 		for (size_t j = 0; j < end - start; j++)
 			ft_vector_add(&node->cmd.argv, &tokens[j + start]);
 		node->cmd.argc = ft_vector_size(node->cmd.argv);
+		s = NULL;
+		ft_vector_add(&node->cmd.argv, &s);
 	}
 	return (node);
 }

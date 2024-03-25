@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 23:45:53 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/23 15:01:41 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/25 13:37:22 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@ void	copy_env(t_minishell *minishell, char *envp[])
 		ft_vector_add(&minishell->env, &s);
 		envp++;
 	}
+	s = NULL;
+	ft_vector_add(&minishell->env, NULL);
 }
 
 char	*getourenv(t_minishell *minishell, char *name)
