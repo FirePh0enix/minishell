@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   prompt.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 16:22:50 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/23 00:51:56 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/25 14:15:27 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void	print_prompt_prefix()
 	printf("%s $ ", cwd);
 }
 
-void	prompt(t_minishell *minishell)
+void	prompt(t_minishell *msh)
 {
 	char	*line;
 	t_node	*node;
@@ -39,15 +39,15 @@ void	prompt(t_minishell *minishell)
 		if (g_signum == SIGINT)
 		{
 			g_signum = -1;
-			minishell->exit_code = 130;
+			msh->exit_code = 130;
 		}
 		getcwd(cwd, 64);
 		ft_sprintf(buf, "%s $ ", cwd);
 		line = readline(buf);
 		if (line == NULL)
 			break ;
-		node = parse_line(minishell, line);
+		node = parse_line(msh, line);
 		add_history(line);
-		// Do something with the binary tree here !
+		exec_cmd(msh, node);
 	}
 }
