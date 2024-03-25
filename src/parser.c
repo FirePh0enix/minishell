@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/25 13:38:45 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/25 23:33:23 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -197,7 +197,8 @@ static char	**expand_tokens(t_minishell *minishell, char **tokens)
 		else if (tokens[i][0] == '$')
 		{
 			char	*env = getourenv(minishell, tokens[i] + 1);
-			ft_vector_add(&tokens2, &env);
+			if (env)
+				ft_vector_add(&tokens2, &env);
 		}
 		else
 		{
@@ -225,8 +226,71 @@ static int	get_op_priority(char *s)
 	return (-1);
 }
 
-static size_t	get_op(char **tokens, size_t start, size_t end)
+static int	get_op(char **tokens, size_t start, size_t end)
 {
+	int		i;
+	char	*tok;
+	int		hprio;
+	int		pos;
+
+	pos = -1;
+	i = end - 1;
+	while (i >= -1)
+	{
+		tok = tokens[i];
+		if (isop(tok) && get_op_priority(tok) > hprio)
+		{
+			hprio = get_op_priority(tok);
+			pos = i;
+		}
+		i++;
+	}
+	return (pos);
+}
+
+static t_node	*parse_expr2(char **tokens, size_t start, size_t end)
+{
+	int		pos;
+	t_node	*node;
+	char	*s;
+
+	node = malloc(sizeof(t_node));
+	if (!node)
+		return (node);
+	pos = get_op(tokens, start, end);
+	if (pos == -1)
+	{
+		node->type = TY_CMD;
+		node->cmd.argv = ft_vector(sizeof(char *), 0);
+		for (size_t j = 0; j < end - start; j++)
+			ft_vector_add(&node->cmd.argv, &tokens[j + start]);
+		node->cmd.argc = ft_vector_size(node->cmd.argv);
+		s = NULL;
+		ft_vector_add(&node->cmd.argv, &s);
+		return (node);
+	}
+
+	// TODO
+	//
+	// The command `ls > test.txt Makefile | grep Make` should expand to the
+	// following tree:
+	//
+	//               pipe
+	//               / \
+	//              /   \
+	//             /     \
+	//            /       \
+	//          red       cmd
+	//          / \  [ grep Make ]
+	//         /   \
+	//        /     \
+	//      cmd    test.txt
+	// [ ls Makefile ]
+	//
+	// Where the output of `ls Makefile` is redirected to `test.txt` but also
+	// piped to `grep Makefile`
+
+	return (NULL);
 }
 
 static t_node	*parse_expr(char **tokens, size_t start, size_t end)
