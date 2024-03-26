@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 14:51:56 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/03/25 15:02:49 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/03/26 11:52:24 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,11 +17,13 @@ int	builtin_echo(int ac, char **av)
 	int		i;
 	bool	nl;
 
+	if (!av || !*av)
+		return 1;
 	i = 1;
 	nl = true;
-	if (strcmp(av[1], "-n") == 0)
+	while (av[i] && strcmp(av[i], "-n") == 0)
 	{
-		i = 2;
+		i++;
 		nl = false;
 	}
 	while (i < ac)
