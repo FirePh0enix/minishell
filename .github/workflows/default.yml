@@ -13,7 +13,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Clone dependencies
-      run: git submodule update --init
+      with:
+        token: ${{ secrets.REPO_PAT }}
+        submodules: true
     - name: Run automated tests
       run: make libft/libft.a test
