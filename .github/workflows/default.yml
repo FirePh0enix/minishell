@@ -13,5 +13,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Clone dependencies
+      run: git submodule update --init
     - name: Run automated tests
       run: make libft/libft.a test
