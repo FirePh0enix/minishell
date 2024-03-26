@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/26 16:15:51 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/26 16:28:45 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static char	*next_string(char *line, size_t *index)
 	size_t	size;
 	char	*s;
 
-	i = *index;
+	i = *index + 1;
 	s = ft_calloc(1, 1);
 	size = 0;
 	while (i < ft_strlen(line))
@@ -143,7 +143,7 @@ static char	*expand_dquotes(t_minishell *minishell, char *tok)
 	while (1)
 	{
 		start = i;
-		while (tok[i] && tok[i] != '$')
+		while (tok[i] && tok[i] != '"' && tok[i] != '$')
 			i++;
 		tok2 = ft_realloc(tok2, size + 1, size + 1 + (i - start));
 		ft_memcpy(tok2 + size, tok + start, i - start);
