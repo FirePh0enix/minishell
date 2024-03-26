@@ -6,13 +6,14 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/03/25 15:15:44 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/03/26 19:02:27 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "parser.h"
 #include <stdio.h>
+#include <unistd.h>
 
 char	**ft_get_path(char **env)
 {
@@ -73,7 +74,7 @@ int	ft_exec_cmd(char **av, char **envp)
 	return (0);
 }
 
-int	exec_cmd(t_minishell *msh, t_node *node)
+int	exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 {
 	int	pid;
 
@@ -92,13 +93,26 @@ int	exec_cmd(t_minishell *msh, t_node *node)
 			return (-1);
 		if (pid == 0)
 		{
+			if (parent_in != -1)
+			{
+				if (dup2(msh->pipe[0], STDIN_FILENO) == -1)
+					return (printf("ERROR DUP2\n"));
+				close(msh->pipe[0]);
+			}
+			if (parent_out != -1)
+			{
+				if (dup2(msh->pipe[1], STDOUT_FILENO) == -1)
+					return (printf("ERROR DUP2\n"));
+				close(msh->pipe[1]);
+			}
 			if (ft_exec_cmd(node->cmd.argv, msh->env) == -1)
-				return (-1);
+				return (printf("ERROR EXECVE\n"));
 		}
 		else
 		{
 			while (wait(NULL) > 0)
 			{
+				printf("WAITING\n");
 				if (g_signum == SIGINT)
 				{
 					kill(pid, SIGINT);
@@ -106,6 +120,13 @@ int	exec_cmd(t_minishell *msh, t_node *node)
 				}
 			}
 		}
+	}
+	else if (node->type == TY_PIPE)
+	{
+		exec_cmd(msh, node->pipe.left, parent_in, msh->pipe[0]);
+		while(wait(NULL) > 0)
+			;
+		exec_cmd(msh, node->pipe.right, msh->pipe[1], parent_out);
 	}
 	return (0);
 }
