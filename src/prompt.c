@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 16:22:50 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/26 16:04:57 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/26 19:04:39 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,6 @@ void	prompt(t_minishell *msh)
 		node = parse_line(msh, line);
 		dump_line(node);
 		add_history(line);
-		exec_cmd(msh, node);
+		exec_cmd(msh, node, -1, -1);
 	}
 }
