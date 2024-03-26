@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:25:25 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/23 23:00:46 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/26 16:16:44 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,21 +38,19 @@ typedef struct s_node
 		{
 			char	**argv;
 			int		argc;
+
+			char	*infile;
+			char	*outfile;
 		}	cmd;
 		struct
 		{
 			struct s_node	*left;
 			struct s_node	*right;
 		}	pipe;
-		struct
-		{
-			struct s_node	*cmd;
-			char			*filename;
-			t_dir			dir;
-		}	red;
 	};
 }	t_node;
 
 t_node	*parse_line(t_minishell *minishell, char *line);
+void	dump_line(t_node *node);
 
 #endif

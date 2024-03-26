@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/25 23:33:23 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/26 16:28:45 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static char	*next_string(char *line, size_t *index)
 	size_t	size;
 	char	*s;
 
-	i = *index;
+	i = *index + 1;
 	s = ft_calloc(1, 1);
 	size = 0;
 	while (i < ft_strlen(line))
@@ -143,7 +143,7 @@ static char	*expand_dquotes(t_minishell *minishell, char *tok)
 	while (1)
 	{
 		start = i;
-		while (tok[i] && tok[i] != '$')
+		while (tok[i] && tok[i] != '"' && tok[i] != '$')
 			i++;
 		tok2 = ft_realloc(tok2, size + 1, size + 1 + (i - start));
 		ft_memcpy(tok2 + size, tok + start, i - start);
@@ -235,7 +235,8 @@ static int	get_op(char **tokens, size_t start, size_t end)
 
 	pos = -1;
 	i = end - 1;
-	while (i >= -1)
+	hprio = 0;
+	while (i >= (int) start)
 	{
 		tok = tokens[i];
 		if (isop(tok) && get_op_priority(tok) > hprio)
@@ -243,12 +244,12 @@ static int	get_op(char **tokens, size_t start, size_t end)
 			hprio = get_op_priority(tok);
 			pos = i;
 		}
-		i++;
+		i--;
 	}
 	return (pos);
 }
 
-static t_node	*parse_expr2(char **tokens, size_t start, size_t end)
+static t_node	*parse_expr(char **tokens, size_t start, size_t end)
 {
 	int		pos;
 	t_node	*node;
@@ -267,6 +268,13 @@ static t_node	*parse_expr2(char **tokens, size_t start, size_t end)
 		node->cmd.argc = ft_vector_size(node->cmd.argv);
 		s = NULL;
 		ft_vector_add(&node->cmd.argv, &s);
+		return (node);
+	}
+	else if (!strcmp(tokens[pos], "|"))
+	{
+		node->type = TY_PIPE;
+		node->pipe.left = parse_expr(tokens, start, pos);
+		node->pipe.right = parse_expr(tokens, pos + 1, end);
 		return (node);
 	}
 
@@ -293,40 +301,6 @@ static t_node	*parse_expr2(char **tokens, size_t start, size_t end)
 	return (NULL);
 }
 
-static t_node	*parse_expr(char **tokens, size_t start, size_t end)
-{
-	int		i;
-	t_node	*node;
-	char	*s;
-
-	node = malloc(sizeof(t_node));
-	if (!node)
-		return (NULL);
-	node->type = TY_PIPE;
-	i = end - 1;
-	while (i >= 0)
-	{
-		if (strcmp(tokens[i], "|") == 0)
-		{
-			node->pipe.left = parse_expr(tokens, start, i);
-			node->pipe.right = parse_expr(tokens, start, i);
-			break ;
-		}
-		i--;
-	}
-	if (i < 0)
-	{
-		node->type = TY_CMD;
-		node->cmd.argv = ft_vector(sizeof(char *), 0);
-		for (size_t j = 0; j < end - start; j++)
-			ft_vector_add(&node->cmd.argv, &tokens[j + start]);
-		node->cmd.argc = ft_vector_size(node->cmd.argv);
-		s = NULL;
-		ft_vector_add(&node->cmd.argv, &s);
-	}
-	return (node);
-}
-
 // -----------------------------------------------------------------------------
 // Line parsing
 
@@ -339,4 +313,48 @@ t_node	*parse_line(t_minishell *minishell, char *line)
 	for (size_t i = 0; i < ft_vector_size(tokens); i++)
 		printf("tok: %s\n", tokens[i]);
 	return (parse_expr(tokens, 0, ft_vector_size(tokens)));
+}
+
+static void	_print_spaces(int layer)
+{
+	int	i;
+
+	i = 0;
+	while (i < layer * 3)
+	{
+		printf(" ");
+		i++;
+	}
+}
+
+static void	_rec_dump_line(t_node *node, int layer)
+{
+	if (node->type == TY_CMD)
+	{
+		printf("CMD {\n");
+		_print_spaces(layer + 1);
+		printf("argv = [ ");
+		for (int i = 0; i < node->cmd.argc; i++)
+			printf("%s ", node->cmd.argv[i]);
+		printf("]\n");
+		_print_spaces(layer);
+		printf("}\n");
+	}
+	else if (node->type == TY_PIPE)
+	{
+		printf("PIPE {\n");
+		_print_spaces(layer + 1);
+		printf("left = ");
+		_rec_dump_line(node->pipe.left, layer + 1);
+		_print_spaces(layer + 1);
+		printf("right = ");
+		_rec_dump_line(node->pipe.right, layer + 1);
+		_print_spaces(layer);
+		printf("}\n");
+	}
+}
+
+void	dump_line(t_node *node)
+{
+	_rec_dump_line(node, 0);
 }
