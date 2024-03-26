@@ -6,7 +6,7 @@
 #    By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/22 14:41:53 by ledelbec          #+#    #+#              #
-#    Updated: 2024/03/25 14:45:36 by vopekdas         ###   ########.fr        #
+#    Updated: 2024/03/26 19:39:34 by ledelbec         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -40,6 +40,9 @@ $(NAME): $(OBJS) libft/libft.a
 
 libft/libft.a:
 	make -C libft
+
+-include $(DEPS)
+include tests.mk
 
 clean:
 	make -C libft clean
