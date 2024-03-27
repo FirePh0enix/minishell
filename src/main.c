@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 14:41:09 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/27 13:54:13 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/27 15:29:58 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,10 @@ int	main(int argc, char *argv[], char *envp[])
 	copy_env(&minishell, envp);
 	init_signals(&minishell);
 	add_history("cat Makefile | grep all");
+	add_history("cat Makefile | < compile_flags.txt grep all");
+	add_history("< compile_flags.txt grep all");
+	add_history("cat Makefile > test.txt");
+	add_history("cat Makefile > test.txt | grep all");
 	prompt(&minishell);
 	return (minishell.exit_code);
 }

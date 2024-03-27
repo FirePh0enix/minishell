@@ -17,4 +17,4 @@ jobs:
         token: ${{ secrets.REPO_PAT }}
         submodules: true
     - name: Run automated tests
-      run: make libft/libft.a test
+      run: make test

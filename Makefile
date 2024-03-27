@@ -6,12 +6,11 @@
 #    By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/22 14:41:53 by ledelbec          #+#    #+#              #
-#    Updated: 2024/03/26 19:39:34 by ledelbec         ###   ########.fr        #
+#    Updated: 2024/03/27 14:03:36 by vopekdas         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 SRCS=\
-	src/main.c \
 	src/prompt.c \
 	src/signal.c \
 	src/parser.c \
@@ -26,7 +25,9 @@ SRCS=\
 	src/builtins/pwd.c\
 	src/builtins/unset.c\
 
-OBJS=$(SRCS:.c=.o)
+MAIN_SRCS=src/main.c $(SRCS)
+
+OBJS=$(MAIN_SRCS:.c=.o)
 DEPS=$(OBJS:.o=.d)
 
 CC=clang
