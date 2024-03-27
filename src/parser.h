@@ -6,12 +6,14 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:25:25 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/26 16:16:44 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/27 13:28:39 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PARSER_H
 # define PARSER_H
+
+# include <stdbool.h>
 
 typedef struct s_minishell	t_minishell;
 
@@ -21,13 +23,6 @@ typedef enum e_type
 	TY_PIPE,
 	TY_RED
 }	t_type;
-
-typedef enum e_dir
-{
-	IN,
-	OUT,
-	OUT_APPEND
-}	t_dir;
 
 typedef struct s_node
 {
@@ -41,6 +36,7 @@ typedef struct s_node
 
 			char	*infile;
 			char	*outfile;
+			bool	append;
 		}	cmd;
 		struct
 		{

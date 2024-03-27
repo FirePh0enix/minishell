@@ -6,13 +6,14 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 14:41:09 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/26 19:06:10 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/03/27 13:54:13 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "parser.h"
 #include "libft.h"
+#include <readline/history.h>
 #include <stdio.h>
 #include <unistd.h>
 
@@ -23,7 +24,7 @@ int	main(int argc, char *argv[], char *envp[])
 	pipe(minishell.pipe);
 	copy_env(&minishell, envp);
 	init_signals(&minishell);
-
+	add_history("cat Makefile | grep all");
 	prompt(&minishell);
 	return (minishell.exit_code);
 }

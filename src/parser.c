@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/26 16:28:45 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/27 13:54:50 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,15 +214,13 @@ static char	**expand_tokens(t_minishell *minishell, char **tokens)
 
 static int	isop(char *s)
 {
-	return (!strcmp(s, "|") || !strcmp(s, ">"));
+	return (!strcmp(s, "|"));
 }
 
 static int	get_op_priority(char *s)
 {
 	if (!strcmp(s, "|"))
 		return (1);
-	else if (!strcmp(s, ">"))
-		return (2);
 	return (-1);
 }
 
@@ -249,55 +247,62 @@ static int	get_op(char **tokens, size_t start, size_t end)
 	return (pos);
 }
 
+static t_node	*parse_cmd(char **tokens, size_t start, size_t end)
+{
+	t_node	*node;
+	size_t	i;
+	char	*tok;
+
+	node = ft_calloc(sizeof(t_node), 1);
+	if (!node)
+		return (NULL);
+	node->type = TY_CMD;
+	node->cmd.argv = ft_vector(sizeof(char *), 0);
+	i = 0;
+	while (i < end - start)
+	{
+		tok = tokens[i + start];
+		if (!strcmp(tok, "<"))
+		{
+			if (i + 1 >= end - start)
+				return (NULL);
+			i++;
+			node->cmd.infile = tokens[i];
+		}
+		else if (!strcmp(tok, ">") || !strcmp(tok, ">>"))
+		{
+			if (i + 1 >= end - start)
+				return (NULL);
+			i++;
+			node->cmd.outfile = tokens[i];
+			node->cmd.append = !strcmp(tok, ">>");
+		}
+		else
+			ft_vector_add(&node->cmd.argv, &tok);
+		i++;
+	}
+	tok = NULL;
+	ft_vector_add(&node->cmd.argv, &tok);
+	node->cmd.argc = ft_vector_size(node->cmd.argv) - 1;
+	return (node);
+}
+
 static t_node	*parse_expr(char **tokens, size_t start, size_t end)
 {
 	int		pos;
 	t_node	*node;
-	char	*s;
 
-	node = malloc(sizeof(t_node));
-	if (!node)
-		return (node);
 	pos = get_op(tokens, start, end);
 	if (pos == -1)
-	{
-		node->type = TY_CMD;
-		node->cmd.argv = ft_vector(sizeof(char *), 0);
-		for (size_t j = 0; j < end - start; j++)
-			ft_vector_add(&node->cmd.argv, &tokens[j + start]);
-		node->cmd.argc = ft_vector_size(node->cmd.argv);
-		s = NULL;
-		ft_vector_add(&node->cmd.argv, &s);
-		return (node);
-	}
+		return (parse_cmd(tokens, start, end));
 	else if (!strcmp(tokens[pos], "|"))
 	{
+		node = malloc(sizeof(t_node));
 		node->type = TY_PIPE;
 		node->pipe.left = parse_expr(tokens, start, pos);
 		node->pipe.right = parse_expr(tokens, pos + 1, end);
 		return (node);
 	}
-
-	// TODO
-	//
-	// The command `ls > test.txt Makefile | grep Make` should expand to the
-	// following tree:
-	//
-	//               pipe
-	//               / \
-	//              /   \
-	//             /     \
-	//            /       \
-	//          red       cmd
-	//          / \  [ grep Make ]
-	//         /   \
-	//        /     \
-	//      cmd    test.txt
-	// [ ls Makefile ]
-	//
-	// Where the output of `ls Makefile` is redirected to `test.txt` but also
-	// piped to `grep Makefile`
-
 	return (NULL);
 }
 
@@ -337,6 +342,12 @@ static void	_rec_dump_line(t_node *node, int layer)
 		for (int i = 0; i < node->cmd.argc; i++)
 			printf("%s ", node->cmd.argv[i]);
 		printf("]\n");
+		_print_spaces(layer + 1);
+		printf("in = %s\n", node->cmd.infile);
+		_print_spaces(layer + 1);
+		printf("out = %s\n", node->cmd.outfile);
+		_print_spaces(layer + 1);
+		printf("append mode = %d\n", node->cmd.append);
 		_print_spaces(layer);
 		printf("}\n");
 	}
