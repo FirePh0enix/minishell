@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:24:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/26 13:47:30 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/03/27 15:13:04 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@
 # include <stdio.h>
 # include <errno.h>
 
-
+# define TMP_FILE "/tmp/msh-miniseashell-tmp"
 
 typedef struct s_minishell
 {
