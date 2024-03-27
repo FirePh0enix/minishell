@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:24:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/25 15:16:48 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/03/26 13:47:30 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@
 
 typedef struct s_minishell
 {
+	int		pipe[2];
 	int		exit_code;
 	char	**env;
 }	t_minishell;
