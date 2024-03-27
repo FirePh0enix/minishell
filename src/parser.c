@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/27 13:54:50 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/27 14:32:48 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -267,14 +267,14 @@ static t_node	*parse_cmd(char **tokens, size_t start, size_t end)
 			if (i + 1 >= end - start)
 				return (NULL);
 			i++;
-			node->cmd.infile = tokens[i];
+			node->cmd.infile = tokens[i + start];
 		}
 		else if (!strcmp(tok, ">") || !strcmp(tok, ">>"))
 		{
 			if (i + 1 >= end - start)
 				return (NULL);
 			i++;
-			node->cmd.outfile = tokens[i];
+			node->cmd.outfile = tokens[i + start];
 			node->cmd.append = !strcmp(tok, ">>");
 		}
 		else
