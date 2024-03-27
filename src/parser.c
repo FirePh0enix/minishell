@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/27 14:32:48 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/27 19:50:28 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
+#include <readline/readline.h>
 
 static char	*next_string(char *line, size_t *index)
 {
@@ -247,6 +248,25 @@ static int	get_op(char **tokens, size_t start, size_t end)
 	return (pos);
 }
 
+static char	*heredoc(char *eof)
+{
+	const char	*filename = "/tmp/msh-miniseashell-heredoc";
+	char		*line;
+	int			fd;
+
+	fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+	while (1)
+	{
+		line = readline("> ");
+		if (!strcmp(line, eof))
+			break ;
+		write(fd, line, ft_strlen(line));
+		write(fd, "\n", 1);
+	}
+	close(fd);
+	return ((char *) filename);
+}
+
 static t_node	*parse_cmd(char **tokens, size_t start, size_t end)
 {
 	t_node	*node;
@@ -268,6 +288,13 @@ static t_node	*parse_cmd(char **tokens, size_t start, size_t end)
 				return (NULL);
 			i++;
 			node->cmd.infile = tokens[i + start];
+		}
+		else if (!strcmp(tok, "<<"))
+		{
+			if (i + 1 >= end - start)
+				return (NULL);
+			i++;
+			node->cmd.infile = heredoc(tokens[i + start]);
 		}
 		else if (!strcmp(tok, ">") || !strcmp(tok, ">>"))
 		{

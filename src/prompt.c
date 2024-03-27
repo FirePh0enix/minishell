@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 16:22:50 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/27 13:33:14 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/03/27 18:52:51 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,8 @@ void	prompt(t_minishell *msh)
 		line = readline(buf);
 		if (line == NULL)
 			break ;
+		else if (line[0] == '\0')
+			continue ;
 		node = parse_line(msh, line);
 		dump_line(node);
 		add_history(line);
