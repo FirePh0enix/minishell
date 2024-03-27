@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:24:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/27 16:37:03 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/03/28 00:16:17 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,9 @@ extern int	g_signum;
 void	prompt(t_minishell *minishell);
 void	print_prompt_prefix();
 void	init_signals(t_minishell *minishell);
+
+void	add_our_history(t_minishell *msh, char *line);
+void	load_history(t_minishell *msh);
 
 char	**wildcard(char *suffix);
 
