@@ -6,7 +6,7 @@
 #    By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/26 19:37:47 by ledelbec          #+#    #+#              #
-#    Updated: 2024/03/26 22:30:12 by ledelbec         ###   ########.fr        #
+#    Updated: 2024/03/27 11:51:53 by ledelbec         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,10 +30,13 @@ TEST_SRCS=\
 	src/builtins/unset.c
 
 TESTS=\
-	simple-parser
+	simple-command-parsing \
+	command-parsing-with-pipe \
+	env-variables \
 
-test: $(OBJS)
-	$(foreach TEST, $(TESTS), @bash tests/test.sh $(TEST) "$(TEST_SRCS)")
+test:
+	@$(foreach TEST, $(TESTS), bash tests/test.sh $(TEST) "$(TEST_SRCS)";)
+	@rm -f minishell.test
 
 test-clean:
 	rm -f minishell.test
