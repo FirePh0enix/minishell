@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/03/28 13:42:58 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/28 14:35:46 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,9 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 	int		file;
 	int		fd[2];
 	char	*cmd;
+	int		status;
 
+	status = 0;
 	if (node->type == TY_CMD)
 	{
 		if (strcmp(node->cmd.argv[0], "cd") == 0)
@@ -132,8 +134,7 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 				if (dup2(file, STDOUT_FILENO) == -1)
 					return (printf("ERROR OUTFILE\n"), 1);
 			}
-			if (ft_exec_cmd(cmd, node->cmd.argv, msh->env) == -1)
-				return (printf("ERROR EXECVE\n"), 1);
+			msh->exit_code = ft_exec_cmd(cmd, node->cmd.argv, msh->env);
 		}
 		else
 		{
@@ -141,7 +142,7 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 				close(parent_in);
 			if (parent_out != -1)
 				close(parent_out);
-			while (wait(NULL) > 0)
+			while (wait(&status) > 0)
 			{
 				if (g_signum != -1)
 					kill(pid, g_signum);
@@ -156,5 +157,19 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 		exec_cmd(msh, node->pipe.right, fd[0], parent_out);
 		close(fd[0]);
 	}
-	return (0);
+	else if (node->type == TY_OR)
+	{
+		status = exec_cmd(msh, node->pipe.left, parent_in, parent_out);
+		if (status == 0)
+			return (status);
+		status = exec_cmd(msh, node->pipe.right, parent_in, parent_out);
+	}
+	else if (node->type == TY_AND)
+	{
+		status = exec_cmd(msh, node->pipe.left, parent_in, parent_out);
+		if (status != 0)
+			return (status);
+		status = exec_cmd(msh, node->pipe.right, parent_in, parent_out);
+	}
+	return (status);
 }
