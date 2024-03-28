@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:24:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/28 11:41:14 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/28 12:44:45 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ typedef struct s_minishell
 	int		pipe[2];
 	int		exit_code;
 	char	**env;
+	size_t	heredocs;
 }	t_minishell;
 
 extern int	g_signum;
@@ -52,9 +53,12 @@ char	**wildcard(char *suffix);
 void	copy_env(t_minishell *minishell, char *envp[]);
 char	*getourenv(t_minishell *minishell, char *name);
 
+void	msh_error(char *msg);
+
 int		builtin_cd(int ac, char **av);
 int		builtin_pwd(int ac, char **av);
 int		builtin_echo(int ac, char **av);
 int		builtin_exit(int ac, char **av);
+int		builtin_unset(t_minishell *msh, int ac, char **av);
 
 #endif

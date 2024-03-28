@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/28 11:27:28 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/28 12:46:51 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -262,12 +262,13 @@ static int	get_op(char **tokens, size_t start, size_t end)
 	return (pos);
 }
 
-static char	*heredoc(char *eof)
+static char	*heredoc(t_minishell *msh, char *eof)
 {
-	const char	*filename = "/tmp/msh-miniseashell-heredoc";
 	char		*line;
 	int			fd;
+	char		filename[256];
 
+	ft_sprintf(filename, "/tmp/msh-miniseashell-heredoc-%zu", msh->heredocs++);
 	fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	while (1)
 	{
@@ -278,10 +279,10 @@ static char	*heredoc(char *eof)
 		write(fd, "\n", 1);
 	}
 	close(fd);
-	return ((char *) filename);
+	return (ft_strdup(filename));
 }
 
-static t_node	*parse_cmd(char **tokens, size_t start, size_t end)
+static t_node	*parse_cmd(t_minishell *msh, char **tokens, size_t start, size_t end)
 {
 	t_node	*node;
 	size_t	i;
@@ -308,7 +309,7 @@ static t_node	*parse_cmd(char **tokens, size_t start, size_t end)
 			if (i + 1 >= end - start)
 				return (NULL);
 			i++;
-			node->cmd.infile = heredoc(tokens[i + start]);
+			node->cmd.infile = heredoc(msh, tokens[i + start]);
 		}
 		else if (!strcmp(tok, ">") || !strcmp(tok, ">>"))
 		{
@@ -328,20 +329,20 @@ static t_node	*parse_cmd(char **tokens, size_t start, size_t end)
 	return (node);
 }
 
-static t_node	*parse_expr(char **tokens, size_t start, size_t end)
+static t_node	*parse_expr(t_minishell *msh, char **tokens, size_t start, size_t end)
 {
 	int		pos;
 	t_node	*node;
 
 	pos = get_op(tokens, start, end);
 	if (pos == -1)
-		return (parse_cmd(tokens, start, end));
+		return (parse_cmd(msh, tokens, start, end));
 	else if (!strcmp(tokens[pos], "|"))
 	{
 		node = malloc(sizeof(t_node));
 		node->type = TY_PIPE;
-		node->pipe.left = parse_expr(tokens, start, pos);
-		node->pipe.right = parse_expr(tokens, pos + 1, end);
+		node->pipe.left = parse_expr(msh, tokens, start, pos);
+		node->pipe.right = parse_expr(msh, tokens, pos + 1, end);
 		return (node);
 	}
 	return (NULL);
@@ -350,15 +351,16 @@ static t_node	*parse_expr(char **tokens, size_t start, size_t end)
 // -----------------------------------------------------------------------------
 // Line parsing
 
-t_node	*parse_line(t_minishell *minishell, char *line)
+t_node	*parse_line(t_minishell *msh, char *line)
 {
 	char	**tokens;
 
+	msh->heredocs = 0;
 	tokens = split_into_tokens(line);
-	tokens = expand_tokens(minishell, tokens);
+	tokens = expand_tokens(msh, tokens);
 	for (size_t i = 0; i < ft_vector_size(tokens); i++)
 		printf("tok: %s\n", tokens[i]);
-	return (parse_expr(tokens, 0, ft_vector_size(tokens)));
+	return (parse_expr(msh, tokens, 0, ft_vector_size(tokens)));
 }
 
 static void	_print_spaces(int layer)

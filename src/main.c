@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 14:41:09 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/28 00:18:52 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/28 12:44:26 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ int	main(int argc, char *argv[], char *envp[])
 	t_minishell	msh;
 
 	msh.exit_code = 0;
+	msh.heredocs = 0;
 	pipe(msh.pipe);
 	copy_env(&msh, envp);
 	init_signals(&msh);

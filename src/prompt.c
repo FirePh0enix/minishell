@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 16:22:50 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/28 11:43:55 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/28 11:56:08 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,11 @@ void	prompt(t_minishell *msh)
 		else if (line[0] == '\0')
 			continue ;
 		node = parse_line(msh, line);
+		if (!node)
+		{
+			msh_error("parsing error");
+			continue ;
+		}
 		dump_line(node);
 		add_our_history(msh, line);
 		msh->exit_code = exec_cmd(msh, node, -1, -1);
