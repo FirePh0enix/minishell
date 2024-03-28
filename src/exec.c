@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/03/27 16:39:46 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/03/28 13:42:58 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,37 +17,35 @@
 #include <stdio.h>
 #include <unistd.h>
 
-char	**ft_get_path(char **env)
+char	**ft_get_path(t_minishell *msh)
 {
 	char	**path;
+	char	*env;
 
-	if (!env || !*env)
-		return (NULL);
-	path = NULL;
-	while (*env)
+	env = getourenv(msh, "PATH");
+	if (env)
 	{
-		if (ft_strncmp(*env, "PATH=", 5) == 0)
-		{
-			path = ft_split(*env + 5, ':');
-			if (!path)
-				return (NULL);
-			return (path);
-		}
-		env++;
+		path = ft_split(env, ':');
+		if (!path)
+			return (NULL);
+		return (path);
 	}
 	return (NULL);
 }
 
-char	*ft_create_path(char *command, char **envp)
+char	*ft_create_path(t_minishell *msh, char *command)
 {
 	char	**path;
 	int		i;
 	char	buf[256];
 
-	if (!envp || !command || !*envp || !*command)
+	if (!command || !*command)
 		return (NULL);
+	if ((ft_strlen(command) >= 2 && !ft_strncmp(command, "./", 2))
+		|| command[0] == '/')
+		return (ft_strdup(command));
 	i = 0;
-	path = ft_get_path(envp);
+	path = ft_get_path(msh);
 	if (!path)
 		return (NULL);
 	while (path[i])
@@ -60,22 +58,14 @@ char	*ft_create_path(char *command, char **envp)
 	return (NULL);
 }
 
-int	ft_exec_cmd(char **av, char **envp)
+int	ft_exec_cmd(char *cmd, char **av, char **envp)
 {
-	char	*path;
-
-	if (ft_strncmp(av[0], "./", 2) == 0)
-		path = ft_strdup(av[0]);
-	else
-		path = ft_create_path(av[0], envp);
-	if (!path)
-		return (-1);
-	if (execve(path, av, envp) == -1)
+	if (execve(cmd, av, envp) == -1)
 	{
-		free(path);
+		free(cmd);
 		return (-1);
 	}
-	free(path);
+	free(cmd);
 	return (0);
 }
 
@@ -95,10 +85,10 @@ int	copy_file(int out, int in)
 
 int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 {
-	int	pid;
-	int	file;
-	int	tmp;
-	int	fd[2];
+	int		pid;
+	int		file;
+	int		fd[2];
+	char	*cmd;
 
 	if (node->type == TY_CMD)
 	{
@@ -110,6 +100,9 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 			return (builtin_echo(node->cmd.argc, node->cmd.argv));
 		else if (strcmp(node->cmd.argv[0], "exit") == 0)
 			return (builtin_exit(node->cmd.argc, node->cmd.argv));
+		cmd = ft_create_path(msh, node->cmd.argv[0]);
+		if (!cmd)
+			return (msh_error_cmd(node->cmd.argv[0]), -1);
 		pid = fork();
 		if (pid == -1)
 			return (-1);
@@ -139,7 +132,7 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 				if (dup2(file, STDOUT_FILENO) == -1)
 					return (printf("ERROR OUTFILE\n"), 1);
 			}
-			if (ft_exec_cmd(node->cmd.argv, msh->env) == -1)
+			if (ft_exec_cmd(cmd, node->cmd.argv, msh->env) == -1)
 				return (printf("ERROR EXECVE\n"), 1);
 		}
 		else

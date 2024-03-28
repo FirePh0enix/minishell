@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/28 12:46:51 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/28 13:51:49 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -229,13 +229,15 @@ static char	**expand_tokens(t_minishell *msh, char **tokens)
 
 static int	isop(char *s)
 {
-	return (!strcmp(s, "|"));
+	return (!strcmp(s, "|") || !strcmp(s, "||") || !strcmp(s, "&&"));
 }
 
 static int	get_op_priority(char *s)
 {
 	if (!strcmp(s, "|"))
 		return (1);
+	else if (!strcmp(s, "||") || !strcmp(s, "&&"))
+		return (2);
 	return (-1);
 }
 
@@ -309,6 +311,8 @@ static t_node	*parse_cmd(t_minishell *msh, char **tokens, size_t start, size_t e
 			if (i + 1 >= end - start)
 				return (NULL);
 			i++;
+			if (node->cmd.infile)
+				free(node->cmd.infile);
 			node->cmd.infile = heredoc(msh, tokens[i + start]);
 		}
 		else if (!strcmp(tok, ">") || !strcmp(tok, ">>"))
@@ -341,6 +345,22 @@ static t_node	*parse_expr(t_minishell *msh, char **tokens, size_t start, size_t 
 	{
 		node = malloc(sizeof(t_node));
 		node->type = TY_PIPE;
+		node->pipe.left = parse_expr(msh, tokens, start, pos);
+		node->pipe.right = parse_expr(msh, tokens, pos + 1, end);
+		return (node);
+	}
+	else if (!strcmp(tokens[pos], "||"))
+	{
+		node = malloc(sizeof(t_node));
+		node->type = TY_OR;
+		node->pipe.left = parse_expr(msh, tokens, start, pos);
+		node->pipe.right = parse_expr(msh, tokens, pos + 1, end);
+		return (node);
+	}
+	else if (!strcmp(tokens[pos], "&&"))
+	{
+		node = malloc(sizeof(t_node));
+		node->type = TY_AND;
 		node->pipe.left = parse_expr(msh, tokens, start, pos);
 		node->pipe.right = parse_expr(msh, tokens, pos + 1, end);
 		return (node);
@@ -397,6 +417,30 @@ static void	_rec_dump_line(t_node *node, int layer)
 	else if (node->type == TY_PIPE)
 	{
 		printf("PIPE {\n");
+		_print_spaces(layer + 1);
+		printf("left = ");
+		_rec_dump_line(node->pipe.left, layer + 1);
+		_print_spaces(layer + 1);
+		printf("right = ");
+		_rec_dump_line(node->pipe.right, layer + 1);
+		_print_spaces(layer);
+		printf("}\n");
+	}
+	else if (node->type == TY_OR)
+	{
+		printf("OR {\n");
+		_print_spaces(layer + 1);
+		printf("left = ");
+		_rec_dump_line(node->pipe.left, layer + 1);
+		_print_spaces(layer + 1);
+		printf("right = ");
+		_rec_dump_line(node->pipe.right, layer + 1);
+		_print_spaces(layer);
+		printf("}\n");
+	}
+	else if (node->type == TY_AND)
+	{
+		printf("AND {\n");
 		_print_spaces(layer + 1);
 		printf("left = ");
 		_rec_dump_line(node->pipe.left, layer + 1);

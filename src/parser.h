@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:25:25 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/27 13:28:39 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/28 13:47:06 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,8 @@ typedef enum e_type
 {
 	TY_CMD,
 	TY_PIPE,
-	TY_RED
+	TY_OR,
+	TY_AND
 }	t_type;
 
 typedef struct s_node
