@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 16:22:50 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/28 15:21:38 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/28 21:47:35 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ void	write_prefix(t_minishell *msh, char buf[])
 		ft_sprintf(buf, COL_LGREEN " ~%s " COL_LBLUE "$ " COL_RESET, cwd + home_sz);
 	else
 		ft_sprintf(buf, COL_LGREEN " %s " COL_LBLUE "$" COL_RESET, cwd);
+	free(home);
 }
 
 void	prompt(t_minishell *msh)

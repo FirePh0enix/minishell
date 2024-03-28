@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/28 16:08:49 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/28 21:40:14 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -377,6 +377,9 @@ t_node	*parse_line(t_minishell *msh, char *line)
 
 	msh->heredocs = 0;
 	tokens = split_into_tokens(line);
+	/*for (size_t i = 0; i < ft_vector_size(tokens); i++)
+		free(tokens[i]);
+	ft_vector_free(tokens);*/
 	tokens = expand_tokens(msh, tokens);
 	for (size_t i = 0; i < ft_vector_size(tokens); i++)
 		printf("tok: %s\n", tokens[i]);

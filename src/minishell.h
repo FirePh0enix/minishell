@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:24:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/28 15:17:27 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/28 21:55:20 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ typedef struct s_minishell
 	int		pipe[2];
 	int		exit_code;
 	char	**env;
+	char	**history;
 	size_t	heredocs;
 }	t_minishell;
 
@@ -47,12 +48,14 @@ void	init_signals(t_minishell *minishell);
 
 void	add_our_history(t_minishell *msh, char *line);
 void	load_history(t_minishell *msh);
+void	free_history(t_minishell *msh);
 
 char	**wildcard(char *suffix);
 
 void	copy_env(t_minishell *minishell, char *envp[]);
 char	*getourenv(t_minishell *minishell, char *name);
 void	setourenv(t_minishell *msh, char *name, char *value);
+void	free_env(t_minishell *msh);
 
 void	msh_error(char *msg);
 void	msh_error_cmd(char *cmd);
@@ -63,5 +66,6 @@ int		builtin_echo(int ac, char **av);
 int		builtin_exit(int ac, char **av);
 int		builtin_unset(t_minishell *msh, int ac, char **av);
 int		builtin_env(t_minishell *msh, int ac, char *av[]);
+int		builtin_export(t_minishell *msh, int ac, char *av[]);
 
 #endif

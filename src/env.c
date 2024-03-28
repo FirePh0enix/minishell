@@ -6,12 +6,13 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 23:45:53 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/28 15:05:45 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/28 21:54:54 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #include "minishell.h"
+#include "parser.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -77,4 +78,9 @@ void	setourenv(t_minishell *msh, char *name, char *value)
 	s = ft_strjoin(name, "=");
 	s2 = ft_strjoin(s, value);
 	free(s);
+}
+
+void	free_env(t_minishell *msh)
+{
+	ft_vector_deep_free(msh->env);
 }

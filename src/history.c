@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/27 23:38:35 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/28 00:21:07 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/28 22:22:01 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ void	add_our_history(t_minishell *msh, char *line)
 		close(fd);
 	}
 	add_history(line);
+	ft_vector_add(&msh->history, &line);
 }
 
 void	load_history(t_minishell *msh)
@@ -40,18 +41,26 @@ void	load_history(t_minishell *msh)
 	char	*line;
 
 	home = getourenv(msh, "HOME");
+	msh->history = ft_vector(sizeof(char *), 0);
 	if (home)
 	{
 		ft_sprintf(buf, "%s/.msh_history", home);
 		fd = open(buf, O_RDONLY | O_CREAT, 0666);
-		// TODO Maybe store the lines in a vector and free them later ?
 		while (1)
 		{
 			line = get_next_line(fd);
 			if (!line)
 				break ;
 			line[ft_strlen(line) - 1] = '\0';
+			ft_vector_add(&msh->history, &line);
 			add_history(line);
 		}
+		close(fd);
+		free(home);
 	}
+}
+
+void	free_history(t_minishell *msh)
+{
+	ft_vector_deep_free(msh->history);
 }
