@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:24:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/28 00:16:17 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/28 11:41:14 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,10 @@
 # include <stdbool.h>
 # include <stdio.h>
 # include <errno.h>
+
+# define COL_LBLUE  "\e[0;34m"
+# define COL_LGREEN "\e[1;32m"
+# define COL_RESET  "\e[0m"
 
 typedef struct s_minishell
 {

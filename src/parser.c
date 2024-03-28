@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/27 19:50:28 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/28 11:27:28 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,9 +168,9 @@ static char	*expand_dquotes(t_minishell *minishell, char *tok)
 }
 
 /*
- * Expand metacharacters like * and $
+ * Expand metacharacters like *, ~ and $
  */
-static char	**expand_tokens(t_minishell *minishell, char **tokens)
+static char	**expand_tokens(t_minishell *msh, char **tokens)
 {
 	size_t	i;
 	size_t	j;
@@ -191,15 +191,29 @@ static char	**expand_tokens(t_minishell *minishell, char **tokens)
 		}
 		else if (tokens[i][0] == '"')
 		{
-			s = expand_dquotes(minishell, tokens[i]);
+			s = expand_dquotes(msh, tokens[i]);
 			ft_vector_add(&tokens2, &s);
 			free(tokens[i]);
 		}
 		else if (tokens[i][0] == '$')
 		{
-			char	*env = getourenv(minishell, tokens[i] + 1);
+			char	*env = getourenv(msh, tokens[i] + 1);
 			if (env)
 				ft_vector_add(&tokens2, &env);
+		}
+		else if (tokens[i][0] == '~')
+		{
+			char	*home = getourenv(msh, "HOME");
+			if (home)
+			{
+				s = ft_strjoin(home, tokens[i] + 1);
+				ft_vector_add(&tokens2, &s);
+			}
+			else
+			{
+				s = ft_strdup(tokens[i] + 1);
+				ft_vector_add(&tokens2, &s);
+			}
 		}
 		else
 		{

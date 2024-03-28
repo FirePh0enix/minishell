@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 16:22:50 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/27 23:51:35 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/28 11:43:55 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,20 +19,33 @@
 #include "minishell.h"
 #include "parser.h"
 
-void	print_prompt_prefix()
+void	write_prefix(t_minishell *msh, char buf[])
 {
-	char	cwd[64];
+	char	cwd[256];
+	char	*home;
+	size_t	home_sz;
+	size_t	cwd_sz;
 
-	getcwd(cwd, 64);
-	printf("%s $ ", cwd);
+	getcwd(cwd, 256);
+	home = getourenv(msh, "HOME");
+	if (!home)
+	{
+		ft_sprintf(buf, COL_LGREEN "%s $ " COL_RESET, cwd);
+		return ;
+	}
+	home_sz = ft_strlen(home);
+	cwd_sz = ft_strlen(cwd);
+	if (cwd_sz >= home_sz && !ft_strncmp(home, cwd, home_sz))
+		ft_sprintf(buf, COL_LGREEN "~%s " COL_LBLUE "$ " COL_RESET, cwd + home_sz);
+	else
+		ft_sprintf(buf, COL_LGREEN "%s " COL_LBLUE "$" COL_RESET, cwd);
 }
 
 void	prompt(t_minishell *msh)
 {
 	char	*line;
 	t_node	*node;
-	char	cwd[64];
-	char	buf[64];
+	char	buf[256];
 
 	while (1)
 	{
@@ -41,8 +54,7 @@ void	prompt(t_minishell *msh)
 			g_signum = -1;
 			msh->exit_code = 130;
 		}
-		getcwd(cwd, 64);
-		ft_sprintf(buf, "%s $ ", cwd);
+		write_prefix(msh, buf);
 		line = readline(buf);
 		if (line == NULL)
 			break ;
