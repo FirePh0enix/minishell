@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/28 13:51:49 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/28 16:08:49 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -301,14 +301,14 @@ static t_node	*parse_cmd(t_minishell *msh, char **tokens, size_t start, size_t e
 		tok = tokens[i + start];
 		if (!strcmp(tok, "<"))
 		{
-			if (i + 1 >= end - start)
+			if (i + 1 > end - start)
 				return (NULL);
 			i++;
 			node->cmd.infile = tokens[i + start];
 		}
 		else if (!strcmp(tok, "<<"))
 		{
-			if (i + 1 >= end - start)
+			if (i + 1 > end - start)
 				return (NULL);
 			i++;
 			if (node->cmd.infile)
@@ -317,7 +317,7 @@ static t_node	*parse_cmd(t_minishell *msh, char **tokens, size_t start, size_t e
 		}
 		else if (!strcmp(tok, ">") || !strcmp(tok, ">>"))
 		{
-			if (i + 1 >= end - start)
+			if (i + 1 > end - start)
 				return (NULL);
 			i++;
 			node->cmd.outfile = tokens[i + start];

@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:24:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/28 13:42:20 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/28 15:17:27 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,14 +52,16 @@ char	**wildcard(char *suffix);
 
 void	copy_env(t_minishell *minishell, char *envp[]);
 char	*getourenv(t_minishell *minishell, char *name);
+void	setourenv(t_minishell *msh, char *name, char *value);
 
 void	msh_error(char *msg);
 void	msh_error_cmd(char *cmd);
 
-int		builtin_cd(int ac, char **av);
+int		builtin_cd(t_minishell *msh, int ac, char **av);
 int		builtin_pwd(int ac, char **av);
 int		builtin_echo(int ac, char **av);
 int		builtin_exit(int ac, char **av);
 int		builtin_unset(t_minishell *msh, int ac, char **av);
+int		builtin_env(t_minishell *msh, int ac, char *av[]);
 
 #endif

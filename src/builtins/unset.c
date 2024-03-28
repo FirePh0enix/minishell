@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/27 14:24:38 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/27 16:53:28 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/03/28 15:20:25 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,12 +23,12 @@ int	builtin_unset(t_minishell *msh, int argc, char *argv[])
 	i = 0;
 	while (msh->env[i])
 	{
-		if (ft_strlen(msh->env[i]) > size)
+		if (ft_strlen(msh->env[i]) <= size)
 		{
 			i++;
 			continue ;
 		}
-		if (ft_strncmp(msh->env[i], argv[1], size) && msh->env[i][size] == '=')
+		if (!ft_strncmp(msh->env[i], argv[1], size) && msh->env[i][size] == '=')
 		{
 			ft_vector_del(&msh->env, i);
 			break ;

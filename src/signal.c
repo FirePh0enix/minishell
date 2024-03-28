@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 18:31:08 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/22 22:52:54 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/28 14:04:16 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,18 +23,23 @@ void	signal_handler(int signum, siginfo_t *si, void *p)
 	(void) si;
 	(void) p;
 	g_signum = signum;
-	printf("\n");
-	rl_replace_line("", 0);
-	rl_on_new_line();
-	rl_redisplay();
+	if (signum == SIGINT)
+	{
+		printf("\n");
+		rl_replace_line("", 0);
+		rl_on_new_line();
+		rl_redisplay();
+	}
 }
 
-void	init_signals(t_minishell *minishell)
+void	init_signals(t_minishell *msh)
 {
 	struct sigaction	sa;
 
+	(void) msh;
 	sa.sa_flags = SA_SIGINFO;
 	sa.sa_sigaction = (void *) signal_handler;
 	sigemptyset(&sa.sa_mask);
 	sigaction(SIGINT, &sa, NULL);
+	sigaction(SIGQUIT, &sa, NULL);
 }

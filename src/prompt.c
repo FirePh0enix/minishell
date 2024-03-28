@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 16:22:50 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/28 13:37:43 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/28 15:21:38 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void	write_prefix(t_minishell *msh, char buf[])
 	home = getourenv(msh, "HOME");
 	if (!home)
 	{
-		ft_sprintf(buf, COL_LGREEN " %s $ " COL_RESET, cwd);
+		ft_sprintf(buf, COL_LGREEN " %s " COL_LBLUE "$ " COL_RESET, cwd);
 		return ;
 	}
 	home_sz = ft_strlen(home);
