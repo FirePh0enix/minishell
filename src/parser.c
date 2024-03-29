@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/28 21:40:14 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/29 13:59:49 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,19 +25,21 @@ static char	*next_string(char *line, size_t *index)
 	char	*s;
 
 	i = *index + 1;
-	s = ft_calloc(1, 1);
-	size = 0;
+	s = ft_calloc(2, 1);
+	s[0] = line[*index];
+	size = 1;
 	while (i < ft_strlen(line))
 	{
 		s = ft_realloc(s, size + 1, size + 2);
 		s[size++] = line[i];
 		s[size] = '\0';
-		i++;
-		if ((line[*index] == '"' && line[i] == '"') || (line[*index] == '\'' && line[i] == '\''))
+		if ((line[*index] == '"' && line[i] == '"')
+			|| (line[*index] == '\'' && line[i] == '\''))
 		{
 			i++;
 			break ;
 		}
+		i++;
 	}
 	*index = i;
 	return (s);
@@ -74,8 +76,11 @@ static char	*next_token(char *line, size_t *index)
 		*index = i;
 		return (s);
 	}
-	else if (line[i] == '"' || line[i] == '"')
+	else if (line[i] == '"' || line[i] == '\'')
+	{
+		*index = i;
 		return (next_string(line, index));
+	}
 	while (i < ft_strlen(line))
 	{
 		if (line[i] == ' ' || line[i] == '|' || line[i] == '"' || line[i] == '>' || line[i] == '<')
