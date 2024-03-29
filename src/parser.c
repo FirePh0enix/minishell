@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/29 13:59:49 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/03/29 14:27:57 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,8 @@ static char	*next_token(char *line, size_t *index)
 	while (line[i] == ' ')
 		i++;
 	size = 0;
-	if (line[i] == '|' || line[i] == '&' || line[i] == '>' || line[i] == '<')
+	if (line[i] == '|' || line[i] == '&' || line[i] == '>' || line[i] == '<'
+		|| line[i] == '(' || line[i] == ')')
 	{
 		if (i + 1 < ft_strlen(line)
 			&& (!ft_strncmp(&line[i], "&&", 2) || !ft_strncmp(&line[i], "||", 2) || !ft_strncmp(&line[i], ">>", 2) || !ft_strncmp(&line[i], "<<", 2)))
@@ -83,7 +84,8 @@ static char	*next_token(char *line, size_t *index)
 	}
 	while (i < ft_strlen(line))
 	{
-		if (line[i] == ' ' || line[i] == '|' || line[i] == '"' || line[i] == '>' || line[i] == '<')
+		if (line[i] == ' ' || line[i] == '|' || line[i] == '"' || line[i] == '>'
+			|| line[i] == '<' || line[i] == '(' || line[i] == ')')
 			break ;
 		s = ft_realloc(s, size + 1, size + 2);
 		s[size++] = line[i];
@@ -252,14 +254,20 @@ static int	get_op(char **tokens, size_t start, size_t end)
 	char	*tok;
 	int		hprio;
 	int		pos;
+	int		parent;
 
 	pos = -1;
 	i = end - 1;
 	hprio = 0;
+	parent = 0;
 	while (i >= (int) start)
 	{
 		tok = tokens[i];
-		if (isop(tok) && get_op_priority(tok) > hprio)
+		if (!strcmp(tok, ")"))
+			parent++;
+		else if (!strcmp(tok, "("))
+			parent--;
+		else if (parent == 0 && isop(tok) && get_op_priority(tok) > hprio)
 		{
 			hprio = get_op_priority(tok);
 			pos = i;
@@ -345,7 +353,12 @@ static t_node	*parse_expr(t_minishell *msh, char **tokens, size_t start, size_t 
 
 	pos = get_op(tokens, start, end);
 	if (pos == -1)
+	{
+		if (end - start >= 2
+			&& !strcmp(tokens[start], "(") && !strcmp(tokens[end - 1], ")"))
+			return (parse_expr(msh, tokens, start + 1, end - 1));
 		return (parse_cmd(msh, tokens, start, end));
+	}
 	else if (!strcmp(tokens[pos], "|"))
 	{
 		node = malloc(sizeof(t_node));
