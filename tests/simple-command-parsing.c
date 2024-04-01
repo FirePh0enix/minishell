@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   simple-parser.c                                    :+:      :+:    :+:   */
+/*   simple-command-parsing.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/26 22:00:52 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/26 22:45:51 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/01 20:50:19 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,9 @@ int	main()
 	node.type = TY_CMD;
 	node.cmd.argc = 2;
 	node.cmd.argv = ft_vector(sizeof(char *), 0);
+	node.cmd.outfile = NULL;
+	node.cmd.append = false;
+	node.cmd.infile = NULL;
 	msh.env = ft_vector(sizeof(char *), 0);
 	for (int i = 0; i < 2; i++)
 		ft_vector_add(&node.cmd.argv, &argv[i]);

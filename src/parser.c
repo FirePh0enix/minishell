@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/01 20:03:35 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/01 20:48:48 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -414,8 +414,8 @@ static t_node	*parse_parent(t_minishell *msh, char **tokens, size_t start, size_
 		}
 	}
 
-	printf("parent: %d %d\n", parent_start, parent_end);
-	printf("        %zd %zd\n", start, end);
+	// printf("parent: %d %d\n", parent_start, parent_end);
+	// printf("        %zd %zd\n", start, end);
 
 	if (parent_start == -1 && parent_end == -1)
 		return (parse_cmd(msh, tokens, start, end));
@@ -457,7 +457,6 @@ static t_node	*parse_parent(t_minishell *msh, char **tokens, size_t start, size_
 	// Finally parse what's between parenthesis and add the redirections
 
 	t_node	*node = parse_expr(msh, tokens, parent_start + 1, parent_end - 1);
-	printf("Hello world %p\n", node);
 
 	if (outfile != NULL)
 		apply_out(msh, node, outfile, append);

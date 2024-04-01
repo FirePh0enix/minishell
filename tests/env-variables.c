@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/27 11:52:22 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/01 20:08:30 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/01 20:51:09 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,9 @@ void	setup_node(t_node *node)
 	node->type = TY_CMD;
 	node->cmd.argv = ft_vector_from_array((void *) argv1, 3);
 	node->cmd.argc = 2;
+	node->cmd.outfile = NULL;
+	node->cmd.append = false;
+	node->cmd.infile = NULL;
 }
 
 int	main()
