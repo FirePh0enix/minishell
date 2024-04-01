@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 14:41:09 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/28 22:04:17 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/01 13:26:12 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@ int	main(int argc, char *argv[], char *envp[])
 	(void) argc;
 	(void) argv;
 	msh.exit_code = 0;
-	pipe(msh.pipe);
 	copy_env(&msh, envp);
 	init_signals(&msh);
 	load_history(&msh);
