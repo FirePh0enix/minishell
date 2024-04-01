@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/29 14:27:57 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/01 20:03:35 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -257,7 +257,7 @@ static int	get_op(char **tokens, size_t start, size_t end)
 	int		parent;
 
 	pos = -1;
-	i = end - 1;
+	i = end;
 	hprio = 0;
 	parent = 0;
 	while (i >= (int) start)
@@ -297,7 +297,8 @@ static char	*heredoc(t_minishell *msh, char *eof)
 	return (ft_strdup(filename));
 }
 
-static t_node	*parse_cmd(t_minishell *msh, char **tokens, size_t start, size_t end)
+static t_node	*parse_cmd(t_minishell *msh, char **tokens,
+		size_t start, size_t end)
 {
 	t_node	*node;
 	size_t	i;
@@ -308,16 +309,16 @@ static t_node	*parse_cmd(t_minishell *msh, char **tokens, size_t start, size_t e
 		return (NULL);
 	node->type = TY_CMD;
 	node->cmd.argv = ft_vector(sizeof(char *), 0);
-	i = 0;
-	while (i < end - start)
+	i = start;
+	while (i <= end)
 	{
-		tok = tokens[i + start];
+		tok = tokens[i];
 		if (!strcmp(tok, "<"))
 		{
-			if (i + 1 > end - start)
+			if (i + 1 > end)
 				return (NULL);
 			i++;
-			node->cmd.infile = tokens[i + start];
+			node->cmd.infile = tokens[i];
 		}
 		else if (!strcmp(tok, "<<"))
 		{
@@ -326,14 +327,14 @@ static t_node	*parse_cmd(t_minishell *msh, char **tokens, size_t start, size_t e
 			i++;
 			if (node->cmd.infile)
 				free(node->cmd.infile);
-			node->cmd.infile = heredoc(msh, tokens[i + start]);
+			node->cmd.infile = heredoc(msh, tokens[i]);
 		}
 		else if (!strcmp(tok, ">") || !strcmp(tok, ">>"))
 		{
-			if (i + 1 > end - start)
+			if (i + 1 > end)
 				return (NULL);
 			i++;
-			node->cmd.outfile = tokens[i + start];
+			node->cmd.outfile = tokens[i];
 			node->cmd.append = !strcmp(tok, ">>");
 		}
 		else
@@ -346,24 +347,140 @@ static t_node	*parse_cmd(t_minishell *msh, char **tokens, size_t start, size_t e
 	return (node);
 }
 
+static t_node	*parse_expr(t_minishell *msh, char **tokens, size_t start, size_t end);
+
+static void	apply_out(t_minishell *msh, t_node *node, char *outfile, bool append)
+{
+	if (node->type == TY_CMD)
+	{
+		node->cmd.outfile = outfile;
+		node->cmd.append = append;
+	}
+	else if (node->type == TY_PIPE)
+	{
+		apply_out(msh, node->pipe.right, outfile, append);
+	}
+	else if (node->type == TY_AND || node->type == TY_OR)
+	{
+		// Append mode is forced on the right node to simulate the behaviour
+		// of bash
+		apply_out(msh, node->pipe.left, outfile, append);
+		apply_out(msh, node->pipe.right, outfile, true);
+	}
+}
+
+static void	apply_in(t_minishell *msh, t_node *node, char *infile)
+{
+	if (node->type == TY_CMD)
+	{
+		node->cmd.infile = infile;
+	}
+	else if (node->type == TY_PIPE)
+	{
+		apply_in(msh, node->pipe.left, infile);
+	}
+	else if (node->type == TY_AND || node->type == TY_OR)
+	{
+		apply_in(msh, node->pipe.left, infile);
+		apply_in(msh, node->pipe.right, infile);
+	}
+}
+
+static t_node	*parse_parent(t_minishell *msh, char **tokens, size_t start, size_t end)
+{
+	char	*outfile = NULL;
+	char	*infile = NULL;
+	bool	append;
+
+	// First find the parenthesis start and end values
+	int	parent_start;
+	int	parent_end;
+
+	parent_start = - 1;
+	parent_end = -1;
+	for (size_t i = start; i <= end; i++)
+	{
+		if (!strcmp(tokens[i], "("))
+		{
+			if (parent_start != -1)
+				return (NULL);
+			parent_start = i;
+		}
+		else if (!strcmp(tokens[i], ")"))
+		{
+			if (parent_end != -1)
+				return (NULL);
+			parent_end = i;
+		}
+	}
+
+	printf("parent: %d %d\n", parent_start, parent_end);
+	printf("        %zd %zd\n", start, end);
+
+	if (parent_start == -1 && parent_end == -1)
+		return (parse_cmd(msh, tokens, start, end));
+	else if (parent_start == -1 || parent_end == -1)
+		return (NULL);
+
+	// Then parse redirections here
+	char	*tok;
+
+	for (size_t i = start; i < end; i++)
+	{
+		if (i >= (size_t)parent_start && i <= (size_t)parent_end)
+			continue ;
+		tok = tokens[i];
+		if (!strcmp(tok, "<"))
+		{
+			if (i + 1 > end - start)
+				return (NULL);
+			i++;
+			infile = tokens[i + start];
+		}
+		else if (!strcmp(tok, "<<"))
+		{
+			if (i + 1 > end - start)
+				return (NULL);
+			i++;
+			infile = heredoc(msh, tokens[i]);
+		}
+		else if (!strcmp(tok, ">") || !strcmp(tok, ">>"))
+		{
+			if (i + 1 > end)
+				return (NULL);
+			i++;
+			outfile = tokens[i + start];
+			append = !strcmp(tok, ">>");
+		}
+	}
+
+	// Finally parse what's between parenthesis and add the redirections
+
+	t_node	*node = parse_expr(msh, tokens, parent_start + 1, parent_end - 1);
+	printf("Hello world %p\n", node);
+
+	if (outfile != NULL)
+		apply_out(msh, node, outfile, append);
+	if (infile != NULL)
+		apply_in(msh, node, infile);
+	return (node);
+}
+
 static t_node	*parse_expr(t_minishell *msh, char **tokens, size_t start, size_t end)
 {
-	int		pos;
+	int			pos;
 	t_node	*node;
 
 	pos = get_op(tokens, start, end);
 	if (pos == -1)
-	{
-		if (end - start >= 2
-			&& !strcmp(tokens[start], "(") && !strcmp(tokens[end - 1], ")"))
-			return (parse_expr(msh, tokens, start + 1, end - 1));
-		return (parse_cmd(msh, tokens, start, end));
-	}
+		return (parse_parent(msh, tokens, start, end));
+	else if (pos == 0)
+		return (NULL);
 	else if (!strcmp(tokens[pos], "|"))
 	{
 		node = malloc(sizeof(t_node));
 		node->type = TY_PIPE;
-		node->pipe.left = parse_expr(msh, tokens, start, pos);
+		node->pipe.left = parse_expr(msh, tokens, start, pos - 1);
 		node->pipe.right = parse_expr(msh, tokens, pos + 1, end);
 		return (node);
 	}
@@ -371,7 +488,7 @@ static t_node	*parse_expr(t_minishell *msh, char **tokens, size_t start, size_t 
 	{
 		node = malloc(sizeof(t_node));
 		node->type = TY_OR;
-		node->pipe.left = parse_expr(msh, tokens, start, pos);
+		node->pipe.left = parse_expr(msh, tokens, start, pos - 1);
 		node->pipe.right = parse_expr(msh, tokens, pos + 1, end);
 		return (node);
 	}
@@ -379,7 +496,7 @@ static t_node	*parse_expr(t_minishell *msh, char **tokens, size_t start, size_t 
 	{
 		node = malloc(sizeof(t_node));
 		node->type = TY_AND;
-		node->pipe.left = parse_expr(msh, tokens, start, pos);
+		node->pipe.left = parse_expr(msh, tokens, start, pos - 1);
 		node->pipe.right = parse_expr(msh, tokens, pos + 1, end);
 		return (node);
 	}
@@ -401,8 +518,14 @@ t_node	*parse_line(t_minishell *msh, char *line)
 	tokens = expand_tokens(msh, tokens);
 	for (size_t i = 0; i < ft_vector_size(tokens); i++)
 		printf("tok: %s\n", tokens[i]);
-	return (parse_expr(msh, tokens, 0, ft_vector_size(tokens)));
+	return (parse_expr(msh, tokens, 0, ft_vector_size(tokens) - 1));
 }
+
+// -----------------------------------------------------------------------------
+// Convert "Prenodes" to actual nodes
+
+// -----------------------------------------------------------------------------
+// Debugging
 
 static void	_print_spaces(int layer)
 {
