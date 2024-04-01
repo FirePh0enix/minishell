@@ -6,13 +6,19 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/26 22:14:52 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/26 22:44:33 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/01 20:44:09 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../test.h"
+#include "parser.h"
 #include <stdlib.h>
 #include <stdio.h>
+
+static bool	not_all_null(char *a, char *b)
+{
+	return ((a != NULL && b == NULL) || (a == NULL && b != NULL));
+}
 
 static bool	node_equals(t_node *a, t_node *b)
 {
@@ -31,7 +37,15 @@ static bool	node_equals(t_node *a, t_node *b)
 				return (false);
 			i++;
 		}
+		if (not_all_null(a->cmd.outfile, b->cmd.outfile)
+			|| (a->cmd.outfile != NULL && b->cmd.outfile != NULL && strcmp(a->cmd.outfile, b->cmd.outfile)))
+			return (false);
 	}
+	else if (a->type == TY_PIPE && b->type == TY_PIPE)
+		return (a->pipe.left && b->pipe.left
+			&& node_equals(a->pipe.left, b->pipe.left)
+			&& a->pipe.right && b->pipe.right
+			&& node_equals(a->pipe.right, b->pipe.right));
 	return (true);
 }
 
