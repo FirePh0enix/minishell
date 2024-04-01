@@ -6,10 +6,11 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 14:51:56 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/01 14:02:08 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/01 14:35:45 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft.h"
 #include <minishell.h>
 
 static int strcmpn(char *s)
@@ -29,13 +30,16 @@ static int strcmpn(char *s)
 	return (0);
 }
 
-int	builtin_echo(int ac, char **av)
+int	builtin_echo(int ac, char **av, int parent_out, t_node *node)
 {
 	int		i;
 	bool	nl;
+	int		flags;
+	int		file;
 
 	if (!av || !*av)
 		return (1);
+	flags = O_WRONLY | O_CREAT;
 	i = 1;
 	nl = true;
 	while (av[i] && ft_strlen(av[i]) >= 2 && strcmpn(av[i]) == 0)
@@ -43,12 +47,44 @@ int	builtin_echo(int ac, char **av)
 		i++;
 		nl = false;
 	}
-	while (i < ac)
+	if (parent_out != -1)
 	{
-		printf("%s", av[i]);
-		if (i + 1 < ac)
-			printf(" ");
-		i++;
+		while (i < ac)
+		{
+			ft_putstr_fd(av[i], parent_out);
+			if (i + 1 < ac)
+				ft_putstr_fd(" ", parent_out);
+			i++;
+		}
+		if (nl)
+			ft_putstr_fd("\n", parent_out);
+	}
+	else if (node->cmd.outfile)
+	{
+		if (node->cmd.append)
+			flags |= O_APPEND;
+		else
+			flags |= O_TRUNC;
+		file = open(node->cmd.outfile, flags, 0666);
+		while (i < ac)
+		{
+			ft_putstr_fd(av[i], file);
+			if (i + 1 < ac)
+				ft_putstr_fd(" ", file);
+			i++;
+		}
+		if (nl)
+			ft_putstr_fd("\n", file);
+	}
+	else
+	{
+		while (i < ac)
+		{
+			printf("%s", av[i]);
+			if (i + 1 < ac)
+				printf(" ");
+			i++;
+		}
 	}
 	if (nl)
 		printf("\n");

@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/01 14:15:25 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/01 14:43:58 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,18 +37,14 @@ bool	is_builtin(t_node *node)
 	return (false);
 }
 
-int	exec_builtin(t_minishell *msh, t_node *node, int parent_in, int parent_out)
+int	exec_builtin(t_minishell *msh, t_node *node, int parent_out)
 {
-	(void)parent_in;
-
-	// TODO: builtin can also write in pipe, so add putstr_fd for needed case.
-	// TODO: echo, env and pwd
 	if (strcmp(node->cmd.argv[0], "cd") == 0)
 		return (builtin_cd(msh, node->cmd.argc, node->cmd.argv));
 	else if (strcmp(node->cmd.argv[0], "pwd") == 0)
 		return (builtin_pwd(node->cmd.argc, node->cmd.argv, parent_out, node));
 	else if (strcmp(node->cmd.argv[0], "echo") == 0)
-		return (builtin_echo(node->cmd.argc, node->cmd.argv));
+		return (builtin_echo(node->cmd.argc, node->cmd.argv, parent_out, node));
 	else if (strcmp(node->cmd.argv[0], "exit") == 0)
 		return (builtin_exit(node->cmd.argc, node->cmd.argv));
 	else if (strcmp(node->cmd.argv[0], "unset") == 0)
@@ -72,7 +68,7 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 	if (node->type == TY_CMD)
 	{
 		if (is_builtin(node))
-			return (exec_builtin(msh, node, parent_in, parent_out));
+			return (exec_builtin(msh, node, parent_out));
 		cmd = ft_create_path(msh, node->cmd.argv[0]);
 		if (!cmd)
 			return (msh_error_cmd(node->cmd.argv[0]), -1);
