@@ -32,7 +32,7 @@ jobs:
         else
           sudo apt install --yes valgrind="$VALGRIND_VERSION"
           mkdir -p ~/valgrind
-          sudo dpkg -L valgrind | while IFS= read -r f; do if test -f $f; then echo $f; fi; done | xargs cp --parens --target-directory ~/valgrind
+          sudo dpkg -L valgrind | while IFS= read -r f; do if test -f $f; then echo $f; fi; done | xargs cp --parents --target-directory ~/valgrind
         fi
     - name: Run automated tests
       run: make test

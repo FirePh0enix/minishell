@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 14:51:56 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/01 14:35:45 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/02 15:13:32 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,7 @@ int	builtin_echo(int ac, char **av, int parent_out, t_node *node)
 		}
 		if (nl)
 			ft_putstr_fd("\n", file);
+		close(file);
 	}
 	else
 	{
@@ -85,8 +86,8 @@ int	builtin_echo(int ac, char **av, int parent_out, t_node *node)
 				printf(" ");
 			i++;
 		}
+		if (nl)
+			printf("\n");
 	}
-	if (nl)
-		printf("\n");
 	return (0);
 }

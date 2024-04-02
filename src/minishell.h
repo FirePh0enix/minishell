@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:24:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/01 14:30:41 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/02 15:05:26 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,12 +59,12 @@ void	free_env(t_minishell *msh);
 void	msh_error(char *msg);
 void	msh_error_cmd(char *cmd);
 
-int		builtin_cd(t_minishell *msh, int ac, char **av);
+int		builtin_cd(t_minishell *msh, int ac, char **av, int parent_out, t_node *node);
 int		builtin_pwd(int ac, char **av, int parent_out, t_node *node);
 int		builtin_echo(int ac, char **av, int parent_out, t_node *node);
-int		builtin_exit(int ac, char **av);
-int		builtin_unset(t_minishell *msh, int ac, char **av);
+int		builtin_exit(int ac, char **av, t_node *node);
+int		builtin_unset(t_minishell *msh, int ac, char **av, t_node *node);
 int		builtin_env(t_minishell *msh, int parent_out, t_node *node);
-int		builtin_export(t_minishell *msh, int ac, char *av[]);
+int		builtin_export(t_minishell *msh, int ac, char *av[], t_node *node);
 
 #endif

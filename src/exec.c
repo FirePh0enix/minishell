@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/01 14:43:58 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/02 15:05:33 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,19 +40,19 @@ bool	is_builtin(t_node *node)
 int	exec_builtin(t_minishell *msh, t_node *node, int parent_out)
 {
 	if (strcmp(node->cmd.argv[0], "cd") == 0)
-		return (builtin_cd(msh, node->cmd.argc, node->cmd.argv));
+		return (builtin_cd(msh, node->cmd.argc, node->cmd.argv, parent_out, node));
 	else if (strcmp(node->cmd.argv[0], "pwd") == 0)
 		return (builtin_pwd(node->cmd.argc, node->cmd.argv, parent_out, node));
 	else if (strcmp(node->cmd.argv[0], "echo") == 0)
 		return (builtin_echo(node->cmd.argc, node->cmd.argv, parent_out, node));
 	else if (strcmp(node->cmd.argv[0], "exit") == 0)
-		return (builtin_exit(node->cmd.argc, node->cmd.argv));
+		return (builtin_exit(node->cmd.argc, node->cmd.argv, node));
 	else if (strcmp(node->cmd.argv[0], "unset") == 0)
-		return (builtin_unset(msh, node->cmd.argc, node->cmd.argv));
+		return (builtin_unset(msh, node->cmd.argc, node->cmd.argv, node));
 	else if (strcmp(node->cmd.argv[0], "env") == 0)
 		return (builtin_env(msh, parent_out, node));
 	else if (strcmp(node->cmd.argv[0], "export") == 0)
-		return (builtin_export(msh, node->cmd.argc, node->cmd.argv));
+		return (builtin_export(msh, node->cmd.argc, node->cmd.argv, node));
 	return (0);
 }
 
