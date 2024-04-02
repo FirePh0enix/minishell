@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 16:22:50 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/01 19:13:56 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/02 13:45:39 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void	write_prefix(t_minishell *msh, char buf[])
 {
 	char	cwd[256];
 	char	*home;
-	size_t	home_sz;
+	size_t	sz;
 	size_t	cwd_sz;
 
 	getcwd(cwd, 256);
@@ -33,13 +33,18 @@ void	write_prefix(t_minishell *msh, char buf[])
 		ft_sprintf(buf, COL_LGREEN " %s " COL_LBLUE "$ " COL_RESET, cwd);
 		return ;
 	}
-	home_sz = ft_strlen(home);
+	sz = ft_strlen(home);
 	cwd_sz = ft_strlen(cwd);
-	if (cwd_sz >= home_sz && !ft_strncmp(home, cwd, home_sz))
-		ft_sprintf(buf, COL_LGREEN " ~%s " COL_LBLUE "$ " COL_RESET, cwd + home_sz);
+	if (cwd_sz >= sz && !ft_strncmp(home, cwd, sz))
+		ft_sprintf(buf, COL_LGREEN " ~%s " COL_LBLUE "$ " COL_RESET, cwd + sz);
 	else
-		ft_sprintf(buf, COL_LGREEN " %s " COL_LBLUE "$" COL_RESET, cwd);
+		ft_sprintf(buf, COL_LGREEN " %s " COL_LBLUE "$ " COL_RESET, cwd);
 	free(home);
+}
+
+int	event(void)
+{
+	return (0);
 }
 
 void	prompt(t_minishell *msh)
@@ -48,6 +53,7 @@ void	prompt(t_minishell *msh)
 	t_node	*node;
 	char	buf[256];
 
+	rl_event_hook = event;
 	while (1)
 	{
 		if (g_signum == SIGINT)

@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/27 11:52:22 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/01 20:51:09 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/02 12:16:39 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int	main()
 
 	line = "cd $HOME";
 	msh.env = ft_vector(sizeof(char *), 0);
-	s = "HOME=/home/ledelbec";
+	s = "HOME=/home/ledelbec1234";
 	ft_vector_add(&msh.env, &s);
 	s = NULL;
 	ft_vector_add(&msh.env, &s);
