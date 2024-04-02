@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   env-variables.c                                    :+:      :+:    :+:   */
+/*   parenthesis-with-redirections.c                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/27 11:52:22 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/02 12:16:39 by ledelbec         ###   ########.fr       */
+/*   Created: 2024/04/01 20:10:07 by ledelbec          #+#    #+#             */
+/*   Updated: 2024/04/01 20:49:19 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,22 @@
 
 void	setup_node(t_node *node)
 {
-	const char *argv1[] = { "cd", "/home/ledelbec", NULL };
+	const char	*argv1[] = { "echo", "Hello world", NULL };
+	const char	*argv2[] = { "grep", "all", NULL };
+	t_node		*l;
+	t_node		*r;
 
-	node->type = TY_CMD;
-	node->cmd.argv = ft_vector_from_array((void *) argv1, 3);
-	node->cmd.argc = 2;
-	node->cmd.outfile = NULL;
-	node->cmd.append = false;
-	node->cmd.infile = NULL;
+	node->type = TY_PIPE;
+	l = ft_calloc(1, sizeof(t_node));
+	l->type = TY_CMD;
+	l->cmd.argv = ft_vector_from_array((char **) argv1, 3);
+	l->cmd.argc = 2;
+	r = ft_calloc(1, sizeof(t_node));
+	r->cmd.argv = ft_vector_from_array((char **) argv2, 3);
+	r->cmd.argc = 2;
+	r->cmd.outfile = "test.txt";
+	node->pipe.left = l;
+	node->pipe.right = r;
 }
 
 int	main()
@@ -31,14 +39,8 @@ int	main()
 	char		*line;
 	t_minishell	msh;
 	t_node		node;
-	char		*s;
 
-	line = "cd $HOME";
-	msh.env = ft_vector(sizeof(char *), 0);
-	s = "HOME=/home/ledelbec1234";
-	ft_vector_add(&msh.env, &s);
-	s = NULL;
-	ft_vector_add(&msh.env, &s);
+	line = "(echo \"Hello world\" | grep all) > test.txt";
 	setup_node(&node);
 	assert_node(line, parse_line(&msh, line), &node);
 	return (0);

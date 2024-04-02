@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 18:31:08 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/28 14:04:16 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/02 13:46:10 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,10 +25,8 @@ void	signal_handler(int signum, siginfo_t *si, void *p)
 	g_signum = signum;
 	if (signum == SIGINT)
 	{
-		printf("\n");
 		rl_replace_line("", 0);
-		rl_on_new_line();
-		rl_redisplay();
+		rl_done = 1;
 	}
 }
 
