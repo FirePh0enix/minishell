@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/03/28 15:25:36 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/02 15:05:33 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,72 +14,45 @@
 #include "minishell.h"
 #include "parser.h"
 #include <fcntl.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <unistd.h>
 
-char	**ft_get_path(t_minishell *msh)
+bool	is_builtin(t_node *node)
 {
-	char	**path;
-	char	*env;
-
-	env = getourenv(msh, "PATH");
-	if (env)
-	{
-		path = ft_split(env, ':');
-		if (!path)
-			return (NULL);
-		return (path);
-	}
-	return (NULL);
+	if (strcmp(node->cmd.argv[0], "cd") == 0)
+		return (true);
+	else if (strcmp(node->cmd.argv[0], "pwd") == 0)
+		return  (true);
+	else if (strcmp(node->cmd.argv[0], "echo") == 0)
+		return  (true);
+	else if (strcmp(node->cmd.argv[0], "exit") == 0)
+		return (true);
+	else if (strcmp(node->cmd.argv[0], "unset") == 0)
+		return (true);
+	else if (strcmp(node->cmd.argv[0], "env") == 0)
+		return (true);
+	else if (strcmp(node->cmd.argv[0], "export") == 0)
+		return (true);
+	return (false);
 }
 
-char	*ft_create_path(t_minishell *msh, char *command)
+int	exec_builtin(t_minishell *msh, t_node *node, int parent_out)
 {
-	char	**path;
-	int		i;
-	char	buf[256];
-
-	if (!command || !*command)
-		return (NULL);
-	if ((ft_strlen(command) >= 2 && !ft_strncmp(command, "./", 2))
-		|| command[0] == '/')
-		return (ft_strdup(command));
-	i = 0;
-	path = ft_get_path(msh);
-	if (!path)
-		return (NULL);
-	while (path[i])
-	{
-		ft_sprintf(buf, "%s/%s", path[i], command);
-		if (access(buf, X_OK) == 0)
-			return (ft_strdup(buf));
-		i++;
-	}
-	return (NULL);
-}
-
-int	ft_exec_cmd(char *cmd, char **av, char **envp)
-{
-	if (execve(cmd, av, envp) == -1)
-	{
-		free(cmd);
-		return (-1);
-	}
-	free(cmd);
-	return (0);
-}
-
-int	copy_file(int out, int in)
-{
-	char	buf[4096];
-	int		n;
-
-	n = 4096;
-	while (n == 4096)
-	{
-		n = read(in, buf, 4096);
-		write(out, buf, n);
-	}
+	if (strcmp(node->cmd.argv[0], "cd") == 0)
+		return (builtin_cd(msh, node->cmd.argc, node->cmd.argv, parent_out, node));
+	else if (strcmp(node->cmd.argv[0], "pwd") == 0)
+		return (builtin_pwd(node->cmd.argc, node->cmd.argv, parent_out, node));
+	else if (strcmp(node->cmd.argv[0], "echo") == 0)
+		return (builtin_echo(node->cmd.argc, node->cmd.argv, parent_out, node));
+	else if (strcmp(node->cmd.argv[0], "exit") == 0)
+		return (builtin_exit(node->cmd.argc, node->cmd.argv, node));
+	else if (strcmp(node->cmd.argv[0], "unset") == 0)
+		return (builtin_unset(msh, node->cmd.argc, node->cmd.argv, node));
+	else if (strcmp(node->cmd.argv[0], "env") == 0)
+		return (builtin_env(msh, parent_out, node));
+	else if (strcmp(node->cmd.argv[0], "export") == 0)
+		return (builtin_export(msh, node->cmd.argc, node->cmd.argv, node));
 	return (0);
 }
 
@@ -94,20 +67,8 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 	status = 0;
 	if (node->type == TY_CMD)
 	{
-		if (strcmp(node->cmd.argv[0], "cd") == 0)
-			return (builtin_cd(msh, node->cmd.argc, node->cmd.argv));
-		else if (strcmp(node->cmd.argv[0], "pwd") == 0)
-			return (builtin_pwd(node->cmd.argc, node->cmd.argv));
-		else if (strcmp(node->cmd.argv[0], "echo") == 0)
-			return (builtin_echo(node->cmd.argc, node->cmd.argv));
-		else if (strcmp(node->cmd.argv[0], "exit") == 0)
-			return (builtin_exit(node->cmd.argc, node->cmd.argv));
-		else if (strcmp(node->cmd.argv[0], "unset") == 0)
-			return (builtin_unset(msh, node->cmd.argc, node->cmd.argv));
-		else if (strcmp(node->cmd.argv[0], "env") == 0)
-			return (builtin_env(msh, node->cmd.argc, node->cmd.argv));
-		else if (strcmp(node->cmd.argv[0], "export") == 0)
-			return (builtin_export(msh, node->cmd.argc, node->cmd.argv));
+		if (is_builtin(node))
+			return (exec_builtin(msh, node, parent_out));
 		cmd = ft_create_path(msh, node->cmd.argv[0]);
 		if (!cmd)
 			return (msh_error_cmd(node->cmd.argv[0]), -1);

@@ -6,7 +6,7 @@
 #    By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/22 14:41:53 by ledelbec          #+#    #+#              #
-#    Updated: 2024/04/02 12:04:54 by ledelbec         ###   ########.fr        #
+#    Updated: 2024/04/02 14:25:49 by vopekdas         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,6 +16,7 @@ SRCS=\
 	src/parser.c \
 	src/wildcard.c \
 	src/env.c \
+	src/exec_utils.c \
 	src/exec.c \
 	src/history.c \
 	src/error.c \
