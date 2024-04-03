@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/01 20:48:48 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/03 13:15:35 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,14 +23,20 @@ static char	*next_string(char *line, size_t *index)
 	size_t	i;
 	size_t	size;
 	char	*s;
+	char	*s2;
 
 	i = *index + 1;
 	s = ft_calloc(2, 1);
+	if (!s)
+		return (NULL);
 	s[0] = line[*index];
 	size = 1;
 	while (i < ft_strlen(line))
 	{
-		s = ft_realloc(s, size + 1, size + 2);
+		s2 = ft_realloc(s, size + 1, size + 2);
+		if (!s2)
+			return (free(s), NULL);
+		s = s2;
 		s[size++] = line[i];
 		s[size] = '\0';
 		if ((line[*index] == '"' && line[i] == '"')
@@ -48,6 +54,7 @@ static char	*next_string(char *line, size_t *index)
 static char	*next_token(char *line, size_t *index)
 {
 	char	*s;
+	char	*s2;
 	size_t	i;
 	size_t	size;
 
@@ -65,12 +72,16 @@ static char	*next_token(char *line, size_t *index)
 			&& (!ft_strncmp(&line[i], "&&", 2) || !ft_strncmp(&line[i], "||", 2) || !ft_strncmp(&line[i], ">>", 2) || !ft_strncmp(&line[i], "<<", 2)))
 		{
 			s = ft_calloc(1, 3);
+			if (!s)
+				return (NULL);
 			ft_memcpy(s, &line[i], 2);
 			i += 2;
 		}
 		else
 		{
 			s = ft_calloc(1, 2);
+			if (!s)
+				return (NULL);
 			s[0] = line[i];
 			i++;
 		}
@@ -87,7 +98,10 @@ static char	*next_token(char *line, size_t *index)
 		if (line[i] == ' ' || line[i] == '|' || line[i] == '"' || line[i] == '>'
 			|| line[i] == '<' || line[i] == '(' || line[i] == ')')
 			break ;
-		s = ft_realloc(s, size + 1, size + 2);
+		s2 = ft_realloc(s, size + 1, size + 2);
+		if (!s2)
+			return (free(s), NULL);
+		s = s2;
 		s[size++] = line[i];
 		s[size] = '\0';
 		i++;
@@ -111,8 +125,8 @@ static char	**split_into_tokens(char *line)
 		tok = next_token(line, &index);
 		if (!tok)
 			break ;
-		// TODO Should check if ft_vector_add fails to reallocate memory
-		ft_vector_add(&tokens, &tok);
+		if(!ft_vector_add(&tokens, &tok))
+			return (ft_vector_deep_free(tokens), NULL);
 	}
 	return (tokens);
 }
@@ -141,9 +155,11 @@ static char	*ft_strndup(char *s, size_t n)
 static char	*expand_dquotes(t_minishell *minishell, char *tok)
 {
 	char	*tok2;
+	char	*tok2_2;
 	size_t	start;
 	size_t	i;
 	size_t	size;
+	char	*env;
 
 	tok2 = ft_calloc(1, 1);
 	i = 1;
@@ -153,7 +169,9 @@ static char	*expand_dquotes(t_minishell *minishell, char *tok)
 		start = i;
 		while (tok[i] && tok[i] != '"' && tok[i] != '$')
 			i++;
-		tok2 = ft_realloc(tok2, size + 1, size + 1 + (i - start));
+		tok2_2 = ft_realloc(tok2, size + 1, size + 1 + (i - start));
+		if (!tok2_2)
+			return (free(tok2), NULL);
 		ft_memcpy(tok2 + size, tok + start, i - start);
 		size += i - start;
 		if (tok[i] == '$')
@@ -161,12 +179,15 @@ static char	*expand_dquotes(t_minishell *minishell, char *tok)
 			start = i + 1;
 			while (tok[i] && !ispathend(tok[i]))
 				i++;
-			tok2 = ft_realloc(tok2, size + 1, size + 1 + (i - start));
-			char	*env = getourenv(minishell, ft_strndup(tok + start, i - start));
+			tok2_2 = ft_realloc(tok2, size + 1, size + 1 + (i - start));
+			if (!tok2_2)
+				return (free(tok2), NULL);
+			env = getourenv(minishell, ft_strndup(tok + start, i - start));
 			if (!env)
 				continue ;
 			ft_memcpy(tok2 + size, env, ft_strlen(env));
 			size += ft_strlen(env);
+			free(env);
 		}
 		else
 			break ;
@@ -184,48 +205,57 @@ static char	**expand_tokens(t_minishell *msh, char **tokens)
 	char	**tokens2;
 	char	**files;
 	char	*s;
+	char	*env;
 
 	tokens2 = ft_vector(sizeof(char *), 0);
+	if (!tokens2)
+		return (NULL);
 	i = 0;
 	while (i < ft_vector_size(tokens))
 	{
 		if (ft_strchr(tokens[i], '*'))
 		{
 			files = wildcard(ft_strchr(tokens[i], '*') + 1);
+			if (!files)
+				return (ft_vector_deep_free(tokens2), NULL);
 			j = 0;
 			while (j < ft_vector_size(files))
-				ft_vector_add(&tokens2, &files[j++]);
+				if (!ft_vector_add(&tokens2, &files[j++]))
+					return (ft_vector_deep_free(tokens2), NULL);
 		}
 		else if (tokens[i][0] == '"')
 		{
 			s = expand_dquotes(msh, tokens[i]);
-			ft_vector_add(&tokens2, &s);
+			if (!ft_vector_add(&tokens2, &s))
+				return (ft_vector_deep_free(tokens2), NULL);
 			free(tokens[i]);
 		}
 		else if (tokens[i][0] == '$')
 		{
-			char	*env = getourenv(msh, tokens[i] + 1);
-			if (env)
-				ft_vector_add(&tokens2, &env);
+			env = getourenv(msh, tokens[i] + 1);
+			if (env && !ft_vector_add(&tokens2, &env))
+				return (ft_vector_deep_free(tokens2), NULL);
 		}
 		else if (tokens[i][0] == '~')
 		{
-			char	*home = getourenv(msh, "HOME");
-			if (home)
+			env = getourenv(msh, "HOME");
+			if (env)
 			{
-				s = ft_strjoin(home, tokens[i] + 1);
-				ft_vector_add(&tokens2, &s);
+				s = ft_strjoin(env, tokens[i] + 1);
+				if (!s || !ft_vector_add(&tokens2, &s))
+					return (free(env), free(s), ft_vector_deep_free(tokens2),
+						NULL);
+				free(env);
 			}
 			else
 			{
 				s = ft_strdup(tokens[i] + 1);
-				ft_vector_add(&tokens2, &s);
+				if (!s || !ft_vector_add(&tokens2, &s))
+					return (free(s), ft_vector_deep_free(tokens2), NULL);
 			}
 		}
-		else
-		{
-			ft_vector_add(&tokens2, &tokens[i]);
-		}
+		else if (!ft_vector_add(&tokens2, &tokens[i]))
+			return (ft_vector_deep_free(tokens2), NULL);
 		i++;
 	}
 	return (tokens2);
@@ -285,6 +315,8 @@ static char	*heredoc(t_minishell *msh, char *eof)
 
 	ft_sprintf(filename, "/tmp/msh-miniseashell-heredoc-%zu", msh->heredocs++);
 	fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+	if (fd == -1)
+		return (NULL);
 	while (1)
 	{
 		line = readline("> ");
@@ -309,6 +341,8 @@ static t_node	*parse_cmd(t_minishell *msh, char **tokens,
 		return (NULL);
 	node->type = TY_CMD;
 	node->cmd.argv = ft_vector(sizeof(char *), 0);
+	if (!node->cmd.argv)
+		return (free(node), NULL);
 	i = start;
 	while (i <= end)
 	{
@@ -328,6 +362,8 @@ static t_node	*parse_cmd(t_minishell *msh, char **tokens,
 			if (node->cmd.infile)
 				free(node->cmd.infile);
 			node->cmd.infile = heredoc(msh, tokens[i]);
+			if (!node->cmd.infile)
+				return (ft_vector_deep_free(node->cmd.argv), free(node), NULL);
 		}
 		else if (!strcmp(tok, ">") || !strcmp(tok, ">>"))
 		{
@@ -337,12 +373,13 @@ static t_node	*parse_cmd(t_minishell *msh, char **tokens,
 			node->cmd.outfile = tokens[i];
 			node->cmd.append = !strcmp(tok, ">>");
 		}
-		else
-			ft_vector_add(&node->cmd.argv, &tok);
+		else if (!ft_vector_add(&node->cmd.argv, &tok))
+			return (ft_vector_deep_free(node->cmd.argv), free(node), NULL);
 		i++;
 	}
 	tok = NULL;
-	ft_vector_add(&node->cmd.argv, &tok);
+	if (!ft_vector_add(&node->cmd.argv, &tok))
+		return (ft_vector_deep_free(node->cmd.argv), free(node), NULL);
 	node->cmd.argc = ft_vector_size(node->cmd.argv) - 1;
 	return (node);
 }
@@ -443,6 +480,8 @@ static t_node	*parse_parent(t_minishell *msh, char **tokens, size_t start, size_
 				return (NULL);
 			i++;
 			infile = heredoc(msh, tokens[i]);
+			if (!infile)
+				return (NULL); // free outfile, infile if needed
 		}
 		else if (!strcmp(tok, ">") || !strcmp(tok, ">>"))
 		{
@@ -478,6 +517,8 @@ static t_node	*parse_expr(t_minishell *msh, char **tokens, size_t start, size_t 
 	else if (!strcmp(tokens[pos], "|"))
 	{
 		node = malloc(sizeof(t_node));
+		if (!node)
+			return (NULL);
 		node->type = TY_PIPE;
 		node->pipe.left = parse_expr(msh, tokens, start, pos - 1);
 		node->pipe.right = parse_expr(msh, tokens, pos + 1, end);
@@ -486,6 +527,8 @@ static t_node	*parse_expr(t_minishell *msh, char **tokens, size_t start, size_t 
 	else if (!strcmp(tokens[pos], "||"))
 	{
 		node = malloc(sizeof(t_node));
+		if (!node)
+			return (NULL);
 		node->type = TY_OR;
 		node->pipe.left = parse_expr(msh, tokens, start, pos - 1);
 		node->pipe.right = parse_expr(msh, tokens, pos + 1, end);
@@ -494,6 +537,8 @@ static t_node	*parse_expr(t_minishell *msh, char **tokens, size_t start, size_t 
 	else if (!strcmp(tokens[pos], "&&"))
 	{
 		node = malloc(sizeof(t_node));
+		if (!node)
+			return (NULL);
 		node->type = TY_AND;
 		node->pipe.left = parse_expr(msh, tokens, start, pos - 1);
 		node->pipe.right = parse_expr(msh, tokens, pos + 1, end);
