@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/02 15:05:33 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/03 14:29:17 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,13 @@
 #include <fcntl.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 bool	is_builtin(t_node *node)
 {
+	if (node->cmd.argc == 0)
+		return (false);
 	if (strcmp(node->cmd.argv[0], "cd") == 0)
 		return (true);
 	else if (strcmp(node->cmd.argv[0], "pwd") == 0)
@@ -65,13 +68,17 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 	int		status;
 
 	status = 0;
+	cmd = NULL;
 	if (node->type == TY_CMD)
 	{
 		if (is_builtin(node))
 			return (exec_builtin(msh, node, parent_out));
-		cmd = ft_create_path(msh, node->cmd.argv[0]);
-		if (!cmd)
-			return (msh_error_cmd(node->cmd.argv[0]), -1);
+		if (node->cmd.argc > 0)
+		{
+			cmd = ft_create_path(msh, node->cmd.argv[0]);
+			if (!cmd)
+				return (msh_error_cmd(node->cmd.argv[0]), -1);
+		}
 		pid = fork();
 		if (pid == -1)
 			return (-1);
@@ -79,9 +86,11 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 		{
 			if (parent_in != -1 && dup2(parent_in, STDIN_FILENO) == -1)
 				return (printf("ERROR DUP2 PARENT_IN\n"), 1);
-			if (node->cmd.infile)
+			if (node->cmd.infile && node->cmd.argc > 0)
 			{
 				file = open(node->cmd.infile, O_RDONLY);
+				if (file == -1)
+					return (printf("ERROR OPEN INFILE\n"), 1);
 				if (dup2(file, STDIN_FILENO) == -1)
 					return (printf("ERROR DUP2 TMP\n"), 1);
 			}
@@ -98,10 +107,15 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 				else
 					flags |= O_TRUNC;
 				file = open(node->cmd.outfile, flags, 0666);
+				if (file == -1)
+					return (printf("ERROR OPEN OUTFILE\n"), 1);
 				if (dup2(file, STDOUT_FILENO) == -1)
 					return (printf("ERROR OUTFILE\n"), 1);
 			}
-			msh->exit_code = ft_exec_cmd(cmd, node->cmd.argv, msh->env);
+			if (cmd)
+				ft_exec_cmd(cmd, node->cmd.argv, msh->env);
+			else
+				exit(EXIT_SUCCESS);
 		}
 		else
 		{

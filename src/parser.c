@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/03 13:15:35 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/03 14:21:50 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,6 +172,7 @@ static char	*expand_dquotes(t_minishell *minishell, char *tok)
 		tok2_2 = ft_realloc(tok2, size + 1, size + 1 + (i - start));
 		if (!tok2_2)
 			return (free(tok2), NULL);
+		tok2 = tok2_2;
 		ft_memcpy(tok2 + size, tok + start, i - start);
 		size += i - start;
 		if (tok[i] == '$')
@@ -182,6 +183,7 @@ static char	*expand_dquotes(t_minishell *minishell, char *tok)
 			tok2_2 = ft_realloc(tok2, size + 1, size + 1 + (i - start));
 			if (!tok2_2)
 				return (free(tok2), NULL);
+			tok2 = tok2_2;
 			env = getourenv(minishell, ft_strndup(tok + start, i - start));
 			if (!env)
 				continue ;
