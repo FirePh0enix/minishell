@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/03 14:29:17 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/03 20:04:17 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,8 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 	char	*cmd;
 	int		status;
 
+	// TODO:  "cat Makefile | grep all" file descriptor 3 still open
+
 	status = 0;
 	cmd = NULL;
 	if (node->type == TY_CMD)
@@ -84,8 +86,12 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 			return (-1);
 		if (pid == 0)
 		{
-			if (parent_in != -1 && dup2(parent_in, STDIN_FILENO) == -1)
-				return (printf("ERROR DUP2 PARENT_IN\n"), 1);
+			if (parent_in != -1)
+			{
+				if (dup2(parent_in, STDIN_FILENO) == -1)
+					return (printf("ERROR DUP2 PARENT_IN\n"), 1);
+				close(parent_in);
+			}
 			if (node->cmd.infile && node->cmd.argc > 0)
 			{
 				file = open(node->cmd.infile, O_RDONLY);
@@ -93,11 +99,13 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 					return (printf("ERROR OPEN INFILE\n"), 1);
 				if (dup2(file, STDIN_FILENO) == -1)
 					return (printf("ERROR DUP2 TMP\n"), 1);
+				close(file);
 			}
 			if (parent_out != -1)
 			{
 				if (dup2(parent_out, STDOUT_FILENO) == -1)
 					return (printf("ERROR DUP2 PARENT_OUT\n"), 1);
+				close(parent_out);
 			}
 			if (node->cmd.outfile)
 			{
@@ -111,7 +119,12 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 					return (printf("ERROR OPEN OUTFILE\n"), 1);
 				if (dup2(file, STDOUT_FILENO) == -1)
 					return (printf("ERROR OUTFILE\n"), 1);
+				close(file);
 			}
+			if (parent_in != -1)
+				close(parent_in);
+			if (parent_out != -1)
+				close(parent_out);
 			if (cmd)
 				ft_exec_cmd(cmd, node->cmd.argv, msh->env);
 			else
@@ -132,7 +145,8 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 	}
 	else if (node->type == TY_PIPE)
 	{
-		pipe(fd);
+		if (pipe(fd) == -1)
+			return (printf("ERROR PIPE\n"), 1);
 		exec_cmd(msh, node->pipe.left, parent_in, fd[1]);
 		close(fd[1]);
 		exec_cmd(msh, node->pipe.right, fd[0], parent_out);
