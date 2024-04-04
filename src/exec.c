@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/03 20:04:17 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/04 18:58:20 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+
+# define debug(fmt, ...) printf("[%s:%d] " fmt "\n", __FILE__, __LINE__, ##__VA_ARGS__)
+# define error(fmt, ...) printf("\033[1;31m[%s:%d] " fmt "\033[0m", __FILE__, __LINE__, ##__VA_ARGS__)
 
 bool	is_builtin(t_node *node)
 {
@@ -59,16 +62,16 @@ int	exec_builtin(t_minishell *msh, t_node *node, int parent_out)
 	return (0);
 }
 
-int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
+int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out, int child)
 {
 	int		pid;
 	int		file;
-	int		fd[2];
 	char	*cmd;
 	int		status;
+	int		fd[2];
 
-	// TODO:  "cat Makefile | grep all" file descriptor 3 still open
-
+	// TODO:  I think the remaining file descriptor is because first child cannot close fd[0] / parent_in because he is called with parent_in == -1;
+	// TODO: Ok lol i think it s because we are not giving the adress of fd[0] so he cannot close the pipe that he didnt need
 	status = 0;
 	cmd = NULL;
 	if (node->type == TY_CMD)
@@ -86,10 +89,18 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 			return (-1);
 		if (pid == 0)
 		{
+			if (child == 1 && parent_in == -1)
+			{
+				debug("(CHILD %d)CLOSING PARENT_IN : %d", child, fd[1]);
+				// FIXME: GIVE THE ADRESS OF FD[0] IF YOU WANT TO CLOSE IT PROPERLY
+				close(3);
+			}
+			// TODO: DO THE SAME FOR CHILD 2 BECAUSE HE NEED TO CLOSE FD[1]
 			if (parent_in != -1)
 			{
 				if (dup2(parent_in, STDIN_FILENO) == -1)
 					return (printf("ERROR DUP2 PARENT_IN\n"), 1);
+				debug("(CHILD %d)CLOSING PARENT_IN : %d", child, parent_in);
 				close(parent_in);
 			}
 			if (node->cmd.infile && node->cmd.argc > 0)
@@ -99,12 +110,14 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 					return (printf("ERROR OPEN INFILE\n"), 1);
 				if (dup2(file, STDIN_FILENO) == -1)
 					return (printf("ERROR DUP2 TMP\n"), 1);
+				debug("(CHILD %d)CLOSING INFILE : %d", child, file);
 				close(file);
 			}
 			if (parent_out != -1)
 			{
 				if (dup2(parent_out, STDOUT_FILENO) == -1)
 					return (printf("ERROR DUP2 PARENT_OUT\n"), 1);
+				debug("(CHILD %d)CLOSING PARENT_OUT %d", child ,parent_out);
 				close(parent_out);
 			}
 			if (node->cmd.outfile)
@@ -116,15 +129,12 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 					flags |= O_TRUNC;
 				file = open(node->cmd.outfile, flags, 0666);
 				if (file == -1)
-					return (printf("ERROR OPEN OUTFILE\n"), 1);
+					return (error("ERROR OPEN OUTFILE\n"), 1);
 				if (dup2(file, STDOUT_FILENO) == -1)
-					return (printf("ERROR OUTFILE\n"), 1);
+					return (error("ERROR OUTFILE\n"), 1);
+				debug("(CHILD %d)CLOSING OUTFILE %d", child, file);
 				close(file);
 			}
-			if (parent_in != -1)
-				close(parent_in);
-			if (parent_out != -1)
-				close(parent_out);
 			if (cmd)
 				ft_exec_cmd(cmd, node->cmd.argv, msh->env);
 			else
@@ -132,10 +142,6 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 		}
 		else
 		{
-			if (parent_in != -1)
-				close(parent_in);
-			if (parent_out != -1)
-				close(parent_out);
 			while (wait(&status) > 0)
 			{
 				if (g_signum != -1)
@@ -147,24 +153,32 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 	{
 		if (pipe(fd) == -1)
 			return (printf("ERROR PIPE\n"), 1);
-		exec_cmd(msh, node->pipe.left, parent_in, fd[1]);
-		close(fd[1]);
-		exec_cmd(msh, node->pipe.right, fd[0], parent_out);
-		close(fd[0]);
+		exec_cmd(msh, node->pipe.left, parent_in, fd[1], 1);
+		if (fd[1] != -1)
+		{
+			debug("(PARENT)CLOSING fd[1] %d", fd[1]);
+			close(fd[1]);
+		}
+		exec_cmd(msh, node->pipe.right, fd[0], parent_out, 2);
+		if (fd[0] != -1)
+		{
+			debug("(PARENT)CLOSING fd[0] %d", fd[0]);
+			close(fd[0]);
+		}
 	}
 	else if (node->type == TY_OR)
 	{
-		status = exec_cmd(msh, node->pipe.left, parent_in, parent_out);
+		status = exec_cmd(msh, node->pipe.left, parent_in, parent_out, child);
 		if (status == 0)
 			return (status);
-		status = exec_cmd(msh, node->pipe.right, parent_in, parent_out);
+		status = exec_cmd(msh, node->pipe.right, parent_in, parent_out, child);
 	}
 	else if (node->type == TY_AND)
 	{
-		status = exec_cmd(msh, node->pipe.left, parent_in, parent_out);
+		status = exec_cmd(msh, node->pipe.left, parent_in, parent_out, child);
 		if (status != 0)
 			return (status);
-		status = exec_cmd(msh, node->pipe.right, parent_in, parent_out);
+		status = exec_cmd(msh, node->pipe.right, parent_in, parent_out, child);
 	}
 	return (status);
 }
