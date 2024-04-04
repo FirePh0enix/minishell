@@ -7,7 +7,7 @@ TESTS=(
 	parenthesis-with-redirections
 )
 
-SRCS="tests/lib/assert.c src/parser.c src/wildcard.c src/env.c"
+SRCS="tests/lib/assert.c src/parser.c src/wildcard.c src/env.c src/parser/expr.c src/parser/tokenizer.c"
 
 GREEN="\e[42m"
 RED="\e[101m"
