@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/04 13:35:43 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/04 15:21:53 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,7 @@ static char	**expand_tokens(t_minishell *msh, char **tokens)
 	char	**files;
 	char	*s;
 	char	*env;
+	char	*tok;
 
 	tokens2 = ft_vector(sizeof(char *), 0);
 	if (!tokens2)
@@ -143,8 +144,12 @@ static char	**expand_tokens(t_minishell *msh, char **tokens)
 					return (free(s), ft_vector_deep_free(tokens2), NULL);
 			}
 		}
-		else if (!ft_vector_add(&tokens2, &tokens[i]))
-			return (ft_vector_deep_free(tokens2), NULL);
+		else
+		{
+			tok = ft_strdup(tokens[i]);
+			if (!ft_vector_add(&tokens2, &tok))
+				return (ft_vector_deep_free(tokens2), NULL);
+		}
 		i++;
 	}
 	return (tokens2);
@@ -156,20 +161,17 @@ static char	**expand_tokens(t_minishell *msh, char **tokens)
 t_node	*parse_line(t_minishell *msh, char *line)
 {
 	char	**tokens;
+	char	**tokens2;
+	t_node	*expr;
 
 	msh->heredocs = 0;
 	tokens = split_into_tokens(line);
-	/*for (size_t i = 0; i < ft_vector_size(tokens); i++)
-		free(tokens[i]);
-	ft_vector_free(tokens);*/
-	tokens = expand_tokens(msh, tokens);
-	for (size_t i = 0; i < ft_vector_size(tokens); i++)
-		printf("tok: %s\n", tokens[i]);
-	return (parse_expr(msh, tokens, 0, ft_vector_size(tokens) - 1));
+	tokens2 = expand_tokens(msh, tokens);
+	ft_vector_deep_free(tokens);
+	expr = parse_expr(msh, tokens2, 0, ft_vector_size(tokens2) - 1);
+	ft_vector_deep_free(tokens2);
+	return (expr);
 }
-
-// -----------------------------------------------------------------------------
-// Convert "Prenodes" to actual nodes
 
 // -----------------------------------------------------------------------------
 // Debugging

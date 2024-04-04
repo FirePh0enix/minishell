@@ -1198,3 +1198,29 @@
    fun:prompt
    fun:main
 }
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:realloc
+   fun:xrealloc
+   fun:expand_prompt
+   fun:rl_expand_prompt
+   fun:rl_set_prompt
+   fun:readline
+   fun:prompt
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:xmalloc
+   fun:_rl_init_locale
+   fun:_rl_reset_locale
+   fun:rl_initialize
+   fun:readline
+   fun:prompt
+   fun:main
+}

@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/27 23:38:35 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/04 13:50:52 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/04 15:40:55 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,21 +20,22 @@ void	add_our_history(t_minishell *msh, char *line)
 	int		fd;
 	char	buf[256];
 	char	*home;
+	char	*line2;
 
 	home = getourenv(msh, "HOME");
-	line = ft_strdup(line);
-	if (!line)
+	line2 = ft_strdup(line);
+	if (!line2)
 		return ;
 	if (home)
 	{
 		ft_sprintf(buf, "%s/.msh_history", home);
 		fd = open(buf, O_WRONLY | O_APPEND | O_CREAT, 0666);
-		write(fd, line, ft_strlen(line));
-		write(fd, "\n", 1);
+		ft_putendl_fd(line2, fd);
 		close(fd);
+		free(home);
 	}
-	add_history(line);
-	ft_vector_add(&msh->history, &line);
+	add_history(line2);
+	ft_vector_add(&msh->history, &line2);
 }
 
 static void	read_our_history(t_minishell *msh, int fd)

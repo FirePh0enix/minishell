@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:34:59 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/04 13:38:13 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/04 15:25:53 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,8 +73,7 @@ static char	*heredoc(t_minishell *msh, char *eof)
 		line = readline("> ");
 		if (!strcmp(line, eof))
 			break ;
-		write(fd, line, ft_strlen(line));
-		write(fd, "\n", 1);
+		ft_putendl_fd(line, fd);
 	}
 	close(fd);
 	return (ft_strdup(filename));
@@ -97,13 +96,13 @@ static t_node	*parse_cmd(t_minishell *msh, char **tokens,
 	i = start;
 	while (i <= end)
 	{
-		tok = tokens[i];
+		tok = ft_strdup(tokens[i]);
 		if (!strcmp(tok, "<"))
 		{
 			if (i + 1 > end)
 				return (NULL);
 			i++;
-			node->cmd.infile = tokens[i];
+			node->cmd.infile = ft_strdup(tokens[i]);
 		}
 		else if (!strcmp(tok, "<<"))
 		{
@@ -121,7 +120,7 @@ static t_node	*parse_cmd(t_minishell *msh, char **tokens,
 			if (i + 1 > end)
 				return (NULL);
 			i++;
-			node->cmd.outfile = tokens[i];
+			node->cmd.outfile = ft_strdup(tokens[i]);
 			node->cmd.append = !strcmp(tok, ">>");
 		}
 		else if (!ft_vector_add(&node->cmd.argv, &tok))
@@ -200,9 +199,6 @@ static t_node	*parse_parent(t_minishell *msh, char **tokens, size_t start, size_
 		}
 	}
 
-	// printf("parent: %d %d\n", parent_start, parent_end);
-	// printf("        %zd %zd\n", start, end);
-
 	if (parent_start == -1 && parent_end == -1)
 		return (parse_cmd(msh, tokens, start, end));
 	else if (parent_start == -1 || parent_end == -1)
@@ -221,7 +217,7 @@ static t_node	*parse_parent(t_minishell *msh, char **tokens, size_t start, size_
 			if (i + 1 > end - start)
 				return (NULL);
 			i++;
-			infile = tokens[i + start];
+			infile = ft_strdup(tokens[i + start]);
 		}
 		else if (!strcmp(tok, "<<"))
 		{
@@ -237,7 +233,7 @@ static t_node	*parse_parent(t_minishell *msh, char **tokens, size_t start, size_
 			if (i + 1 > end)
 				return (NULL);
 			i++;
-			outfile = tokens[i + start];
+			outfile = ft_strdup(tokens[i + start]);
 			append = !strcmp(tok, ">>");
 		}
 	}

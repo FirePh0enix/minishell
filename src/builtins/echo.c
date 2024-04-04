@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 14:51:56 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/04 13:25:51 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/04 15:16:59 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ static int	open_outfile(t_node *node)
 
 static void	print(char **av, int i, int fd, bool nl)
 {
-	while (av[++i])
+	while (av[i])
 	{
 		ft_putstr_fd(av[i], fd);
 		if (av[i + 1])

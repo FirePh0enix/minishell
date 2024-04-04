@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:25:25 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/04 13:37:14 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/04 15:31:31 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,5 +56,6 @@ char	*next_token(char *line, size_t *index);
 char	**split_into_tokens(char *line);
 
 t_node	*parse_expr(t_minishell *msh, char **tokens, size_t start, size_t end);
+void	free_node(t_node *node);
 
 #endif
