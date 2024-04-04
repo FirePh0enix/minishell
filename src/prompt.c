@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 16:22:50 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/02 13:45:39 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/04 13:50:16 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,10 +47,26 @@ int	event(void)
 	return (0);
 }
 
+static int	execute_line(t_minishell *msh, char *line)
+{
+	t_node	*node;
+
+	node = parse_line(msh, line);
+	add_our_history(msh, line);
+	free(line);
+	if (!node)
+	{
+		msh_error("parsing error");
+		return (-1);
+	}
+	dump_line(node);
+	msh->exit_code = exec_cmd(msh, node, -1, -1);
+	return (0);
+}
+
 void	prompt(t_minishell *msh)
 {
 	char	*line;
-	t_node	*node;
 	char	buf[256];
 
 	rl_event_hook = event;
@@ -67,14 +83,7 @@ void	prompt(t_minishell *msh)
 			break ;
 		else if (line[0] == '\0')
 			continue ;
-		node = parse_line(msh, line);
-		add_our_history(msh, line);
-		if (!node)
-		{
-			msh_error("parsing error");
+		if (execute_line(msh, line) == -1)
 			continue ;
-		}
-		dump_line(node);
-		msh->exit_code = exec_cmd(msh, node, -1, -1);
 	}
 }

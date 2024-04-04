@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/27 23:38:35 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/03 12:56:57 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/04 13:50:52 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,9 @@ void	add_our_history(t_minishell *msh, char *line)
 	char	*home;
 
 	home = getourenv(msh, "HOME");
+	line = ft_strdup(line);
+	if (!line)
+		return ;
 	if (home)
 	{
 		ft_sprintf(buf, "%s/.msh_history", home);

@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/28 15:13:31 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/01 14:17:07 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/04 13:14:15 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,42 +14,28 @@
 
 int	builtin_env(t_minishell *msh, int parent_out, t_node *node)
 {
-	size_t	i;
-	int		flags;
-	int		file;
+	int	i;
+	int	flags;
+	int	file;
 
-	i = 0;
+	file = STDOUT_FILENO;
 	flags = O_WRONLY | O_CREAT;
 	if (parent_out != -1)
-	{
-		while (msh->env[i])
-		{
-			ft_putstr_fd(msh->env[i], parent_out);
-			ft_putstr_fd("\n", parent_out);
-			i++;
-		}
-	}
-	else if (node->cmd.outfile)
+		file = parent_out;
+	if (node->cmd.outfile)
 	{
 		if (node->cmd.append)
 			flags |= O_APPEND;
 		else
 			flags |= O_TRUNC;
 		file = open(node->cmd.outfile, flags, 0666);
-		while (msh->env[i])
-		{
-			ft_putstr_fd(msh->env[i], file);
-			ft_putstr_fd("\n", file);
-			i++;
-		}
+		if (file == -1)
+			return (msh_error("unable to open outfile"), -1);
 	}
-	else
-	{
-		while (msh->env[i])
-		{
-			printf("%s\n", msh->env[i]);
-			i++;
-		}
-	}
+	i = -1;
+	while (msh->env[++i])
+		ft_putendl_fd(msh->env[i], file);
+	if (node->cmd.outfile)
+		close(file);
 	return (0);
 }
