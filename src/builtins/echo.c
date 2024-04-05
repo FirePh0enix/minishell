@@ -6,14 +6,14 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 14:51:56 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/02 15:13:32 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/04 15:16:59 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #include <minishell.h>
 
-static int strcmpn(char *s)
+static int	strcmpn(char *s)
 {
 	int	i;
 
@@ -30,64 +30,58 @@ static int strcmpn(char *s)
 	return (0);
 }
 
+static int	open_outfile(t_node *node)
+{
+	int	flags;
+	int	fd;
+
+	flags = O_WRONLY | O_CREAT;
+	if (node->cmd.append)
+		flags |= O_APPEND;
+	else
+		flags |= O_TRUNC;
+	fd = open(node->cmd.outfile, flags, 0666);
+	if (fd == -1)
+		return (msh_builtin_error("echo", "unable to open outfile"), -1);
+	return (fd);
+}
+
+static void	print(char **av, int i, int fd, bool nl)
+{
+	while (av[i])
+	{
+		ft_putstr_fd(av[i], fd);
+		if (av[i + 1])
+			ft_putstr_fd(" ", fd);
+		i++;
+	}
+	if (nl)
+		ft_putstr_fd("\n", fd);
+}
+
 int	builtin_echo(int ac, char **av, int parent_out, t_node *node)
 {
 	int		i;
 	bool	nl;
-	int		flags;
 	int		file;
 
-	if (!av || !*av)
-		return (1);
-	flags = O_WRONLY | O_CREAT;
+	(void) ac;
 	i = 1;
 	nl = true;
+	file = STDOUT_FILENO;
 	while (av[i] && ft_strlen(av[i]) >= 2 && strcmpn(av[i]) == 0)
 	{
 		i++;
 		nl = false;
 	}
 	if (parent_out != -1)
-	{
-		while (i < ac)
-		{
-			ft_putstr_fd(av[i], parent_out);
-			if (i + 1 < ac)
-				ft_putstr_fd(" ", parent_out);
-			i++;
-		}
-		if (nl)
-			ft_putstr_fd("\n", parent_out);
-	}
-	else if (node->cmd.outfile)
-	{
-		if (node->cmd.append)
-			flags |= O_APPEND;
-		else
-			flags |= O_TRUNC;
-		file = open(node->cmd.outfile, flags, 0666);
-		while (i < ac)
-		{
-			ft_putstr_fd(av[i], file);
-			if (i + 1 < ac)
-				ft_putstr_fd(" ", file);
-			i++;
-		}
-		if (nl)
-			ft_putstr_fd("\n", file);
+		file = parent_out;
+	if (node->cmd.outfile)
+		file = open_outfile(node);
+	if (file == -1)
+		return (-1);
+	print(av, i, file, nl);
+	if (node->cmd.outfile)
 		close(file);
-	}
-	else
-	{
-		while (i < ac)
-		{
-			printf("%s", av[i]);
-			if (i + 1 < ac)
-				printf(" ");
-			i++;
-		}
-		if (nl)
-			printf("\n");
-	}
 	return (0);
 }

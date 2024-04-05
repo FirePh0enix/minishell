@@ -1,35 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   error.c                                            :+:      :+:    :+:   */
+/*   free_node.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/28 11:50:42 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/04 11:46:40 by ledelbec         ###   ########.fr       */
+/*   Created: 2024/04/04 15:28:21 by ledelbec          #+#    #+#             */
+/*   Updated: 2024/04/04 15:30:34 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
+#include "parser.h"
 #include "libft.h"
+#include <stdlib.h>
 
-void	msh_error(char *msg)
+void	free_node(t_node *node)
 {
-	write(2, "msh: ", 5);
-	write(2, msg, ft_strlen(msg));
-	write(2, "\n", 1);
-}
-
-void	msh_builtin_error(char *builtin, char *msg)
-{
-	ft_putstr_fd(builtin, 2);
-	ft_putstr_fd(": ", 2);
-	ft_putendl_fd(msg, 2);
-}
-
-void	msh_error_cmd(char *cmd)
-{
-	write(2, "msh: cannot find command `", 26);
-	write(2, cmd, ft_strlen(cmd));
-	write(2, "`\n", 2);
+	if (node->type == TY_CMD)
+	{
+		ft_vector_deep_free(node->cmd.argv);
+		if (node->cmd.outfile)
+			free(node->cmd.outfile);
+		if (node->cmd.infile)
+			free(node->cmd.infile);
+	}
+	else
+	{
+		free_node(node->pipe.left);
+		free_node(node->pipe.right);
+	}
+	free(node);
 }

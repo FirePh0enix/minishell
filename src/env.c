@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 23:45:53 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/03/28 21:54:54 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/04 13:09:12 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,8 @@ void	copy_env(t_minishell *minishell, char *envp[])
 		s = ft_strdup(*envp);
 		if (!s)
 			return ;
-		ft_vector_add(&minishell->env, &s);
+		if (!ft_vector_add(&minishell->env, &s))
+			break ;
 		envp++;
 	}
 	s = NULL;
@@ -44,40 +45,64 @@ char	*getourenv(t_minishell *minishell, char *name)
 	while (i < ft_vector_size(minishell->env) - 1)
 	{
 		if (minishell->env[i] && ft_strlen(minishell->env[i]) > size
-				&& ft_strncmp(name, minishell->env[i], size) == 0
-				&& minishell->env[i][size] == '=')
+			&& ft_strncmp(name, minishell->env[i], size) == 0
+			&& minishell->env[i][size] == '=')
 			return (ft_strdup(ft_strchr(minishell->env[i], '=') + 1));
 		i++;
 	}
 	return (NULL);
 }
 
-void	setourenv(t_minishell *msh, char *name, char *value)
+static int	try_replace_env(t_minishell *msh, char *name, char *value)
 {
 	const size_t	sz = ft_strlen(name);
-	size_t			i;
+	int				i;
 	char			*s;
 	char			*s2;
 
-	i = 0;
-	while (i < ft_vector_size(msh->env) - 1)
+	i = -1;
+	while (msh->env[++i])
 	{
-		if (ft_strlen(msh->env[i]) > sz
-			&& !ft_strncmp(msh->env[i], name, sz)
+		if (ft_strlen(msh->env[i]) > sz && !ft_strncmp(msh->env[i], name, sz)
 			&& msh->env[i][sz] == '=')
 		{
 			free(msh->env[i]);
 			s = ft_strjoin(name, "=");
+			if (!s)
+				return (-1);
 			s2 = ft_strjoin(s, value);
+			if (!s2)
+				return (free(s), -1);
 			free(s);
 			msh->env[i] = s2;
-			return ;
+			return (-1);
 		}
-		i++;
 	}
+	return (i);
+}
+
+void	setourenv(t_minishell *msh, char *name, char *value)
+{
+	int		i;
+	char	*s;
+	char	*s2;
+
+	i = try_replace_env(msh, name, value);
+	if (i == -1)
+		return ;
 	s = ft_strjoin(name, "=");
+	if (!s)
+		return ;
 	s2 = ft_strjoin(s, value);
+	if (!s2)
+	{
+		free(s);
+		return ;
+	}
 	free(s);
+	msh->env[i] = s2;
+	s2 = NULL;
+	ft_vector_add(&msh->env, &s2);
 }
 
 void	free_env(t_minishell *msh)

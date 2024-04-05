@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:24:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/04 18:16:32 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/05 15:39:49 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ void	setourenv(t_minishell *msh, char *name, char *value);
 void	free_env(t_minishell *msh);
 
 void	msh_error(char *msg);
+void	msh_builtin_error(char *builtin, char *msg);
 void	msh_error_cmd(char *cmd);
 
 int		builtin_cd(t_minishell *msh, int ac, char **av, int parent_out, t_node *node);
