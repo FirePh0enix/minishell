@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/03 14:29:17 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/06 15:55:19 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,6 +112,9 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 				if (dup2(file, STDOUT_FILENO) == -1)
 					return (printf("ERROR OUTFILE\n"), 1);
 			}
+			for (size_t i = 0; i < ft_vector_size(msh->open_fds); i++)
+				close(msh->open_fds[i]);
+			ft_vector_free(msh->open_fds);
 			if (cmd)
 				ft_exec_cmd(cmd, node->cmd.argv, msh->env);
 			else
@@ -133,6 +136,8 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 	else if (node->type == TY_PIPE)
 	{
 		pipe(fd);
+		ft_vector_add(&msh->open_fds, &fd[0]);
+		ft_vector_add(&msh->open_fds, &fd[1]);
 		exec_cmd(msh, node->pipe.left, parent_in, fd[1]);
 		close(fd[1]);
 		exec_cmd(msh, node->pipe.right, fd[0], parent_out);
