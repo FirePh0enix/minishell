@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/05 19:56:55 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/06 14:19:46 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ int	exec_builtin(t_minishell *msh, t_node *node, int parent_out)
 	return (0);
 }
 
-int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out, int *cp_fd)
+int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 {
 	int		pid;
 	int		file;
@@ -71,9 +71,9 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out, i
 	int		status;
 	int		fd[2];
 	static int i = 0;
+	static int pipe_nb = 0;
 
-	// TODO:  I think the remaining file descriptor is because first child cannot close fd[0] / parent_in because he is called with parent_in == -1;
-	// TODO: Ok lol i think it s because we are not giving the adress of fd[0] so he cannot close the pipe that he didnt need
+
 	status = 0;
 	cmd = NULL;
 	if (node->type == TY_CMD)
@@ -99,20 +99,15 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out, i
 					return (printf("ERROR OPEN INFILE\n"), 1);
 				if (dup2(file, STDIN_FILENO) == -1)
 					return (printf("ERROR DUP2 TMP\n"), 1);
-				debug("(CHILD %d)CLOSING INFILE %d", i, file);
+				// debug("(CHILD %d)CLOSING INFILE %d", i, file);
 				close(file);
 			}
 			else if (parent_in != -1)
 			{
 				if (dup2(parent_in, STDIN_FILENO) == -1)
 					return (printf("ERROR DUP2 PARENT_IN\n"), 1);
-				debug("(CHILD %d)CLOSING PARENT_IN %d", i, parent_in);
+				// debug("(CHILD %d)CLOSING PARENT_IN %d", i, parent_in);
 				close(parent_in);
-			}
-			else
-			{
-				debug("(CHILD %d)CLOSING PARENT_IN WITH COPY %d", i, cp_fd[0]);
-				close(cp_fd[0]);
 			}
 			if (node->cmd.outfile)
 			{
@@ -126,21 +121,20 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out, i
 					return (error("ERROR OPEN OUTFILE\n"), 1);
 				if (dup2(file, STDOUT_FILENO) == -1)
 					return (error("ERROR OUTFILE\n"), 1);
-				debug("(CHILD %d)CLOSING OUTFILE %d", i, file);
+				// debug("(CHILD %d)CLOSING OUTFILE %d", i, file);
 				close(file);
 			}
 			else if (parent_out != -1)
 			{
 				if (dup2(parent_out, STDOUT_FILENO) == -1)
 					return (printf("ERROR DUP2 PARENT_OUT\n"), 1);
-				debug("(CHILD %d)CLOSING PARENT_OUT %d", i ,parent_out);
+				// debug("(CHILD %d)CLOSING PARENT_OUT %d", i ,parent_out);
 				close(parent_out);
 			}
-			else
-			{
-				debug("(CHILD %d)CLOSING PARENT_OUT WITH COPY %d", i, cp_fd[1]);
-				close(cp_fd[1]);
-			}
+			if (pipe_nb > 0)
+				for (int i = 0; i < pipe_nb; i++)
+					close(3 + i);
+			pipe_nb--;
 			if (cmd)
 				ft_exec_cmd(cmd, node->cmd.argv, msh->env);
 			else
@@ -157,15 +151,16 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out, i
 	}
 	else if (node->type == TY_PIPE)
 	{
+		pipe_nb++;
 		if (pipe(fd) == -1)
 			return (printf("ERROR PIPE\n"), 1);
-		exec_cmd(msh, node->pipe.left, parent_in, fd[1], fd);
+		exec_cmd(msh, node->pipe.left, parent_in, fd[1]);
 		if (fd[1] != -1)
 		{
 			// debug("(PARENT)CLOSING fd[1] %d", fd[1]);
 			close(fd[1]);
 		}
-		exec_cmd(msh, node->pipe.right, fd[0], parent_out, fd);
+		exec_cmd(msh, node->pipe.right, fd[0], parent_out);
 		if (fd[0] != -1)
 		{
 			// debug("(PARENT)CLOSING fd[0] %d", fd[0]);
@@ -174,17 +169,17 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out, i
 	}
 	else if (node->type == TY_OR)
 	{
-		status = exec_cmd(msh, node->pipe.left, parent_in, parent_out, cp_fd);
+		status = exec_cmd(msh, node->pipe.left, parent_in, parent_out);
 		if (status == 0)
 			return (status);
-		status = exec_cmd(msh, node->pipe.right, parent_in, parent_out, cp_fd);
+		status = exec_cmd(msh, node->pipe.right, parent_in, parent_out);
 	}
 	else if (node->type == TY_AND)
 	{
-		status = exec_cmd(msh, node->pipe.left, parent_in, parent_out, cp_fd);
+		status = exec_cmd(msh, node->pipe.left, parent_in, parent_out);
 		if (status != 0)
 			return (status);
-		status = exec_cmd(msh, node->pipe.right, parent_in, parent_out, cp_fd);
+		status = exec_cmd(msh, node->pipe.right, parent_in, parent_out);
 	}
 	return (status);
 }
