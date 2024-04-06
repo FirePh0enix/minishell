@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/06 14:19:46 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/06 14:33:45 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,9 +132,8 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 				close(parent_out);
 			}
 			if (pipe_nb > 0)
-				for (int i = 0; i < pipe_nb; i++)
+				for (int i = 0; i < pipe_nb * 2; i++)
 					close(3 + i);
-			pipe_nb--;
 			if (cmd)
 				ft_exec_cmd(cmd, node->cmd.argv, msh->env);
 			else
