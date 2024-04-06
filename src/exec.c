@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/06 14:33:45 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/06 14:51:58 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,9 +150,9 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 	}
 	else if (node->type == TY_PIPE)
 	{
-		pipe_nb++;
 		if (pipe(fd) == -1)
 			return (printf("ERROR PIPE\n"), 1);
+		pipe_nb++;
 		exec_cmd(msh, node->pipe.left, parent_in, fd[1]);
 		if (fd[1] != -1)
 		{
