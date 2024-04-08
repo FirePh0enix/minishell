@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 16:22:50 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/04 15:31:13 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/07 16:46:46 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ void	prompt(t_minishell *msh)
 	rl_event_hook = event;
 	while (1)
 	{
+		ft_vector_clear(msh->open_fds);
 		if (g_signum == SIGINT)
 		{
 			g_signum = -1;
