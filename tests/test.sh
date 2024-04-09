@@ -17,7 +17,7 @@ RESET="\e[0m"
 run-test()
 {
 	clang -o minishell.test tests/$1.c $SRCS libft/libft.a -lreadline -Ilibft -Isrc -g
-	OUTPUT=`./minishell.test`
+	OUTPUT=`./minishell.test 2> /dev/null`
 
 	if [ $? -eq 0 ]; then
 		echo -e "Test \`$BOLD$1$RESET\` is a ${GREEN}Success${RESET}"
@@ -48,4 +48,10 @@ for test_name in "${TESTS[@]}"; do
 	fi
 done
 
+bash tests/test2.sh
+
+LAST_ERR=$?
+if [[ $LAST_ERR != 0 ]]; then
+	SIGNIFICANT_ERR=$LAST_ERR
+fi
 exit $SIGNIFICANT_ERR
