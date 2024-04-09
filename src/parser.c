@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/09 14:32:41 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/09 15:01:36 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,7 +185,7 @@ t_node	*parse_line(t_minishell *msh, char *line)
 	tokens2 = expand_tokens(msh, tokens);
 	ft_vector_deep_free(tokens);
 	for (size_t i = 0; i < ft_vector_size(tokens2); i++)
-		printf("tok: %s\n", tokens2[i]);
+		ft_fprintf(2, "tok: %s\n", tokens2[i]);
 	expr = parse_expr(msh, tokens2, 0, ft_vector_size(tokens2) - 1);
 	ft_vector_deep_free(tokens2);
 	return (expr);
@@ -201,7 +201,7 @@ static void	_print_spaces(int layer)
 	i = 0;
 	while (i < layer * 3)
 	{
-		printf(" ");
+		ft_fprintf(2, " ");
 		i++;
 	}
 }
@@ -210,56 +210,56 @@ static void	_rec_dump_line(t_node *node, int layer)
 {
 	if (node->type == TY_CMD)
 	{
-		printf("CMD {\n");
+		ft_fprintf(2, "CMD {\n");
 		_print_spaces(layer + 1);
-		printf("argv = [ ");
+		ft_fprintf(2, "argv = [ ");
 		for (int i = 0; i < node->cmd.argc; i++)
-			printf("%s ", node->cmd.argv[i]);
-		printf("]\n");
+			ft_fprintf(2, "%s ", node->cmd.argv[i]);
+		ft_fprintf(2, "]\n");
 		_print_spaces(layer + 1);
-		printf("in = %s\n", node->cmd.infile);
+		ft_fprintf(2, "in = %s\n", node->cmd.infile);
 		_print_spaces(layer + 1);
-		printf("out = %s\n", node->cmd.outfile);
+		ft_fprintf(2, "out = %s\n", node->cmd.outfile);
 		_print_spaces(layer + 1);
-		printf("append mode = %d\n", node->cmd.append);
+		ft_fprintf(2, "append mode = %d\n", node->cmd.append);
 		_print_spaces(layer);
-		printf("}\n");
+		ft_fprintf(2, "}\n");
 	}
 	else if (node->type == TY_PIPE)
 	{
-		printf("PIPE {\n");
+		ft_fprintf(2, "PIPE {\n");
 		_print_spaces(layer + 1);
-		printf("left = ");
+		ft_fprintf(2, "left = ");
 		_rec_dump_line(node->pipe.left, layer + 1);
 		_print_spaces(layer + 1);
-		printf("right = ");
+		ft_fprintf(2, "right = ");
 		_rec_dump_line(node->pipe.right, layer + 1);
 		_print_spaces(layer);
-		printf("}\n");
+		ft_fprintf(2, "}\n");
 	}
 	else if (node->type == TY_OR)
 	{
-		printf("OR {\n");
+		ft_fprintf(2, "OR {\n");
 		_print_spaces(layer + 1);
-		printf("left = ");
+		ft_fprintf(2, "left = ");
 		_rec_dump_line(node->pipe.left, layer + 1);
 		_print_spaces(layer + 1);
-		printf("right = ");
+		ft_fprintf(2, "right = ");
 		_rec_dump_line(node->pipe.right, layer + 1);
 		_print_spaces(layer);
-		printf("}\n");
+		ft_fprintf(2, "}\n");
 	}
 	else if (node->type == TY_AND)
 	{
-		printf("AND {\n");
+		ft_fprintf(2, "AND {\n");
 		_print_spaces(layer + 1);
-		printf("left = ");
+		ft_fprintf(2, "left = ");
 		_rec_dump_line(node->pipe.left, layer + 1);
 		_print_spaces(layer + 1);
-		printf("right = ");
+		ft_fprintf(2, "right = ");
 		_rec_dump_line(node->pipe.right, layer + 1);
 		_print_spaces(layer);
-		printf("}\n");
+		ft_fprintf(2, "}\n");
 	}
 }
 
