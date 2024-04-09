@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:25:25 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/04 15:31:31 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/09 13:50:23 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include <stdbool.h>
 # include <stddef.h>
+# include "libft.h"
 
 typedef struct s_minishell	t_minishell;
 
@@ -51,9 +52,8 @@ typedef struct s_node
 t_node	*parse_line(t_minishell *minishell, char *line);
 void	dump_line(t_node *node);
 
-char	*next_string(char *line, size_t *index);
-char	*next_token(char *line, size_t *index);
-char	**split_into_tokens(char *line);
+t_str	next_token(char *line, size_t *index);
+t_str	*split_into_tokens(char *line);
 
 t_node	*parse_expr(t_minishell *msh, char **tokens, size_t start, size_t end);
 void	free_node(t_node *node);

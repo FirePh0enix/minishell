@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/04 15:21:53 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/09 14:32:41 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 // -----------------------------------------------------------------------------
 // Wildcard and env expansion
 
-static int	ispathend(int c)
+static int	isnameend(int c)
 {
 	return (c == '"' || c == '|' || c == '(' || c == ')' || c == '{'
 		|| c == '}' || c == '[' || c == ']' || c == '+' || c == '-' || c == '*'
@@ -39,55 +39,76 @@ static char	*ft_strndup(char *s, size_t n)
 	return (s2);
 }
 
-static char	*expand_dquotes(t_minishell *minishell, char *tok)
+static t_str	expand_reg(t_minishell *msh, t_str tok)
 {
-	char	*tok2;
-	char	*tok2_2;
-	size_t	start;
+	t_str	s;
 	size_t	i;
-	size_t	size;
+	size_t	i2;
+	char	*envname;
 	char	*env;
 
-	tok2 = ft_calloc(1, 1);
-	i = 1;
-	size = 0;
-	while (1)
+	s = str("");
+	i = 0;
+	while (tok.data[i])
 	{
-		start = i;
-		while (tok[i] && tok[i] != '"' && tok[i] != '$')
-			i++;
-		tok2_2 = ft_realloc(tok2, size + 1, size + 1 + (i - start));
-		if (!tok2_2)
-			return (free(tok2), NULL);
-		tok2 = tok2_2;
-		ft_memcpy(tok2 + size, tok + start, i - start);
-		size += i - start;
-		if (tok[i] == '$')
+		if (tok.data[i] == '"')
 		{
-			start = i + 1;
-			while (tok[i] && !ispathend(tok[i]))
+			i++;
+			while (tok.data[i] && tok.data[i] != '"')
+			{
+				if (tok.data[i] == '$')
+				{
+					i++;
+					if (!ft_isalpha(tok.data[i]))
+					{
+						i++;
+						continue ;
+					}
+					i++;
+					i2 = i;
+					while (tok.data[i2] &&
+						(ft_isalnum(tok.data[i2]) || tok.data[i2] == '-' || tok.data[i2] == '_'))
+						i2++;
+					envname = ft_strndup(&tok.data[i - 1], i2 - (i - 1));
+					env = getourenv(msh, envname);
+					str_append(&s, env);
+					i = i2;
+					free(envname);
+					free(env);
+				}
+				else
+				{
+					str_append_n(&s, &tok.data[i], 1);
+					i++;
+				}
+			}
+			if (tok.data[i] != '"')
+				return (str_free(&s), str_null());
+		}
+		else if (tok.data[i] == '\'')
+		{
+			i++;
+			while (tok.data[i] && tok.data[i] != '\'')
+			{
+				str_append_n(&s, &tok.data[i], 1);
 				i++;
-			tok2_2 = ft_realloc(tok2, size + 1, size + 1 + (i - start));
-			if (!tok2_2)
-				return (free(tok2), NULL);
-			tok2 = tok2_2;
-			env = getourenv(minishell, ft_strndup(tok + start, i - start));
-			if (!env)
-				continue ;
-			ft_memcpy(tok2 + size, env, ft_strlen(env));
-			size += ft_strlen(env);
-			free(env);
+			}
+			if (tok.data[i] != '\'')
+				return (str_free(&s), str_null());
 		}
 		else
-			break ;
+		{
+			str_append_n(&s, &tok.data[i], 1);
+		}
+		i++;
 	}
-	return (tok2);
+	return (s);
 }
 
 /*
  * Expand metacharacters like *, ~ and $
  */
-static char	**expand_tokens(t_minishell *msh, char **tokens)
+static char	**expand_tokens(t_minishell *msh, t_str *tokens)
 {
 	size_t	i;
 	size_t	j;
@@ -95,7 +116,7 @@ static char	**expand_tokens(t_minishell *msh, char **tokens)
 	char	**files;
 	char	*s;
 	char	*env;
-	char	*tok;
+	t_str	tok;
 
 	tokens2 = ft_vector(sizeof(char *), 0);
 	if (!tokens2)
@@ -103,9 +124,9 @@ static char	**expand_tokens(t_minishell *msh, char **tokens)
 	i = 0;
 	while (i < ft_vector_size(tokens))
 	{
-		if (ft_strchr(tokens[i], '*'))
+		if (ft_strchr(tokens[i].data, '*'))
 		{
-			files = wildcard(ft_strchr(tokens[i], '*') + 1);
+			files = wildcard(ft_strchr(tokens[i].data, '*') + 1);
 			if (!files)
 				return (ft_vector_deep_free(tokens2), NULL);
 			j = 0;
@@ -113,25 +134,18 @@ static char	**expand_tokens(t_minishell *msh, char **tokens)
 				if (!ft_vector_add(&tokens2, &files[j++]))
 					return (ft_vector_deep_free(tokens2), NULL);
 		}
-		else if (tokens[i][0] == '"')
+		else if (tokens[i].data[0] == '$')
 		{
-			s = expand_dquotes(msh, tokens[i]);
-			if (!ft_vector_add(&tokens2, &s))
-				return (ft_vector_deep_free(tokens2), NULL);
-			free(tokens[i]);
-		}
-		else if (tokens[i][0] == '$')
-		{
-			env = getourenv(msh, tokens[i] + 1);
+			env = getourenv(msh, tokens[i].data + 1);
 			if (env && !ft_vector_add(&tokens2, &env))
 				return (ft_vector_deep_free(tokens2), NULL);
 		}
-		else if (tokens[i][0] == '~')
+		else if (tokens[i].data[0] == '~')
 		{
 			env = getourenv(msh, "HOME");
 			if (env)
 			{
-				s = ft_strjoin(env, tokens[i] + 1);
+				s = ft_strjoin(env, tokens[i].data + 1);
 				if (!s || !ft_vector_add(&tokens2, &s))
 					return (free(env), free(s), ft_vector_deep_free(tokens2),
 						NULL);
@@ -139,14 +153,16 @@ static char	**expand_tokens(t_minishell *msh, char **tokens)
 			}
 			else
 			{
-				s = ft_strdup(tokens[i] + 1);
+				s = ft_strdup(tokens[i].data + 1);
 				if (!s || !ft_vector_add(&tokens2, &s))
 					return (free(s), ft_vector_deep_free(tokens2), NULL);
 			}
 		}
 		else
 		{
-			tok = ft_strdup(tokens[i]);
+			tok = expand_reg(msh, tokens[i]);
+			if (!tok.data)
+				return (str_free(&tok), NULL);
 			if (!ft_vector_add(&tokens2, &tok))
 				return (ft_vector_deep_free(tokens2), NULL);
 		}
@@ -160,7 +176,7 @@ static char	**expand_tokens(t_minishell *msh, char **tokens)
 
 t_node	*parse_line(t_minishell *msh, char *line)
 {
-	char	**tokens;
+	t_str	*tokens;
 	char	**tokens2;
 	t_node	*expr;
 
@@ -168,6 +184,8 @@ t_node	*parse_line(t_minishell *msh, char *line)
 	tokens = split_into_tokens(line);
 	tokens2 = expand_tokens(msh, tokens);
 	ft_vector_deep_free(tokens);
+	for (size_t i = 0; i < ft_vector_size(tokens2); i++)
+		printf("tok: %s\n", tokens2[i]);
 	expr = parse_expr(msh, tokens2, 0, ft_vector_size(tokens2) - 1);
 	ft_vector_deep_free(tokens2);
 	return (expr);
