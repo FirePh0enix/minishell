@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 14:33:06 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/10 12:00:10 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/10 14:02:53 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include "minishell.h"
 #include <unistd.h>
 
-int	builtin_cd(t_minishell *msh, int ac, char **av, int parent_out, t_node *node)
+int	builtin_cd(t_minishell *msh, int ac, char **av, int parent_in, int parent_out, t_node *node)
 {
 	char	*oldpwd;
 	char	*pwd;
@@ -23,10 +23,10 @@ int	builtin_cd(t_minishell *msh, int ac, char **av, int parent_out, t_node *node
 
 	if (ac > 2)
 		return (msh_builtin_error("msh", "too many arguments"), 1);
+	if (parent_out != -1 || parent_in != -1)
+		return (0);
 	flags = O_WRONLY | O_CREAT;
 	file = STDOUT_FILENO;
-	if (parent_out != -1)
-		file = parent_out;
 	if (node->cmd.outfile)
 	{
 		if (node->cmd.append)

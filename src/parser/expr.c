@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:34:59 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/04 15:25:53 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/10 13:57:01 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,11 @@ static char	*heredoc(t_minishell *msh, char *eof)
 	return (ft_strdup(filename));
 }
 
+static bool	isvalidfile(char *s)
+{
+	return (!(!strcmp(s, "<") || !strcmp(s, ">") || !strcmp(s, "<<") || !strcmp(s, ">>")));
+}
+
 static t_node	*parse_cmd(t_minishell *msh, char **tokens,
 		size_t start, size_t end)
 {
@@ -103,6 +108,8 @@ static t_node	*parse_cmd(t_minishell *msh, char **tokens,
 				return (NULL);
 			i++;
 			node->cmd.infile = ft_strdup(tokens[i]);
+			if (!isvalidfile(node->cmd.infile))
+				return (free_node(node), NULL);
 		}
 		else if (!strcmp(tok, "<<"))
 		{
@@ -121,6 +128,8 @@ static t_node	*parse_cmd(t_minishell *msh, char **tokens,
 				return (NULL);
 			i++;
 			node->cmd.outfile = ft_strdup(tokens[i]);
+			if (!isvalidfile(node->cmd.outfile))
+				return (free_node(node), NULL);
 			node->cmd.append = !strcmp(tok, ">>");
 		}
 		else if (!ft_vector_add(&node->cmd.argv, &tok))
@@ -131,6 +140,8 @@ static t_node	*parse_cmd(t_minishell *msh, char **tokens,
 	if (!ft_vector_add(&node->cmd.argv, &tok))
 		return (ft_vector_deep_free(node->cmd.argv), free(node), NULL);
 	node->cmd.argc = ft_vector_size(node->cmd.argv) - 1;
+	if (node->cmd.argc == 0 && (!node->cmd.outfile || !node->cmd.infile))
+		return (free_node(node), NULL);
 	return (node);
 }
 
@@ -261,12 +272,16 @@ t_node	*parse_expr(t_minishell *msh, char **tokens, size_t start, size_t end)
 		return (NULL);
 	else if (!strcmp(tokens[pos], "|"))
 	{
-		node = malloc(sizeof(t_node));
+		node = ft_calloc(1, sizeof(t_node));
 		if (!node)
 			return (NULL);
 		node->type = TY_PIPE;
 		node->pipe.left = parse_expr(msh, tokens, start, pos - 1);
+		if (!node->pipe.left)
+			return (free_node(node), NULL);
 		node->pipe.right = parse_expr(msh, tokens, pos + 1, end);
+		if (!node->pipe.right)
+			return (free_node(node), NULL);
 		return (node);
 	}
 	else if (!strcmp(tokens[pos], "||"))

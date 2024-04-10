@@ -21,6 +21,26 @@ run-test()
 	fi
 }
 
+run-test-err()
+{
+	OUTPUT=`./minishell "$1" 2>&1`
+	
+	if [[ $OUTPUT == $2 ]]; then
+		echo -e "Test err \`$BOLD$1$RESET\` is a ${GREEN}Success${RESET}"
+	else
+		echo -e "Test err \`$BOLD$1$RESET\` is a ${RED}Failure${RESET}"
+		echo -e "Expected \`$BOLD$2$RESET\` but got \`$BOLD$OUTPUT$RESET\`"
+		echo
+		EXIT_CODE=1
+	fi
+}
+
+#
+# parser tests
+#
+
+run-test-err "| | |" "msh: parsing error"
+
 #
 # `echo`
 #

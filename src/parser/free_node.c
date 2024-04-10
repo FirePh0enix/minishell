@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 15:28:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/04 15:30:34 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/10 12:21:20 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@
 
 void	free_node(t_node *node)
 {
+	if (!node)
+		return ;
 	if (node->type == TY_CMD)
 	{
 		ft_vector_deep_free(node->cmd.argv);

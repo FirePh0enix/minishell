@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 14:41:09 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/09 15:25:36 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/10 12:27:18 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,11 @@ void	exec_single_cmd(t_minishell *msh, char *argv[])
 	t_node	*node;
 
 	node = parse_line(msh, argv[1]);
+	if (node == NULL)
+	{
+		msh_error("parsing error");
+		return ;
+	}
 	exec_cmd(msh, node, -1, -1);
 }
 

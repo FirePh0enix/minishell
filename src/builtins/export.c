@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/28 15:26:05 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/04 13:10:23 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/10 14:17:33 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ static int	export_variable(t_minishell *msh, char *arg, int *exit_code)
 	return (0);
 }
 
-int	builtin_export(t_minishell *msh, int ac, char *av[], t_node *node)
+int	builtin_export(t_minishell *msh, int ac, char *av[], int in, int out, t_node *node)
 {
 	int		flags;
 	int		file;
@@ -53,6 +53,8 @@ int	builtin_export(t_minishell *msh, int ac, char *av[], t_node *node)
 
 	exit_code = 0;
 	flags = O_WRONLY | O_CREAT;
+	if (out != -1)
+		file = out;
 	if (node->cmd.outfile)
 	{
 		if (node->cmd.append)
@@ -62,6 +64,8 @@ int	builtin_export(t_minishell *msh, int ac, char *av[], t_node *node)
 		file = open(node->cmd.outfile, flags, 0666);
 		close(file);
 	}
+	if (ac != 0 && (in != -1 || out != -1)) // print envs here
+		return (exit_code);
 	i = 0;
 	while (++i < ac)
 		export_variable(msh, av[i], &exit_code);

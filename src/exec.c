@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/06 15:55:19 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/10 14:13:19 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,22 +40,22 @@ bool	is_builtin(t_node *node)
 	return (false);
 }
 
-int	exec_builtin(t_minishell *msh, t_node *node, int parent_out)
+int	exec_builtin(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 {
 	if (strcmp(node->cmd.argv[0], "cd") == 0)
-		return (builtin_cd(msh, node->cmd.argc, node->cmd.argv, parent_out, node));
+		return (builtin_cd(msh, node->cmd.argc, node->cmd.argv, parent_in, parent_out, node));
 	else if (strcmp(node->cmd.argv[0], "pwd") == 0)
 		return (builtin_pwd(node->cmd.argc, node->cmd.argv, parent_out, node));
 	else if (strcmp(node->cmd.argv[0], "echo") == 0)
 		return (builtin_echo(node->cmd.argc, node->cmd.argv, parent_out, node));
 	else if (strcmp(node->cmd.argv[0], "exit") == 0)
-		return (builtin_exit(node->cmd.argc, node->cmd.argv, node));
+		return (builtin_exit(node->cmd.argc, node->cmd.argv, parent_in, parent_out, node));
 	else if (strcmp(node->cmd.argv[0], "unset") == 0)
 		return (builtin_unset(msh, node->cmd.argc, node->cmd.argv, node));
 	else if (strcmp(node->cmd.argv[0], "env") == 0)
 		return (builtin_env(msh, parent_out, node));
 	else if (strcmp(node->cmd.argv[0], "export") == 0)
-		return (builtin_export(msh, node->cmd.argc, node->cmd.argv, node));
+		return (builtin_export(msh, node->cmd.argc, node->cmd.argv, parent_in, parent_out, node));
 	return (0);
 }
 
@@ -72,7 +72,7 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 	if (node->type == TY_CMD)
 	{
 		if (is_builtin(node))
-			return (exec_builtin(msh, node, parent_out));
+			return (exec_builtin(msh, node, parent_in, parent_out));
 		if (node->cmd.argc > 0)
 		{
 			cmd = ft_create_path(msh, node->cmd.argv[0]);
