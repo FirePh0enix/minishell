@@ -48,6 +48,7 @@ for test_name in "${TESTS[@]}"; do
 	fi
 done
 
+echo
 bash tests/test2.sh
 
 LAST_ERR=$?

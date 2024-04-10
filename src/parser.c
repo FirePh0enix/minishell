@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/09 15:01:36 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/10 11:42:01 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,6 @@
 // -----------------------------------------------------------------------------
 // Wildcard and env expansion
 
-static int	isnameend(int c)
-{
-	return (c == '"' || c == '|' || c == '(' || c == ')' || c == '{'
-		|| c == '}' || c == '[' || c == ']' || c == '+' || c == '-' || c == '*'
-		|| c == '/' || c == ' ');
-}
-
 static char	*ft_strndup(char *s, size_t n)
 {
 	char	*s2;
@@ -39,13 +32,37 @@ static char	*ft_strndup(char *s, size_t n)
 	return (s2);
 }
 
+static void	write_env(t_minishell *msh, t_str *s, size_t *index, t_str tok)
+{
+	size_t	i;
+	size_t	i2;
+	char	*env;
+	char	*envname;
+
+	i = *index;
+	i++;
+	if (!ft_isalpha(tok.data[i]))
+	{
+		*index = i;
+		return ;
+	}
+	i++;
+	i2 = i;
+	while (tok.data[i2] &&
+		(ft_isalnum(tok.data[i2]) || tok.data[i2] == '-' || tok.data[i2] == '_'))
+		i2++;
+	envname = ft_strndup(&tok.data[i - 1], i2 - (i - 1));
+	env = getourenv(msh, envname);
+	str_append(s, env);
+	*index = i2 - 1;
+	free(envname);
+	free(env);
+}
+
 static t_str	expand_reg(t_minishell *msh, t_str tok)
 {
 	t_str	s;
 	size_t	i;
-	size_t	i2;
-	char	*envname;
-	char	*env;
 
 	s = str("");
 	i = 0;
@@ -57,30 +74,9 @@ static t_str	expand_reg(t_minishell *msh, t_str tok)
 			while (tok.data[i] && tok.data[i] != '"')
 			{
 				if (tok.data[i] == '$')
-				{
-					i++;
-					if (!ft_isalpha(tok.data[i]))
-					{
-						i++;
-						continue ;
-					}
-					i++;
-					i2 = i;
-					while (tok.data[i2] &&
-						(ft_isalnum(tok.data[i2]) || tok.data[i2] == '-' || tok.data[i2] == '_'))
-						i2++;
-					envname = ft_strndup(&tok.data[i - 1], i2 - (i - 1));
-					env = getourenv(msh, envname);
-					str_append(&s, env);
-					i = i2;
-					free(envname);
-					free(env);
-				}
+					write_env(msh, &s, &i, tok);
 				else
-				{
-					str_append_n(&s, &tok.data[i], 1);
-					i++;
-				}
+					str_append_n(&s, &tok.data[i++], 1);
 			}
 			if (tok.data[i] != '"')
 				return (str_free(&s), str_null());
@@ -95,6 +91,10 @@ static t_str	expand_reg(t_minishell *msh, t_str tok)
 			}
 			if (tok.data[i] != '\'')
 				return (str_free(&s), str_null());
+		}
+		else if (tok.data[i] == '$')
+		{
+			write_env(msh, &s, &i, tok);
 		}
 		else
 		{
@@ -133,12 +133,6 @@ static char	**expand_tokens(t_minishell *msh, t_str *tokens)
 			while (j < ft_vector_size(files))
 				if (!ft_vector_add(&tokens2, &files[j++]))
 					return (ft_vector_deep_free(tokens2), NULL);
-		}
-		else if (tokens[i].data[0] == '$')
-		{
-			env = getourenv(msh, tokens[i].data + 1);
-			if (env && !ft_vector_add(&tokens2, &env))
-				return (ft_vector_deep_free(tokens2), NULL);
 		}
 		else if (tokens[i].data[0] == '~')
 		{

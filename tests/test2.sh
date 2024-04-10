@@ -25,9 +25,18 @@ run-test()
 # `echo`
 #
 
+run-test "echo Hello World" "Hello World"
 run-test "echo -----nnnnnn" "-----nnnnnn"
 run-test "\"\"''echo hola\"\"'''' que\"\"'' tal\"\"''" "hola que tal"
-# run-test 'echo $9HOME' "HOME"
+run-test 'echo $9HOME' "HOME"
+run-test 'echo $HOME%' "$HOME%"
+
+#
+# `pwd`
+#
+
+run-test "pwd" "$PWD"
+run-test "pwd test" "$PWD"
 
 if [[ "$EXIT_CODE" != "0" ]]; then
 	exit 1

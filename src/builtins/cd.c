@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 14:33:06 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/02 14:48:00 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/10 12:00:10 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	builtin_cd(t_minishell *msh, int ac, char **av, int parent_out, t_node *node
 	int		file;
 
 	if (ac > 2)
-		return (1);
+		return (msh_builtin_error("msh", "too many arguments"), 1);
 	flags = O_WRONLY | O_CREAT;
 	file = STDOUT_FILENO;
 	if (parent_out != -1)
