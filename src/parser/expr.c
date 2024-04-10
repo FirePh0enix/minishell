@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:34:59 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/10 16:38:08 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/10 16:43:21 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,7 @@ static t_node	*parse_cmd(t_minishell *msh, char **tokens,
 	t_node	*node;
 	size_t	i;
 	char	*tok;
+	bool	first_out = true;
 
 	node = ft_calloc(sizeof(t_node), 1);
 	if (!node)
@@ -127,7 +128,7 @@ static t_node	*parse_cmd(t_minishell *msh, char **tokens,
 			if (i + 1 > end)
 				return (NULL);
 			i++;
-			if (!node->cmd.append && !strcmp(tok, ">>"))
+			if (!node->cmd.append && !strcmp(tok, ">>") && !first_out)
 			{
 				i++;
 				continue ;
@@ -136,6 +137,7 @@ static t_node	*parse_cmd(t_minishell *msh, char **tokens,
 			if (!isvalidfile(node->cmd.outfile))
 				return (free_node(node), NULL);
 			node->cmd.append = !strcmp(tok, ">>");
+			first_out = true;
 		}
 		else if (!ft_vector_add(&node->cmd.argv, &tok))
 			return (ft_vector_deep_free(node->cmd.argv), free(node), NULL);
