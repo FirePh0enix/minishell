@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 13:30:43 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/01 13:30:58 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/10 14:28:49 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,10 +60,21 @@ char	*ft_create_path(t_minishell *msh, char *command)
 
 int	ft_exec_cmd(char *cmd, char **av, char **envp)
 {
+	int	fd;
+
+	fd = open(cmd, O_DIRECTORY | O_RDONLY);
+	if (fd != -1)
+	{
+		close(fd);
+		errno = EISDIR;
+		perror(av[0]);
+		exit(-1);
+	}
+	errno = 0;
 	if (execve(cmd, av, envp) == -1)
 	{
-		free(cmd);
-		return (-1);
+		perror(av[0]);
+		exit(-1);
 	}
 	free(cmd);
 	return (0);
