@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 23:05:54 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/11 00:21:34 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/11 00:26:41 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,11 @@ char	**wildcard(char *s)
 
 	if (s[i2] == '\0')
 	{
+		if (*path == '\0')
+		{
+			free(path);
+			path = ft_strdup(".");
+		}
 		dir = opendir(path);
 		while (1)
 		{
@@ -158,6 +163,8 @@ char	**wildcard(char *s)
 		closedir(dir);
 		free(past);
 	}
+
+	free(path);
 
 	return (res);
 }
