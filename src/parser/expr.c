@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:34:59 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/10 16:27:45 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/10 16:38:08 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,7 +127,12 @@ static t_node	*parse_cmd(t_minishell *msh, char **tokens,
 			if (i + 1 > end)
 				return (NULL);
 			i++;
-			node->cmd.outfile = ft_strdup(tokens[i]);
+			if (!node->cmd.append && !strcmp(tok, ">>"))
+			{
+				i++;
+				continue ;
+			}
+			node->cmd.outfile = ft_strdup(tokens[i]); // FIXME
 			if (!isvalidfile(node->cmd.outfile))
 				return (free_node(node), NULL);
 			node->cmd.append = !strcmp(tok, ">>");
@@ -218,6 +223,7 @@ static t_node	*parse_parent(t_minishell *msh, char **tokens, size_t start, size_
 	// Then parse redirections here
 	char	*tok;
 
+	append = false;
 	for (size_t i = start; i < end; i++)
 	{
 		if (i >= (size_t)parent_start && i <= (size_t)parent_end)
@@ -245,7 +251,10 @@ static t_node	*parse_parent(t_minishell *msh, char **tokens, size_t start, size_
 				return (NULL);
 			i++;
 			if (!append && !strcmp(tok, ">>"))
+			{
+				ft_fprintf(1, "dedweded\n");
 				continue ;
+			}
 			outfile = ft_strdup(tokens[i + start]);
 			append = !strcmp(tok, ">>");
 		}
