@@ -45,6 +45,7 @@ run-test-err "| | |" "msh: parsing error"
 # `echo`
 #
 
+run-test 'echo $?' "0"
 run-test "echo Hello World" "Hello World"
 run-test "echo -----nnnnnn" "-----nnnnnn"
 run-test "\"\"''echo hola\"\"'''' que\"\"'' tal\"\"''" "hola que tal"

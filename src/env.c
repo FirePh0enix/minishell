@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 23:45:53 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/04 13:09:12 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/10 15:01:40 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,8 @@ char	*getourenv(t_minishell *minishell, char *name)
 
 	if (strcmp(name, "?") == 0)
 		return (ft_itoa(minishell->exit_code));
+	if (strcmp(name, "*") == 0)
+		return (ft_strdup(""));
 	i = 0;
 	while (i < ft_vector_size(minishell->env) - 1)
 	{

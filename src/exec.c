@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/10 14:13:19 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/10 15:29:24 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,7 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 					return (printf("ERROR OPEN INFILE\n"), 1);
 				if (dup2(file, STDIN_FILENO) == -1)
 					return (printf("ERROR DUP2 TMP\n"), 1);
+				close(file);
 			}
 			if (parent_out != -1)
 			{
@@ -111,6 +112,7 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 					return (printf("ERROR OPEN OUTFILE\n"), 1);
 				if (dup2(file, STDOUT_FILENO) == -1)
 					return (printf("ERROR OUTFILE\n"), 1);
+				close(file);
 			}
 			for (size_t i = 0; i < ft_vector_size(msh->open_fds); i++)
 				close(msh->open_fds[i]);
