@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:34:59 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/10 14:36:34 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/10 16:27:45 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -228,7 +228,7 @@ static t_node	*parse_parent(t_minishell *msh, char **tokens, size_t start, size_
 			if (i + 1 > end - start)
 				return (NULL);
 			i++;
-			infile = ft_strdup(tokens[i + start]);
+			infile = ft_strdup(tokens[i + start]); // TODO check heredoc priority
 		}
 		else if (!strcmp(tok, "<<"))
 		{
@@ -244,6 +244,8 @@ static t_node	*parse_parent(t_minishell *msh, char **tokens, size_t start, size_
 			if (i + 1 > end)
 				return (NULL);
 			i++;
+			if (!append && !strcmp(tok, ">>"))
+				continue ;
 			outfile = ft_strdup(tokens[i + start]);
 			append = !strcmp(tok, ">>");
 		}
