@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/10 12:22:50 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/10 22:23:09 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,13 +126,21 @@ static char	**expand_tokens(t_minishell *msh, t_str *tokens)
 	{
 		if (ft_strchr(tokens[i].data, '*'))
 		{
-			files = wildcard(ft_strchr(tokens[i].data, '*') + 1);
+			files = wildcard(tokens[i].data);
 			if (!files)
 				return (ft_vector_deep_free(tokens2), NULL);
-			j = 0;
-			while (j < ft_vector_size(files))
-				if (!ft_vector_add(&tokens2, &files[j++]))
-					return (ft_vector_deep_free(tokens2), NULL);
+			if (ft_vector_size(files) == 0)
+			{
+				s = ft_strdup(tokens[i].data);
+				ft_vector_add(&tokens2, &s);
+			}
+			else
+			{
+				j = 0;
+				while (j < ft_vector_size(files))
+					if (!ft_vector_add(&tokens2, &files[j++]))
+						return (ft_vector_deep_free(tokens2), NULL);
+			}
 		}
 		else if (tokens[i].data[0] == '~')
 		{
