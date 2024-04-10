@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:34:59 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/10 16:43:21 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/10 16:44:19 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,6 +194,7 @@ static t_node	*parse_parent(t_minishell *msh, char **tokens, size_t start, size_
 	char	*outfile = NULL;
 	char	*infile = NULL;
 	bool	append;
+	bool	first_out = true;
 
 	// First find the parenthesis start and end values
 	int	parent_start;
@@ -252,13 +253,11 @@ static t_node	*parse_parent(t_minishell *msh, char **tokens, size_t start, size_
 			if (i + 1 > end)
 				return (NULL);
 			i++;
-			if (!append && !strcmp(tok, ">>"))
-			{
-				ft_fprintf(1, "dedweded\n");
+			if (!append && !strcmp(tok, ">>") && !first_out)
 				continue ;
-			}
 			outfile = ft_strdup(tokens[i + start]);
 			append = !strcmp(tok, ">>");
+			first_out = false;
 		}
 	}
 
