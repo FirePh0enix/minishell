@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:34:59 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/10 13:57:01 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/10 14:36:34 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -291,7 +291,11 @@ t_node	*parse_expr(t_minishell *msh, char **tokens, size_t start, size_t end)
 			return (NULL);
 		node->type = TY_OR;
 		node->pipe.left = parse_expr(msh, tokens, start, pos - 1);
+		if (!node->pipe.left)
+			return (free_node(node), NULL);
 		node->pipe.right = parse_expr(msh, tokens, pos + 1, end);
+		if (!node->pipe.right)
+			return (free_node(node), NULL);
 		return (node);
 	}
 	else if (!strcmp(tokens[pos], "&&"))
@@ -301,7 +305,11 @@ t_node	*parse_expr(t_minishell *msh, char **tokens, size_t start, size_t end)
 			return (NULL);
 		node->type = TY_AND;
 		node->pipe.left = parse_expr(msh, tokens, start, pos - 1);
+		if (!node->pipe.left)
+			return (free_node(node), NULL);
 		node->pipe.right = parse_expr(msh, tokens, pos + 1, end);
+		if (!node->pipe.right)
+			return (free_node(node), NULL);
 		return (node);
 	}
 	return (NULL);
