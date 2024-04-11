@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/10 22:23:09 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/11 16:43:53 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,13 +93,9 @@ static t_str	expand_reg(t_minishell *msh, t_str tok)
 				return (str_free(&s), str_null());
 		}
 		else if (tok.data[i] == '$')
-		{
 			write_env(msh, &s, &i, tok);
-		}
 		else
-		{
 			str_append_n(&s, &tok.data[i], 1);
-		}
 		i++;
 	}
 	return (s);
@@ -124,14 +120,32 @@ static char	**expand_tokens(t_minishell *msh, t_str *tokens)
 	i = 0;
 	while (i < ft_vector_size(tokens))
 	{
-		if (ft_strchr(tokens[i].data, '*'))
+		tok = tokens[i];
+
+		if (tok.data[0] == '~')
 		{
-			files = wildcard(tokens[i].data);
+			env = getourenv(msh, "HOME");
+			if (env)
+			{
+				tok = str(env);
+				str_append(&tok, tokens[i].data + 1);
+				free(env);
+			}
+			else
+			{
+				// FIXME what to do here ?
+				return (NULL);
+			}
+		}
+
+		if (ft_strchr(tok.data, '*'))
+		{
+			files = wildcard(tok.data, 0);
 			if (!files)
 				return (ft_vector_deep_free(tokens2), NULL);
 			if (ft_vector_size(files) == 0)
 			{
-				s = ft_strdup(tokens[i].data);
+				s = ft_strdup(tok.data);
 				ft_vector_add(&tokens2, &s);
 			}
 			else
@@ -142,27 +156,9 @@ static char	**expand_tokens(t_minishell *msh, t_str *tokens)
 						return (ft_vector_deep_free(tokens2), NULL);
 			}
 		}
-		else if (tokens[i].data[0] == '~')
-		{
-			env = getourenv(msh, "HOME");
-			if (env)
-			{
-				s = ft_strjoin(env, tokens[i].data + 1);
-				if (!s || !ft_vector_add(&tokens2, &s))
-					return (free(env), free(s), ft_vector_deep_free(tokens2),
-						NULL);
-				free(env);
-			}
-			else
-			{
-				s = ft_strdup(tokens[i].data + 1);
-				if (!s || !ft_vector_add(&tokens2, &s))
-					return (free(s), ft_vector_deep_free(tokens2), NULL);
-			}
-		}
 		else
 		{
-			tok = expand_reg(msh, tokens[i]);
+			tok = expand_reg(msh, tok);
 			if (!tok.data)
 				return (str_free(&tok), NULL);
 			if (!ft_vector_add(&tokens2, &tok))
