@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 23:05:54 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/12 12:08:43 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/12 12:28:18 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,10 +61,6 @@ static t_file	*filter_files(t_file *files, char *filter)
 
 	suf2 = strndup(suffix, ft_strchr(suffix, '*') - suffix);
 
-	//printf("- pre: %s\n", prefix);
-	//printf("- suf: %s\n", suffix);
-	//printf("- su2: %s\n", suf2);
-
 	i = 0;
 	while (i < ft_vector_size(files))
 	{
@@ -81,12 +77,18 @@ static t_file	*filter_files(t_file *files, char *filter)
 		i++;
 	}
 
-	//for (size_t i = 0; i < ft_vector_size(filtered_files); i++)
-	//	printf("%s (%s) ", filtered_files[i].file, filtered_files[i].file + filtered_files[i].start);
-	//printf("\n\n");
+	t_file	*filtered_files2;
 
 	if (ft_strchr(suffix, '*'))
-		filtered_files = filter_files(filtered_files, suffix + 1);
+	{
+		filtered_files2 = filter_files(filtered_files, ft_strdup(suffix + 1));
+		ft_vector_free(filtered_files);
+		filtered_files = filtered_files2;
+	}
+	free(prefix);
+	free(suffix);
+	free(suf2);
+	free(filter);
 	return (filtered_files);
 }
 
@@ -134,7 +136,7 @@ char	**wildcard(char *s, size_t start_idx)
 
 	if (s[i2] == '\0')
 	{
-		t_file	*files2 = filter_files(files, filter);
+		t_file	*files2 = filter_files(files, ft_strdup(filter));
 		files3 = ft_vector(sizeof(char *), ft_vector_size(files2));
 		for (size_t i = 0; i < ft_vector_size(files2); i++)
 		{
@@ -144,10 +146,11 @@ char	**wildcard(char *s, size_t start_idx)
 			str_append(&s, files2[i].file);
 			ft_vector_add(&files3, &s.data);
 		}
+		ft_vector_free(files2);
 	}
 	else
 	{
-		t_file	*files2 = filter_files(files, filter);
+		t_file	*files2 = filter_files(files, ft_strdup(filter));
 		files3 = ft_vector(sizeof(char *), 0);
 		for (size_t i = 0; i < ft_vector_size(files2); i++)
 		{
@@ -161,7 +164,11 @@ char	**wildcard(char *s, size_t start_idx)
 			char	**files4 = wildcard(s2.data, 0);
 			for (size_t i = 0; i < ft_vector_size(files4); i++)
 				ft_vector_add(&files3, &files4[i]);
+			ft_vector_free(files4);
 		}
+		ft_vector_free(files2);
 	}
+	free(path);
+	free(filter);
 	return (files3);
 }

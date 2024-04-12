@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/11 16:43:53 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/12 12:42:42 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,15 @@ static void	write_env(t_minishell *msh, t_str *s, size_t *index, t_str tok)
 
 	i = *index;
 	i++;
-	if (!ft_isalpha(tok.data[i]))
+	if (tok.data[i] == '?')
+	{
+		*index = i + 1;
+		env = getourenv(msh, "?");
+		str_append(s, env);
+		free(env);
+		return ;
+	}
+	else if (!ft_isalpha(tok.data[i]))
 	{
 		*index = i;
 		return ;
@@ -52,8 +60,11 @@ static void	write_env(t_minishell *msh, t_str *s, size_t *index, t_str tok)
 		(ft_isalnum(tok.data[i2]) || tok.data[i2] == '-' || tok.data[i2] == '_'))
 		i2++;
 	envname = ft_strndup(&tok.data[i - 1], i2 - (i - 1));
+	if (!envname)
+		return ;
 	env = getourenv(msh, envname);
-	str_append(s, env);
+	if (env)
+		str_append(s, env);
 	*index = i2 - 1;
 	free(envname);
 	free(env);
@@ -118,6 +129,10 @@ static char	**expand_tokens(t_minishell *msh, t_str *tokens)
 	if (!tokens2)
 		return (NULL);
 	i = 0;
+	// TODO/FIXME:
+	// - First expand `~`
+	// - Then env variables
+	// - Then wildcards
 	while (i < ft_vector_size(tokens))
 	{
 		tok = tokens[i];
@@ -133,7 +148,7 @@ static char	**expand_tokens(t_minishell *msh, t_str *tokens)
 			}
 			else
 			{
-				// FIXME what to do here ?
+				// FIXME: What to do here ?
 				return (NULL);
 			}
 		}
@@ -161,7 +176,9 @@ static char	**expand_tokens(t_minishell *msh, t_str *tokens)
 			tok = expand_reg(msh, tok);
 			if (!tok.data)
 				return (str_free(&tok), NULL);
-			if (!ft_vector_add(&tokens2, &tok))
+			if (tok.size == 0)
+				str_free(&tok);
+			else if (!ft_vector_add(&tokens2, &tok))
 				return (ft_vector_deep_free(tokens2), NULL);
 		}
 		i++;
