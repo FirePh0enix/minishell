@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/10 15:29:24 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/12 14:53:30 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,10 +53,19 @@ int	exec_builtin(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 	else if (strcmp(node->cmd.argv[0], "unset") == 0)
 		return (builtin_unset(msh, node->cmd.argc, node->cmd.argv, node));
 	else if (strcmp(node->cmd.argv[0], "env") == 0)
-		return (builtin_env(msh, parent_out, node));
+		return (builtin_env(msh, parent_in, parent_out, node));
 	else if (strcmp(node->cmd.argv[0], "export") == 0)
 		return (builtin_export(msh, node->cmd.argc, node->cmd.argv, parent_in, parent_out, node));
 	return (0);
+}
+
+int	code_for_errno()
+{
+	if (errno == EACCES)
+		return (126);
+	else if (errno == ENOENT)
+		return (127);
+	return (-1);
 }
 
 int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
@@ -77,7 +86,7 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 		{
 			cmd = ft_create_path(msh, node->cmd.argv[0]);
 			if (!cmd)
-				return (msh_error_cmd(node->cmd.argv[0]), -1);
+				return (msh_error_cmd(node->cmd.argv[0]), code_for_errno());
 		}
 		pid = fork();
 		if (pid == -1)
@@ -120,7 +129,7 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 			if (cmd)
 				ft_exec_cmd(cmd, node->cmd.argv, msh->env);
 			else
-				exit(EXIT_SUCCESS);
+				exit(0);
 		}
 		else
 		{
@@ -133,6 +142,7 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 				if (g_signum != -1)
 					kill(pid, g_signum);
 			}
+			status = WEXITSTATUS(status);
 		}
 	}
 	else if (node->type == TY_PIPE)

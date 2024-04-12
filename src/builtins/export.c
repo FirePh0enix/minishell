@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/28 15:26:05 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/10 15:11:42 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/12 13:30:44 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ static int	export_variable(t_minishell *msh, char *arg, int *exit_code)
 		return (free(key), free(value),
 			msh_builtin_error("export", "missing key"),
 			set_exit_code(exit_code, 1));
-	if (ft_strlen(key) >= 1 && !ft_isalpha(key[0]))
+	if (ft_strlen(key) >= 1 && !ft_isalpha(key[0])) // FIXME: Check identifiers better
 		return (free(key), free(value),
 			msh_builtin_error("export", "invalid identifier"),
 			set_exit_code(exit_code, 1));
@@ -53,6 +53,7 @@ int	builtin_export(t_minishell *msh, int ac, char *av[], int in, int out, t_node
 
 	exit_code = 0;
 	flags = O_WRONLY | O_CREAT;
+	file = 1;
 	if (out != -1)
 		file = out;
 	if (node->cmd.outfile)
@@ -71,7 +72,7 @@ int	builtin_export(t_minishell *msh, int ac, char *av[], int in, int out, t_node
 			ft_fprintf(file, "declare -x %s\n", msh->env[i++]);
 		return (exit_code);
 	}
-	if (in != -1 || out != -1) // print envs here
+	if (in != -1 || out != -1)
 		return (exit_code);
 	i = 0;
 	while (++i < ac)

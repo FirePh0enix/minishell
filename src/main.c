@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 14:41:09 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/10 12:27:18 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/12 14:51:03 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,25 +21,48 @@
 void	exec_single_cmd(t_minishell *msh, char *argv[])
 {
 	t_node	*node;
+	int		status;
 
 	node = parse_line(msh, argv[1]);
 	if (node == NULL)
 	{
 		msh_error("parsing error");
-		return ;
+		exit(2);
 	}
-	exec_cmd(msh, node, -1, -1);
+	status = exec_cmd(msh, node, -1, -1);
+	free_node(node);
+	exit(status);
 }
 
 int	main(int argc, char *argv[], char *envp[])
 {
 	t_minishell	msh;
+	char		*s2;
 
 	(void) argc;
 	(void) argv;
 	msh.exit_code = 0;
 	msh.open_fds = ft_vector(sizeof(int), 0);
 	copy_env(&msh, envp);
+
+	if (ft_vector_size(msh.env) == 1)
+	{
+		s2 = getcwd(NULL, 0);
+		setourenv(&msh, "PWD", s2);
+		free(s2);
+		setourenv(&msh, "SHLVL", "1");
+		setourenv(&msh, "_", "/usr/bin/env"); // TODO could be better
+	}
+	else
+	{
+		s2 = getourenv(&msh, "SHLVL");
+		int	lvl = ft_atoi(s2) + 1;
+		free(s2);
+		s2 = ft_itoa(lvl);
+		setourenv(&msh, "SHLVL", s2);
+		free(s2);
+	}
+
 	init_signals(&msh);
 	load_history(&msh);
 	if (argc == 1)

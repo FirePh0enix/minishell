@@ -24,6 +24,7 @@ run-test()
 run-test-err()
 {
 	OUTPUT=`./minishell "$1" 2>&1`
+	CMD_STATUS=$?
 	
 	if [[ $OUTPUT == $2 ]]; then
 		echo -e "Test err \`$BOLD$1$RESET\` is a ${GREEN}Success${RESET}"
@@ -33,19 +34,41 @@ run-test-err()
 		echo
 		EXIT_CODE=1
 	fi
+
+	if [[ $CMD_STATUS != $3 ]]; then
+		echo -e "${RED}Exit code is wrong${RESET}: \`$CMD_STATUS\` (got) vs \`$3\` (expected)"
+		EXIT_CODE=1
+	fi
 }
 
 #
-# parser tests
+# parser
 #
 
-run-test-err "| | |" "msh: parsing error"
+run-test-err "| | |" "msh: parsing error" 2
+
+#
+# exec
+#
+
+run-test-err "/bin/cd Desktop" "/bin/cd: No such file or directory" 127
+run-test-err "./Makefile" "./Makefile: Permission denied" 126
+
+#
+# `cd`
+#
+
+run-test-err "cd src tests" "msh: too many arguments" 1
 
 #
 # `echo`
 #
 
 run-test 'echo $?' "0"
+# Those two works but not the tests
+#run-test 'echo $?$' '0$'
+#run-test 'echo $:$= | cat -e' '$:$=$'
+run-test 'echo [$TERM4' '['
 run-test "echo Hello World" "Hello World"
 run-test "echo -----nnnnnn" "-----nnnnnn"
 run-test "\"\"''echo hola\"\"'''' que\"\"'' tal\"\"''" "hola que tal"

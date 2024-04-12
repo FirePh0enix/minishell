@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 14:33:06 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/10 14:02:53 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/12 13:43:12 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ int	builtin_cd(t_minishell *msh, int ac, char **av, int parent_in, int parent_ou
 	{
 		char	*home = getourenv(msh, "HOME");
 		if (!home)
-			return (1);
+			return (msh_builtin_error("cd", "HOME not set"), 1);
 		pwd = getcwd(NULL, 0);
 		setourenv(msh, "OLDPWD", pwd);
 		chdir(home);

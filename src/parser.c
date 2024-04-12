@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/12 12:42:42 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/12 13:34:31 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,14 @@ static void	write_env(t_minishell *msh, t_str *s, size_t *index, t_str tok)
 		free(env);
 		return ;
 	}
+	else if (ft_isdigit(tok.data[i]))
+	{
+		*index = i;
+		return ;
+	}
 	else if (!ft_isalpha(tok.data[i]))
 	{
+		str_append(s, "$");
 		*index = i;
 		return ;
 	}
@@ -77,7 +83,7 @@ static t_str	expand_reg(t_minishell *msh, t_str tok)
 
 	s = str("");
 	i = 0;
-	while (tok.data[i])
+	while (i < tok.size)
 	{
 		if (tok.data[i] == '"')
 		{
@@ -176,8 +182,9 @@ static char	**expand_tokens(t_minishell *msh, t_str *tokens)
 			tok = expand_reg(msh, tok);
 			if (!tok.data)
 				return (str_free(&tok), NULL);
-			if (tok.size == 0)
-				str_free(&tok);
+			// if (tok.size == 0)
+			//	str_free(&tok);
+			// FIXME: Should not add the token if empty expect for dquotes.
 			else if (!ft_vector_add(&tokens2, &tok))
 				return (ft_vector_deep_free(tokens2), NULL);
 		}
