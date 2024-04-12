@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 23:05:54 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/12 00:58:56 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/12 12:08:43 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,7 @@ char	**wildcard(char *s, size_t start_idx)
 		i2++;
 
 	char	*path = strndup(s, i);
-	char	*filter = strndup(s + i + 1, i2 - i);
+	char	*filter = strndup(s + i + 1, i2 - i - 1);
 
 	if (*path == '\0')
 		dir = opendir(".");
@@ -157,9 +157,11 @@ char	**wildcard(char *s, size_t start_idx)
 			str_append(&s2, files2[i].file);
 			str_append(&s2, "/");
 			str_append(&s2, &s[i2 + 1]);
-		}
 
-		// FIXME: `~/D*loads/*.*.*` does not works, stuck at evaluating `D*loads`
+			char	**files4 = wildcard(s2.data, 0);
+			for (size_t i = 0; i < ft_vector_size(files4); i++)
+				ft_vector_add(&files3, &files4[i]);
+		}
 	}
 	return (files3);
 }
