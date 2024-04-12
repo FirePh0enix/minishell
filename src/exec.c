@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/12 15:10:44 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/12 15:53:50 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,20 +94,22 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 		if (pid == 0)
 		{
 			if (parent_in != -1 && dup2(parent_in, STDIN_FILENO) == -1)
-				return (msh_errno(""), 1);
-			if (node->cmd.infile && node->cmd.argc > 0)
+				return (msh_errno(""), exit(1), 1);
+			if (node->cmd.infile)
 			{
 				file = open(node->cmd.infile, O_RDONLY);
 				if (file == -1)
-					return (msh_errno(node->cmd.infile), 1);
-				if (dup2(file, STDIN_FILENO) == -1)
-					return (msh_errno(""), 1);
+					return (msh_errno(node->cmd.infile), exit(1), 1);
+				if (node->cmd.argc > 0 && dup2(file, STDIN_FILENO) == -1)
+					return (msh_errno(""), exit(1), 1);
+				else if (node->cmd.argc == 0 && !node->cmd.outfile)
+					exit(0);
 				close(file);
 			}
 			if (parent_out != -1)
 			{
 				if (dup2(parent_out, STDOUT_FILENO) == -1)
-					return (msh_errno(""), 1);
+					return (msh_errno(""), exit(1), 1);
 			}
 			if (node->cmd.outfile)
 			{
@@ -118,9 +120,9 @@ int    exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 					flags |= O_TRUNC;
 				file = open(node->cmd.outfile, flags, 0666);
 				if (file == -1)
-					return (msh_errno(node->cmd.outfile), 1);
+					return (msh_errno(node->cmd.outfile), exit(1), 1);
 				if (dup2(file, STDOUT_FILENO) == -1)
-					return (msh_errno(""), 1);
+					return (msh_errno(""), exit(1), 1);
 				close(file);
 			}
 			for (size_t i = 0; i < ft_vector_size(msh->open_fds); i++)
