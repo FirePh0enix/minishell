@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:24:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/12 13:15:13 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/12 15:08:04 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ void	free_env(t_minishell *msh);
 void	msh_error(char *msg);
 void	msh_builtin_error(char *builtin, char *msg);
 void	msh_error_cmd(char *cmd);
+void	msh_errno(char *cmd);
 
 int		builtin_cd(t_minishell *msh, int ac, char **av, int parent_in, int parent_out, t_node *node);
 int		builtin_pwd(int ac, char **av, int parent_out, t_node *node);

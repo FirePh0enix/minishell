@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:34:59 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/10 16:44:19 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/12 15:02:35 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,7 +147,7 @@ static t_node	*parse_cmd(t_minishell *msh, char **tokens,
 	if (!ft_vector_add(&node->cmd.argv, &tok))
 		return (ft_vector_deep_free(node->cmd.argv), free(node), NULL);
 	node->cmd.argc = ft_vector_size(node->cmd.argv) - 1;
-	if (node->cmd.argc == 0 && (!node->cmd.outfile || !node->cmd.infile))
+	if (node->cmd.argc == 0 && !node->cmd.outfile && !node->cmd.infile)
 		return (free_node(node), NULL);
 	return (node);
 }
