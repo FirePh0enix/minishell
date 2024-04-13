@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/13 15:29:38 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/13 15:39:26 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/13 19:29:18 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,4 +56,15 @@ int	handle_and(t_minishell *msh, t_node *node, int in, int out)
 		return (status);
 	status = exec_cmd(msh, node->pipe.right, in, out);
 	return (status);
+}
+
+int	handle_if_not_cmd(t_minishell *msh, t_node *node, int in, int out)
+{
+	if (node->type == TY_PIPE)
+		return (handle_pipe(msh, node, in, out));
+	else if (node->type == TY_OR)
+		return (handle_or(msh, node, in, out));
+	else if (node->type == TY_AND)
+		return (handle_and(msh, node, in, out));
+	return (0);
 }

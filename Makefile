@@ -6,7 +6,7 @@
 #    By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/22 14:41:53 by ledelbec          #+#    #+#              #
-#    Updated: 2024/04/13 15:54:14 by vopekdas         ###   ########.fr        #
+#    Updated: 2024/04/13 19:28:12 by vopekdas         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,6 +33,7 @@ SRCS=\
 	src/close_fd.c\
 	src/dup.c\
 	src/handle_type.c\
+	src/builtins_utils.c\
 
 MAIN_SRCS=src/main.c $(SRCS)
 

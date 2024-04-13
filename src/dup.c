@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/13 15:17:13 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/13 16:17:45 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/13 19:45:37 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,21 +54,21 @@ int	dup_outfile(t_node *node)
 	return (0);
 }
 
-int	dup_in(int	in)
+int	dup_in(int in)
 {
 	if (in != -1 && dup2(in, STDIN_FILENO) == -1)
 		return (msh_errno(""), exit(1), 1);
 	return (0);
 }
 
-int	dup_out(int	out)
+int	dup_out(int out)
 {
 	if (out != -1 && dup2(out, STDOUT_FILENO) == -1)
 		return (msh_errno(""), exit(1), 1);
 	return (0);
 }
 
-int	overall_dup(t_node *node, int in, int out)
+void	overall_dup(t_node *node, int in, int out)
 {
 	if (in != -1)
 		dup_in(in);
@@ -78,4 +78,5 @@ int	overall_dup(t_node *node, int in, int out)
 		dup_out(out);
 	if (node->cmd.outfile)
 		dup_outfile(node);
+	return ;
 }
