@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:34:59 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/13 23:52:20 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/14 00:04:36 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,10 +81,13 @@ static char	*heredoc(t_minishell *msh, char *eof)
 	return (ft_strdup(filename));
 }
 
+// TODO: Adapt for HEREDOC delimiter
+//       Check if its works in all cases
 static bool	isvalidfile(char *s)
 {
 	return (!(!strcmp(s, "<") || !strcmp(s, ">") || !strcmp(s, "<<")
-		|| !strcmp(s, ">>")));
+		|| !strcmp(s, ">>") || !strcmp(s, "|") || !strcmp(s, "||")
+		|| !strcmp(s, "&") || !strcmp(s, "&&")));
 }
 
 static t_node	*parse_cmd(t_minishell *msh, char **tokens,
@@ -120,11 +123,13 @@ static t_node	*parse_cmd(t_minishell *msh, char **tokens,
 			if (i + 1 > end - start)
 				return (NULL);
 			i++;
+			if (!isvalidfile(tokens[i]))
+				return (free_node(node), NULL);
 			if (node->cmd.infile)
 				free(node->cmd.infile);
 			node->cmd.infile = heredoc(msh, tokens[i]);
 			if (!node->cmd.infile)
-				return (ft_vector_deep_free(node->cmd.argv), free(node), NULL);
+				return (free_node(node), NULL);
 		}
 		else if (!strcmp(tok, ">") || !strcmp(tok, ">>"))
 		{
