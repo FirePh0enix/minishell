@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 23:05:54 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/12 12:28:18 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/13 22:42:33 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ static t_file	*filter_files(t_file *files, char *filter)
 	return (filtered_files);
 }
 
-char	**wildcard(char *s, size_t start_idx)
+char	**wildcard(char *s)
 {
 	t_file			*files = ft_vector(sizeof(t_file), 0);
 	DIR				*dir;
@@ -114,13 +114,21 @@ char	**wildcard(char *s, size_t start_idx)
 	while (s[i2] && s[i2] != '/')
 		i2++;
 
-	char	*path = strndup(s, i);
+	char	*path;
+	if (i >= 0 && s[i] == '/')
+		path = strndup(s, i);
+	else
+		path = ft_strdup("");
 	char	*filter = strndup(s + i + 1, i2 - i - 1);
 
 	if (*path == '\0')
-		dir = opendir(".");
-	else
-		dir = opendir(path);
+	{
+		free(path);
+		path = ft_strdup(".");
+	}
+	dir = opendir(path);
+	if (!dir)
+		return (ft_vector(sizeof(char *), 0)); // TODO: Free stuff here
 	while (1)
 	{
 		dirent = readdir(dir);
@@ -141,8 +149,11 @@ char	**wildcard(char *s, size_t start_idx)
 		for (size_t i = 0; i < ft_vector_size(files2); i++)
 		{
 			t_str	s = str("");
-			str_append(&s, path);
-			str_append(&s, "/");
+			if (strcmp(path, ".")) // TODO: this will probably also pickup `./*`, we don't want to remove the `./` here
+			{
+				str_append(&s, path);
+				str_append(&s, "/");
+			}
 			str_append(&s, files2[i].file);
 			ft_vector_add(&files3, &s.data);
 		}
@@ -155,13 +166,16 @@ char	**wildcard(char *s, size_t start_idx)
 		for (size_t i = 0; i < ft_vector_size(files2); i++)
 		{
 			t_str	s2 = str("");
-			str_append(&s2, path);
-			str_append(&s2, "/");
+			if (strcmp(path, ".")) // TODO: See top TODO
+			{
+				str_append(&s2, path);
+				str_append(&s2, "/");
+			}
 			str_append(&s2, files2[i].file);
 			str_append(&s2, "/");
 			str_append(&s2, &s[i2 + 1]);
 
-			char	**files4 = wildcard(s2.data, 0);
+			char	**files4 = wildcard(s2.data);
 			for (size_t i = 0; i < ft_vector_size(files4); i++)
 				ft_vector_add(&files3, &files4[i]);
 			ft_vector_free(files4);

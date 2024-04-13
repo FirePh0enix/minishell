@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/12 13:34:31 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/13 22:42:20 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,7 +161,7 @@ static char	**expand_tokens(t_minishell *msh, t_str *tokens)
 
 		if (ft_strchr(tok.data, '*'))
 		{
-			files = wildcard(tok.data, 0);
+			files = wildcard(tok.data);
 			if (!files)
 				return (ft_vector_deep_free(tokens2), NULL);
 			if (ft_vector_size(files) == 0)
