@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 16:22:50 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/13 18:24:46 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/13 20:04:07 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,8 +62,11 @@ static int	execute_line(t_minishell *msh, char *line)
 	}
 	dump_line(node);
 	msh->exit_code = exec_cmd(msh, node, -1, -1);
+	if (msh->exit_code != 0)
+		return (-1);
 	while (wait(&msh->exit_code) > 0) 
 		;
+	msh->exit_code = WEXITSTATUS(msh->exit_code);
 	free_node(node);
 	return (0);
 }	
