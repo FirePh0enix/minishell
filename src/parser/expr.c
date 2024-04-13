@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:34:59 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/12 15:02:35 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/13 23:52:20 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,13 +65,15 @@ static char	*heredoc(t_minishell *msh, char *eof)
 	char		filename[256];
 
 	ft_sprintf(filename, "/tmp/msh-miniseashell-heredoc-%zu", msh->heredocs++);
+	// TODO: Maybe increment files based on which one are available, to allow
+	//       multiple minishell running at the same tome.
 	fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	if (fd == -1)
 		return (NULL);
 	while (1)
 	{
 		line = readline("> ");
-		if (!strcmp(line, eof))
+		if (line == NULL || !strcmp(line, eof))
 			break ;
 		ft_putendl_fd(line, fd);
 	}
@@ -81,7 +83,8 @@ static char	*heredoc(t_minishell *msh, char *eof)
 
 static bool	isvalidfile(char *s)
 {
-	return (!(!strcmp(s, "<") || !strcmp(s, ">") || !strcmp(s, "<<") || !strcmp(s, ">>")));
+	return (!(!strcmp(s, "<") || !strcmp(s, ">") || !strcmp(s, "<<")
+		|| !strcmp(s, ">>")));
 }
 
 static t_node	*parse_cmd(t_minishell *msh, char **tokens,
@@ -133,7 +136,7 @@ static t_node	*parse_cmd(t_minishell *msh, char **tokens,
 				i++;
 				continue ;
 			}
-			node->cmd.outfile = ft_strdup(tokens[i]); // FIXME
+			node->cmd.outfile = ft_strdup(tokens[i]); // FIXME: Idk what to fix
 			if (!isvalidfile(node->cmd.outfile))
 				return (free_node(node), NULL);
 			node->cmd.append = !strcmp(tok, ">>");

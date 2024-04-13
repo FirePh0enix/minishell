@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 23:05:54 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/13 22:42:33 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/13 22:50:51 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,15 +21,8 @@ static bool	starts_with(char *s, char *start)
 	const size_t	size = ft_strlen(s);
 	const size_t	start_size = ft_strlen(start);
 
-	return (start_size == 0 || (size >= start_size && !ft_strncmp(s, start, start_size)));
-}
-
-static bool	ends_with(char *s, char *end)
-{
-	const size_t	size = ft_strlen(s);
-	const size_t	end_size = ft_strlen(end);
-
-	return (end_size == 0 || (size >= end_size && !ft_strncmp(s + size - end_size, end, end_size)));
+	return (start_size == 0
+		|| (size >= start_size && !ft_strncmp(s, start, start_size)));
 }
 
 typedef struct s_file

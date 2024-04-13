@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/13 22:42:20 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/13 23:54:49 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,8 @@ static void	write_env(t_minishell *msh, t_str *s, size_t *index, t_str tok)
 	free(env);
 }
 
-static t_str	expand_reg(t_minishell *msh, t_str tok)
+static t_str	expand_reg(t_minishell *msh, t_str tok, bool *keep_empty,
+	bool expand_env)
 {
 	t_str	s;
 	size_t	i;
@@ -88,9 +89,10 @@ static t_str	expand_reg(t_minishell *msh, t_str tok)
 		if (tok.data[i] == '"')
 		{
 			i++;
+			*keep_empty = true;
 			while (tok.data[i] && tok.data[i] != '"')
 			{
-				if (tok.data[i] == '$')
+				if (tok.data[i] == '$' && expand_env)
 					write_env(msh, &s, &i, tok);
 				else
 					str_append_n(&s, &tok.data[i++], 1);
@@ -109,7 +111,7 @@ static t_str	expand_reg(t_minishell *msh, t_str tok)
 			if (tok.data[i] != '\'')
 				return (str_free(&s), str_null());
 		}
-		else if (tok.data[i] == '$')
+		else if (tok.data[i] == '$' && expand_env)
 			write_env(msh, &s, &i, tok);
 		else
 			str_append_n(&s, &tok.data[i], 1);
@@ -130,6 +132,8 @@ static char	**expand_tokens(t_minishell *msh, t_str *tokens)
 	char	*s;
 	char	*env;
 	t_str	tok;
+
+	bool	keep_empty = false;
 
 	tokens2 = ft_vector(sizeof(char *), 0);
 	if (!tokens2)
@@ -177,15 +181,22 @@ static char	**expand_tokens(t_minishell *msh, t_str *tokens)
 						return (ft_vector_deep_free(tokens2), NULL);
 			}
 		}
-		else
+		else if (i == 0 || strcmp(tokens[i - 1].data, "<<"))
 		{
-			tok = expand_reg(msh, tok);
+			// FIXME: Should not add the token if empty expect for dquotes.
+			//        It should works now.
+			tok = expand_reg(msh, tok, &keep_empty, true); // Free tok
 			if (!tok.data)
 				return (str_free(&tok), NULL);
-			// if (tok.size == 0)
-			//	str_free(&tok);
-			// FIXME: Should not add the token if empty expect for dquotes.
-			else if (!ft_vector_add(&tokens2, &tok))
+			else if (!ft_vector_add(&tokens2, &tok.data))
+				return (ft_vector_deep_free(tokens2), NULL);
+		}
+		else
+		{
+			tok = expand_reg(msh, tok, &keep_empty, false); // Free tok
+			if (!tok.data)
+				return (str_free(&tok), NULL);
+			else if (!ft_vector_add(&tokens2, &tok.data))
 				return (ft_vector_deep_free(tokens2), NULL);
 		}
 		i++;
@@ -206,8 +217,8 @@ t_node	*parse_line(t_minishell *msh, char *line)
 	tokens = split_into_tokens(line);
 	tokens2 = expand_tokens(msh, tokens);
 	ft_vector_deep_free(tokens);
-	//for (size_t i = 0; i < ft_vector_size(tokens2); i++)
-	//	ft_fprintf(2, "tok: %s\n", tokens2[i]);
+	for (size_t i = 0; i < ft_vector_size(tokens2); i++)
+		ft_fprintf(2, "tok: %s\n", tokens2[i]);
 	expr = parse_expr(msh, tokens2, 0, ft_vector_size(tokens2) - 1);
 	ft_vector_deep_free(tokens2);
 	return (expr);
