@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/13 23:54:49 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/14 00:56:28 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ static void	write_env(t_minishell *msh, t_str *s, size_t *index, t_str tok)
 	env = getourenv(msh, envname);
 	if (env)
 		str_append(s, env);
-	*index = i2 - 1;
+	*index = i2; //- 1;
 	free(envname);
 	free(env);
 }
@@ -147,7 +147,7 @@ static char	**expand_tokens(t_minishell *msh, t_str *tokens)
 	{
 		tok = tokens[i];
 
-		if (tok.data[0] == '~')
+		if (tok.size >= 2 && tok.data[0] == '~' && tok.data[1] == '/')
 		{
 			env = getourenv(msh, "HOME");
 			if (env)
@@ -163,7 +163,7 @@ static char	**expand_tokens(t_minishell *msh, t_str *tokens)
 			}
 		}
 
-		if (ft_strchr(tok.data, '*'))
+		if (ft_strchr(tok.data, '*')) // TODO: "*" should not expands
 		{
 			files = wildcard(tok.data);
 			if (!files)
@@ -217,8 +217,8 @@ t_node	*parse_line(t_minishell *msh, char *line)
 	tokens = split_into_tokens(line);
 	tokens2 = expand_tokens(msh, tokens);
 	ft_vector_deep_free(tokens);
-	for (size_t i = 0; i < ft_vector_size(tokens2); i++)
-		ft_fprintf(2, "tok: %s\n", tokens2[i]);
+	//for (size_t i = 0; i < ft_vector_size(tokens2); i++)
+	//	ft_fprintf(2, "tok: %s\n", tokens2[i]);
 	expr = parse_expr(msh, tokens2, 0, ft_vector_size(tokens2) - 1);
 	ft_vector_deep_free(tokens2);
 	return (expr);

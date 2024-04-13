@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 14:41:09 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/13 20:02:53 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/14 00:32:01 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,18 @@
 #include <stdio.h>
 #include <unistd.h>
 
-void	exec_single_cmd(t_minishell *msh, char *argv[])
+// FIXME: Use the same function for single_cmd / prompt for consistency
+int	exec_single_cmd(t_minishell *msh, char *argv[])
 {
 	t_node	*node;
 	int		status;
+	char	*line;
 
+	line = argv[1];
+	if (isemptycmd(line))
+		exit(0);
+	else if (ft_strlen(line) == 1 && line[0] == '!')
+		exit(2);
 	node = parse_line(msh, argv[1]);
 	if (node == NULL)
 	{

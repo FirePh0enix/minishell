@@ -6,13 +6,14 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 15:28:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/10 12:21:20 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/14 00:42:27 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parser.h"
 #include "libft.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 void	free_node(t_node *node)
 {

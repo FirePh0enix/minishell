@@ -46,10 +46,21 @@ run-test-err()
 #
 
 run-test-err "| | |" "msh: parsing error" 2
+run-test-err "echo hola <<<< bonjour" "msh: parsing error" 2
+run-test-err "|||||||||||||" "msh: parsing error" 2
+run-test-err ">>|><" "msh: parsing error" 2
+
+run-test-err "\"\"e\"'c'ho 'b'\"o\"nj\"o\"'u'r\"" "msh: cannot find command \`e'c'ho 'b'onjo'u'r\`" 127
+# Too specific
+# run-test-err '?$HOME' "msh: cannot find command \`?/home/phoenixdev\`" 127
+run-test-err '$' 'msh: cannot find command `$`' 127
 
 #
 # exec
 #
+
+run-test-err "      " "" 0
+run-test-err "!" "" 2
 
 run-test-err "/bin/cd Desktop" "/bin/cd: No such file or directory" 127
 run-test-err "./Makefile" "./Makefile: Permission denied" 126
@@ -74,6 +85,12 @@ run-test "echo -----nnnnnn" "-----nnnnnn"
 run-test "\"\"''echo hola\"\"'''' que\"\"'' tal\"\"''" "hola que tal"
 run-test 'echo $9HOME' "HOME"
 run-test 'echo $HOME%' "$HOME%"
+
+run-test "echo \"hola\"" "hola"
+run-test "echo 'hola'" "hola"
+run-test 'echo "$DONTEXIST""Makefile"' "Makefile"
+run-test 'echo "$DONTEXIST""Makefile"' "Makefile"
+run-test 'echo "$DONTEXIST" "Makefile"' " Makefile"
 
 #
 # `pwd`

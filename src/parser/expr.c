@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:34:59 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/14 00:04:36 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/14 00:39:23 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -306,7 +306,7 @@ t_node	*parse_expr(t_minishell *msh, char **tokens, size_t start, size_t end)
 	}
 	else if (!strcmp(tokens[pos], "||"))
 	{
-		node = malloc(sizeof(t_node));
+		node = ft_calloc(1, sizeof(t_node));
 		if (!node)
 			return (NULL);
 		node->type = TY_OR;
@@ -320,7 +320,7 @@ t_node	*parse_expr(t_minishell *msh, char **tokens, size_t start, size_t end)
 	}
 	else if (!strcmp(tokens[pos], "&&"))
 	{
-		node = malloc(sizeof(t_node));
+		node = ft_calloc(1, sizeof(t_node));
 		if (!node)
 			return (NULL);
 		node->type = TY_AND;

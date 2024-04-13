@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 16:22:50 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/13 20:04:07 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/14 00:25:46 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,10 +47,33 @@ int	event(void)
 	return (0);
 }
 
+bool	isemptycmd(char *s)
+{
+	int	i;
+
+	if (ft_strlen(s) == 1 &&  s[0] == ':')
+		return (true);
+	i = 0;
+	while (s[i])
+	{
+		if (s[i] != ' ' && s[i] != '\t')
+			return (false);
+		i++;
+	}
+	return (true);
+}
+
 static int	execute_line(t_minishell *msh, char *line)
 {
 	t_node	*node;
 
+	if (isemptycmd(line))
+		return (free(line), 0);
+	else if (ft_strlen(line) == 1 && line[0] == '!')
+	{
+		msh->exit_code = 2;
+		return (0);
+	}
 	node = parse_line(msh, line);
 	add_our_history(msh, line);
 	free(line);
