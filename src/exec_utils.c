@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 13:30:43 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/12 16:19:59 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/13 16:15:47 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,19 +82,5 @@ int	ft_exec_cmd(char *cmd, char **av, char **envp)
 		exit(code_for_errno());
 	}
 	free(cmd);
-	return (0);
-}
-
-int	copy_file(int out, int in)
-{
-	char	buf[4096];
-	int		n;
-
-	n = 4096;
-	while (n == 4096)
-	{
-		n = read(in, buf, 4096);
-		write(out, buf, n);
-	}
 	return (0);
 }
