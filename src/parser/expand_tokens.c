@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/14 12:02:25 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/14 20:10:46 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/15 01:14:53 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,19 @@ static bool	is_just_after_heredoc(char *line, size_t i)
 	i--;
 	while (i >= 2)
 	{
+		if (ft_strlen(&line[i]) >= 2 && (!ft_strncmp(line, "&&", 2)
+				|| !ft_strncmp(line, ">>", 2) || !ft_strncmp(line, "||", 2)))
+		{
+			break ;
+		}
+		else if (ft_strlen(&line[i]) >= 2 && !ft_strncmp(line, "<<", 2))
+		{
+			return (true);
+		}
+		else if (ft_strlen(&line[i]) >= 1 && (line[i] == '|' || line[i] == '<' || line[i] == '>'))
+		{
+			break ;
+		}
 		if (line[i] == '"')
 		{
 			i--;
@@ -39,10 +52,6 @@ static bool	is_just_after_heredoc(char *line, size_t i)
 			while (i >= 2 && line[i] != '\'')
 				i--;
 		}
-		else if (i >= 2 && !ft_strncmp(line + i - 2, "<<", 2))
-			return (true);
-		else if (!isspace(line[i]))
-			break ;
 		i--;
 	}
 	return (false);
@@ -64,14 +73,26 @@ t_str	expand_str_stage1(t_minishell *msh, char *line)
 	i = 0;
 	open_quotes = false;
 	open_dquotes = false;
-	while (line[i])
+	while (i < ft_strlen(line))
 	{
 		if (line[i] == '"' && !open_quotes)
 			open_dquotes = !open_dquotes;
 		else if (line[i] == '\'' && !open_dquotes)
 			open_quotes = !open_quotes;
-	
-		if (!open_quotes && !open_dquotes
+
+		if (!open_quotes && line[i + 1] != '\0' && line[i] == '\\'
+			&& (line[i + 1] == '\\' || line[i + 1] == '$'))
+		{
+			str_append_n(&s, &line[i + 1], 1);
+			i += 2;
+			printf("<<>>\n");
+		}
+		else if (!open_quotes && !open_dquotes && line[i] == '\\')
+		{
+			printf("<>\n");
+			i++;
+		}
+		else if (!open_quotes && !open_dquotes
 			&& (i == 0 || line[i - 1] == ' ') && ((ft_strlen(&line[i]) >= 2
 			&& line[i] == '~' && line[i + 1] == '/')
 				|| (ft_strlen(&line[i]) >= 2 && line[i] == '~' && isspace(line[i]))
@@ -87,13 +108,12 @@ t_str	expand_str_stage1(t_minishell *msh, char *line)
 				str_append(&s, "~"); // TODO: Determine what to do in that case
 			i++;
 		}
-		else if (!open_quotes && line[i] == '$' && !is_just_after_heredoc(line, i))
+		else if (!open_quotes && line[i] == '$'
+			&& (is_valid_env_ch(line[i + 1]) || line[i + 1] == '?')
+			&& !is_just_after_heredoc(line, i))
 		{
 			i++;
-			if (!ft_isdigit(line[i]) && !is_valid_env_ch(line[i])
-				&& line[i] != '?')
-				str_append(&s, "$");
-			else if (ft_isdigit(line[i]) || line[i] == '*')
+			if (ft_isdigit(line[i]) || line[i] == '*')
 				i++;
 			else if (line[i] == '?')
 			{
@@ -114,6 +134,16 @@ t_str	expand_str_stage1(t_minishell *msh, char *line)
 					free(env);
 				}
 			}
+		}
+		else if (!open_quotes && !open_dquotes && line[i + 1] != '\0'
+			&& line[i] == '$' && (line[i + 1] == '\'' || line[i + 1] == '"'))
+		{
+			i++;
+		}
+		else if (!open_quotes && line[i] == '$' && line[i + 1] == '$')
+		{
+			i += 2;
+			str_append(&s, "$$");
 		}
 		else
 		{

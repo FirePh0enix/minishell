@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 16:22:50 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/14 12:13:29 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/15 00:49:28 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,17 +66,20 @@ bool	isemptycmd(char *s)
 static int	execute_line(t_minishell *msh, char *line)
 {
 	t_node	*node;
+	char	*line2;
 
-	printf("Line after expansion `%s`\n", expand_str(msh, line).data);
-	if (isemptycmd(line))
-		return (free(line), 0);
-	else if (ft_strlen(line) == 1 && line[0] == '!')
+	line2 = expand_str(msh, line).data;
+	printf("Line after expansion `%s`\n", line2);
+	if (isemptycmd(line2))
+		return (free(line), free(line2), 0);
+	else if (ft_strlen(line2) == 1 && line[0] == '!') // TODO: Remove this maybe ?
 	{
 		msh->exit_code = 2;
 		return (0);
 	}
-	node = parse_line(msh, line);
+	node = parse_line(msh, line2);
 	add_our_history(msh, line);
+	free(line2);
 	free(line);
 	if (!node)
 	{

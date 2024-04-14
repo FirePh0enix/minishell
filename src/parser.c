@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/14 20:18:46 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/15 01:16:08 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@ t_node	*parse_line(t_minishell *msh, char *line)
 	t_node	*expr;
 
 	msh->heredocs = 0;
-	line = expand_str(msh, line).data;
 	tokens = split_into_tokens(line);
 	tokens = expand_wildcards(tokens);
 	//for (size_t i = 0; i < ft_vector_size(tokens); i++)
