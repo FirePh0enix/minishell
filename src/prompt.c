@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 16:22:50 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/14 00:25:46 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/14 12:13:29 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ static int	execute_line(t_minishell *msh, char *line)
 {
 	t_node	*node;
 
+	printf("Line after expansion `%s`\n", expand_str(msh, line).data);
 	if (isemptycmd(line))
 		return (free(line), 0);
 	else if (ft_strlen(line) == 1 && line[0] == '!')

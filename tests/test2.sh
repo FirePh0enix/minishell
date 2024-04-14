@@ -76,8 +76,9 @@ run-test-err "cd src tests" "msh: too many arguments" 1
 #
 
 run-test 'echo $?' "0"
+run-test 'echo $?$?' "00"
 # Those two works but not the tests
-#run-test 'echo $?$' '0$'
+run-test 'echo $?$' '0$'
 #run-test 'echo $:$= | cat -e' '$:$=$'
 run-test 'echo [$TERM4' '['
 run-test "echo Hello World" "Hello World"

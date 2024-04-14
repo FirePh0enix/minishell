@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:34:59 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/14 00:39:23 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/14 19:01:32 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ static char	*heredoc(t_minishell *msh, char *eof)
 	fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	if (fd == -1)
 		return (NULL);
+	printf("EOF is `%s`\n", eof);
 	while (1)
 	{
 		line = readline("> ");

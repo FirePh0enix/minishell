@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/14 00:56:28 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/14 20:18:46 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,208 +19,21 @@
 #include <readline/readline.h>
 
 // -----------------------------------------------------------------------------
-// Wildcard and env expansion
-
-static char	*ft_strndup(char *s, size_t n)
-{
-	char	*s2;
-
-	s2 = ft_calloc(1, n + 1);
-	if (!s2)
-		return (NULL);
-	ft_memcpy(s2, s, n);
-	return (s2);
-}
-
-static void	write_env(t_minishell *msh, t_str *s, size_t *index, t_str tok)
-{
-	size_t	i;
-	size_t	i2;
-	char	*env;
-	char	*envname;
-
-	i = *index;
-	i++;
-	if (tok.data[i] == '?')
-	{
-		*index = i + 1;
-		env = getourenv(msh, "?");
-		str_append(s, env);
-		free(env);
-		return ;
-	}
-	else if (ft_isdigit(tok.data[i]))
-	{
-		*index = i;
-		return ;
-	}
-	else if (!ft_isalpha(tok.data[i]))
-	{
-		str_append(s, "$");
-		*index = i;
-		return ;
-	}
-	i++;
-	i2 = i;
-	while (tok.data[i2] &&
-		(ft_isalnum(tok.data[i2]) || tok.data[i2] == '-' || tok.data[i2] == '_'))
-		i2++;
-	envname = ft_strndup(&tok.data[i - 1], i2 - (i - 1));
-	if (!envname)
-		return ;
-	env = getourenv(msh, envname);
-	if (env)
-		str_append(s, env);
-	*index = i2; //- 1;
-	free(envname);
-	free(env);
-}
-
-static t_str	expand_reg(t_minishell *msh, t_str tok, bool *keep_empty,
-	bool expand_env)
-{
-	t_str	s;
-	size_t	i;
-
-	s = str("");
-	i = 0;
-	while (i < tok.size)
-	{
-		if (tok.data[i] == '"')
-		{
-			i++;
-			*keep_empty = true;
-			while (tok.data[i] && tok.data[i] != '"')
-			{
-				if (tok.data[i] == '$' && expand_env)
-					write_env(msh, &s, &i, tok);
-				else
-					str_append_n(&s, &tok.data[i++], 1);
-			}
-			if (tok.data[i] != '"')
-				return (str_free(&s), str_null());
-		}
-		else if (tok.data[i] == '\'')
-		{
-			i++;
-			while (tok.data[i] && tok.data[i] != '\'')
-			{
-				str_append_n(&s, &tok.data[i], 1);
-				i++;
-			}
-			if (tok.data[i] != '\'')
-				return (str_free(&s), str_null());
-		}
-		else if (tok.data[i] == '$' && expand_env)
-			write_env(msh, &s, &i, tok);
-		else
-			str_append_n(&s, &tok.data[i], 1);
-		i++;
-	}
-	return (s);
-}
-
-/*
- * Expand metacharacters like *, ~ and $
- */
-static char	**expand_tokens(t_minishell *msh, t_str *tokens)
-{
-	size_t	i;
-	size_t	j;
-	char	**tokens2;
-	char	**files;
-	char	*s;
-	char	*env;
-	t_str	tok;
-
-	bool	keep_empty = false;
-
-	tokens2 = ft_vector(sizeof(char *), 0);
-	if (!tokens2)
-		return (NULL);
-	i = 0;
-	// TODO/FIXME:
-	// - First expand `~`
-	// - Then env variables
-	// - Then wildcards
-	while (i < ft_vector_size(tokens))
-	{
-		tok = tokens[i];
-
-		if (tok.size >= 2 && tok.data[0] == '~' && tok.data[1] == '/')
-		{
-			env = getourenv(msh, "HOME");
-			if (env)
-			{
-				tok = str(env);
-				str_append(&tok, tokens[i].data + 1);
-				free(env);
-			}
-			else
-			{
-				// FIXME: What to do here ?
-				return (NULL);
-			}
-		}
-
-		if (ft_strchr(tok.data, '*')) // TODO: "*" should not expands
-		{
-			files = wildcard(tok.data);
-			if (!files)
-				return (ft_vector_deep_free(tokens2), NULL);
-			if (ft_vector_size(files) == 0)
-			{
-				s = ft_strdup(tok.data);
-				ft_vector_add(&tokens2, &s);
-			}
-			else
-			{
-				j = 0;
-				while (j < ft_vector_size(files))
-					if (!ft_vector_add(&tokens2, &files[j++]))
-						return (ft_vector_deep_free(tokens2), NULL);
-			}
-		}
-		else if (i == 0 || strcmp(tokens[i - 1].data, "<<"))
-		{
-			// FIXME: Should not add the token if empty expect for dquotes.
-			//        It should works now.
-			tok = expand_reg(msh, tok, &keep_empty, true); // Free tok
-			if (!tok.data)
-				return (str_free(&tok), NULL);
-			else if (!ft_vector_add(&tokens2, &tok.data))
-				return (ft_vector_deep_free(tokens2), NULL);
-		}
-		else
-		{
-			tok = expand_reg(msh, tok, &keep_empty, false); // Free tok
-			if (!tok.data)
-				return (str_free(&tok), NULL);
-			else if (!ft_vector_add(&tokens2, &tok.data))
-				return (ft_vector_deep_free(tokens2), NULL);
-		}
-		i++;
-	}
-	return (tokens2);
-}
-
-// -----------------------------------------------------------------------------
 // Line parsing
 
 t_node	*parse_line(t_minishell *msh, char *line)
 {
-	t_str	*tokens;
-	char	**tokens2;
+	char	**tokens;
 	t_node	*expr;
 
 	msh->heredocs = 0;
+	line = expand_str(msh, line).data;
 	tokens = split_into_tokens(line);
-	tokens2 = expand_tokens(msh, tokens);
+	tokens = expand_wildcards(tokens);
+	//for (size_t i = 0; i < ft_vector_size(tokens); i++)
+	//	ft_fprintf(2, "tok: %s\n", tokens[i]);
+	expr = parse_expr(msh, tokens, 0, ft_vector_size(tokens) - 1);
 	ft_vector_deep_free(tokens);
-	//for (size_t i = 0; i < ft_vector_size(tokens2); i++)
-	//	ft_fprintf(2, "tok: %s\n", tokens2[i]);
-	expr = parse_expr(msh, tokens2, 0, ft_vector_size(tokens2) - 1);
-	ft_vector_deep_free(tokens2);
 	return (expr);
 }
 

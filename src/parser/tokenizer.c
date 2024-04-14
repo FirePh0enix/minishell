@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:31:32 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/13 23:21:03 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/14 20:17:36 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,92 +15,90 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
-t_str	next_token(char *line, size_t *index)
+static char	*next_token(char *line, size_t *index)
 {
 	t_str	s;
 	size_t	i;
 
 	i = *index;
-	if (line[i] == '\0')
-		return (str_null());
-	s = str("");
-	while (line[i] == ' ')
+	if (i >= ft_strlen(line))
+		return (NULL);
+
+	while (line[i] && (line[i] == ' ' || line[i] == '\t'))
 		i++;
-	if (line[i] == '|' || line[i] == '&' || line[i] == '>' || line[i] == '<'
-		|| line[i] == '(' || line[i] == ')')
+
+	*index = i;
+	if (line[i] == '\0')
+		return (NULL);
+
+	s = str("");
+
+	if (ft_strlen(&line[i]) >= 2
+		&& (!ft_strncmp(&line[i], "<<", 2) || !ft_strncmp(&line[i], ">>", 2)
+			|| !ft_strncmp(&line[i], "&&", 2) || !ft_strncmp(&line[i], "||", 2)))
 	{
-		if (i + 1 < ft_strlen(line)
-			&& (!ft_strncmp(&line[i], "&&", 2) || !ft_strncmp(&line[i], "||", 2) || !ft_strncmp(&line[i], ">>", 2) || !ft_strncmp(&line[i], "<<", 2)))
+		str_append_n(&s, &line[i], 2);
+		*index = i + 2;
+		return (s.data);
+	}
+	else if (ft_strlen(&line[i]) >= 1
+		&& (line[i] == '<' || line[i] == '>' || line[i] == '|'
+			|| line[i] == '(' || line[i] == ')'))
+	{
+		str_append_n(&s, &line[i], 1);
+		*index = i + 1;
+		return (s.data);
+	}
+
+	while (i < ft_strlen(line) && !isspace(line[i]) && line[i] != '<'
+		&& line[i] != '>' && line[i] != '|' && line[i] != '&' && line[i] != '('
+		&& line[i] != ')')
+	{
+		if (line[i] == '"' || line[i] == '\'')
 		{
-			if (!str_append_n(&s, &line[i], 2))
-				return (str_free(&s), str_null());
-			i += 2;
+			*index = i;
+			i++;
+			while (line[i])
+			{
+				if ((line[i] == '"' && line[*index] == '"') || (line[i] == '\'' && line[*index] == '\''))
+				{
+					// i++;
+					break ;
+				}
+				str_append_n(&s, &line[i], 1);
+				i++;
+			}
 		}
 		else
 		{
-			if (!str_append_n(&s, &line[i], 1))
-				return (str_free(&s), str_null());
-			i++;
-		}
-		*index = i;
-		return (s);
-	}
-	while (i < ft_strlen(line))
-	{
-		if (line[i] == ' ' || line[i] == '|' || line[i] == '>'
-			|| line[i] == '<' || line[i] == '(' || line[i] == ')')
-			break ;
-		if (!str_append_n(&s, &line[i], 1))
-			return (str_free(&s), str_null());
-		if (line[i] == '"')
-		{
-			i++;
-			while (i < ft_strlen(line) && line[i] != '"')
-			{
-				if (!str_append_n(&s, &line[i], 1))
-					return (str_free(&s), str_null());
-				i++;
-			}
-			if (!str_append(&s, "\""))
-				return (str_free(&s), str_null());
-		}
-		else if (line[i] == '\'')
-		{
-			i++;
-			while (i < ft_strlen(line) && line[i] != '\'')
-			{
-				if (!str_append_n(&s, &line[i], 1))
-					return (str_free(&s), str_null());
-				i++;
-			}
-			if (!str_append(&s, "'"))
-				return (str_free(&s), str_null());
+			str_append_n(&s, &line[i], 1);
 		}
 		i++;
 	}
+
 	*index = i;
-	return (s);
+	return (s.data);
 }
 
-t_str	*split_into_tokens(char *line)
+char	**split_into_tokens(char *line)
 {
 	size_t	index;
-	t_str	*tokens;
-	t_str	tok;
+	char	**tokens;
+	char	*tok;
 
-	tokens = ft_vector(sizeof(t_str), 0);
+	tokens = ft_vector(sizeof(char *), 0);
 	if (!tokens)
 		return (NULL);
 	index = 0;
 	while (1)
 	{
 		tok = next_token(line, &index);
-		if (!tok.data)
+		if (!tok)
 			break ;
-		if(!ft_vector_add(&tokens, &tok.data))
+		if(!ft_vector_add(&tokens, &tok))
 			return (ft_vector_deep_free(tokens), NULL);
 	}
 	return (tokens);
 }
-

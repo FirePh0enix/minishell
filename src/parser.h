@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:25:25 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/09 13:50:23 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/14 17:22:55 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,10 +52,12 @@ typedef struct s_node
 t_node	*parse_line(t_minishell *minishell, char *line);
 void	dump_line(t_node *node);
 
-t_str	next_token(char *line, size_t *index);
-t_str	*split_into_tokens(char *line);
+char	**split_into_tokens(char *line);
 
 t_node	*parse_expr(t_minishell *msh, char **tokens, size_t start, size_t end);
 void	free_node(t_node *node);
+
+t_str	expand_str(t_minishell *msh, char *line);
+char	**expand_wildcards(char **tokens);
 
 #endif

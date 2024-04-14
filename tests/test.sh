@@ -7,7 +7,7 @@ TESTS=(
 	parenthesis-with-redirections
 )
 
-SRCS="tests/lib/assert.c src/parser.c src/error.c src/signal.c src/history.c src/exec.c src/exec_utils.c src/handle_type.c src/builtins_utils.c src/builtins/echo.c src/builtins/cd.c src/builtins/pwd.c src/builtins/export.c src/builtins/unset.c src/builtins/env.c src/builtins/exit.c src/dup.c src/close_fd.c src/prompt.c src/wildcard.c src/env.c src/parser/expr.c src/parser/tokenizer.c src/parser/free_node.c"
+SRCS="tests/lib/assert.c src/parser.c src/error.c src/signal.c src/history.c src/exec.c src/exec_utils.c src/handle_type.c src/builtins_utils.c src/builtins/echo.c src/builtins/cd.c src/builtins/pwd.c src/builtins/export.c src/builtins/unset.c src/builtins/env.c src/builtins/exit.c src/dup.c src/close_fd.c src/prompt.c src/wildcard.c src/env.c src/parser/expr.c src/parser/tokenizer.c src/parser/free_node.c src/parser/expand_tokens.c"
 
 GREEN="\e[42m"
 RED="\e[101m"

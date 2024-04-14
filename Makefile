@@ -6,7 +6,7 @@
 #    By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/22 14:41:53 by ledelbec          #+#    #+#              #
-#    Updated: 2024/04/13 19:28:12 by vopekdas         ###   ########.fr        #
+#    Updated: 2024/04/14 12:13:47 by ledelbec         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,6 +17,7 @@ SRCS=\
 	src/parser/tokenizer.c \
 	src/parser/expr.c \
 	src/parser/free_node.c \
+	src/parser/expand_tokens.c \
 	src/wildcard.c \
 	src/env.c \
 	src/exec_utils.c \
