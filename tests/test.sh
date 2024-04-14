@@ -17,7 +17,7 @@ RESET="\e[0m"
 run-test()
 {
 	clang -o minishell.test tests/$1.c $SRCS libft/libft.a -lreadline -Ilibft -Isrc -g
-	OUTPUT=`./minishell.test 2> /dev/null`
+	OUTPUT=`./minishell.test 2>&1`
 
 	if [ $? -eq 0 ]; then
 		echo -e "Test \`$BOLD$1$RESET\` is a ${GREEN}Success${RESET}"

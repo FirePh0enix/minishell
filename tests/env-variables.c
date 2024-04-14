@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/27 11:52:22 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/03 12:53:19 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/15 01:51:07 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ int	main()
 	s = NULL;
 	ft_vector_add(&msh.env, &s);
 	setup_node(&node);
+	line = expand_str(&msh, line).data;
 	assert_node(line, parse_line(&msh, line), &node);
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/14 12:02:25 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/15 01:14:53 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/15 01:24:59 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,11 +85,9 @@ t_str	expand_str_stage1(t_minishell *msh, char *line)
 		{
 			str_append_n(&s, &line[i + 1], 1);
 			i += 2;
-			printf("<<>>\n");
 		}
 		else if (!open_quotes && !open_dquotes && line[i] == '\\')
 		{
-			printf("<>\n");
 			i++;
 		}
 		else if (!open_quotes && !open_dquotes

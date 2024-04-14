@@ -101,8 +101,8 @@ run-test 'echo \$HOME' '$HOME'
 # Those tests don't run properly but works when doing them manually
 run-test 'echo \n' 'n'
 #run-test "echo \"\\n\"" '\n'
-#run-test 'echo "\\"' '\'
-run-test "echo '\\\\\\\\'" '\\'
+run-test 'echo "\\"' '\'
+run-test "echo '\\\\'" '\\'
 
 run-test "echo $\"HOME\"" "HOME"
 run-test "echo $'Hello'" "Hello"
