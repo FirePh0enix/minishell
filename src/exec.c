@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/13 20:13:07 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/15 14:10:52 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ int	create_child(t_minishell *msh, t_node *node, int in, int out)
 			ft_exec_cmd(cmd, node->cmd.argv, msh->env);
 		exit(0);
 	}
+	ft_vector_add(&msh->child_pids, &pid);
 	close_fd_parent(in, out);
 	return (0);
 }
