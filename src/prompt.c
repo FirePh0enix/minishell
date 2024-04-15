@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 16:22:50 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/15 15:20:02 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/15 15:22:57 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,22 +64,6 @@ bool	isemptycmd(char *s)
 	return (true);
 }
 
-void	kill_children(t_minishell *msh)
-{
-	size_t	i;
-
-	i = 0;
-	if (g_signum != -1)
-	{
-		while (i < ft_vector_size(msh->child_pids))
-		{
-			kill(msh->child_pids[i], g_signum);
-			i++;
-		}
-		g_signum = -1;
-	}
-}
-
 static int	execute_line(t_minishell *msh, char *line)
 {
 	t_node	*node;
@@ -114,9 +98,7 @@ static int	execute_line(t_minishell *msh, char *line)
 	msh->exit_code = exec_cmd(msh, node, -1, -1);
 	if (msh->exit_code != 0)
 		return (-1);
-	while (wait(&msh->exit_code) > 0)
-		kill_children(msh);
-	msh->exit_code = WEXITSTATUS(msh->exit_code);
+	msh->exit_code = wait_for_children(msh);
 	free_node(node);
 	return (0);
 }

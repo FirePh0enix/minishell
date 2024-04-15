@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 14:41:09 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/15 15:19:36 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/15 15:27:49 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,7 @@ int	exec_single_cmd(t_minishell *msh, char *argv[])
 	status = exec_cmd(msh, node, -1, -1);
 	if (status != 0)
 		exit(status);
-	while (wait(&status) > 0)
-		;
-	status = WEXITSTATUS(status);
+	status = wait_for_children(msh);
 	free_node(node);
 	exit(status);
 }

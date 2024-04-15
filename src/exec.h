@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:54:47 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/13 19:37:46 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/15 15:22:36 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,4 +41,7 @@ int		handle_pipe(t_minishell *msh, t_node *node, int in, int out);
 int		handle_or(t_minishell *msh, t_node *node, int in, int out);
 int		handle_and(t_minishell *msh, t_node *node, int in, int out);
 int		handle_if_not_cmd(t_minishell *msh, t_node *node, int in, int out);
+
+int		wait_for_children(t_minishell *msh);
+
 #endif

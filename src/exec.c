@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/15 15:19:22 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/15 15:23:26 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ int	wait_for_children(t_minishell *msh)
 	size_t	i;
 	int		status;
 
+	status = 0;
 	while (wait(&status) > 0)
 	{
 		i = 0;
@@ -89,4 +90,5 @@ int	wait_for_children(t_minishell *msh)
 			g_signum = -1;
 		}
 	}
+	return (WEXITSTATUS(status));
 }

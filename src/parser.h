@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:25:25 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/14 17:22:55 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/15 16:02:10 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ typedef enum e_type
 	TY_PIPE,
 	TY_OR,
 	TY_AND,
+	TY_PARENT,
 }	t_type;
 
 typedef struct s_node
@@ -46,6 +47,10 @@ typedef struct s_node
 			struct s_node	*left;
 			struct s_node	*right;
 		}	pipe;
+		struct
+		{
+			struct s_node	*node;
+		}	parent;
 	};
 }	t_node;
 

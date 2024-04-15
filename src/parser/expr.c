@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:34:59 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/15 15:11:15 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/15 16:06:06 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,23 +214,36 @@ static t_node	*parse_parent(t_minishell *msh, char **tokens, size_t start, size_
 	int	parent_start;
 	int	parent_end;
 
+	int	open_parents;
+
 	parent_start = - 1;
 	parent_end = -1;
+	open_parents = 0;
 	for (size_t i = start; i <= end; i++)
 	{
 		if (!strcmp(tokens[i], "("))
 		{
-			if (parent_start != -1)
-				return (NULL);
-			parent_start = i;
+			if (parent_start == -1)
+				parent_start = i;
+			else
+				open_parents++;
 		}
 		else if (!strcmp(tokens[i], ")"))
 		{
-			if (parent_end != -1)
-				return (NULL);
-			parent_end = i;
+			if (open_parents == 0 && parent_end == -1)
+				parent_end = i;
+			else
+				open_parents--;
 		}
 	}
+
+	/* 
+	 * FIXME:
+	 * /!\ `(ls) (echo)` is accepted by the parser and exec `ls` /!\
+	 */
+
+	if (open_parents != 0)
+		return (NULL);
 
 	if (parent_start == -1 && parent_end == -1)
 		return (parse_cmd(msh, tokens, start, end));
@@ -240,8 +253,11 @@ static t_node	*parse_parent(t_minishell *msh, char **tokens, size_t start, size_
 	// Then parse redirections here
 	char	*tok;
 
+	// FIXME:
+	// Redirection are not allowed before the parenthesis
+
 	append = false;
-	for (size_t i = start; i < end; i++)
+	for (size_t i = start; i <= end; i++)
 	{
 		if (i >= (size_t)parent_start && i <= (size_t)parent_end)
 			continue ;
@@ -251,7 +267,7 @@ static t_node	*parse_parent(t_minishell *msh, char **tokens, size_t start, size_
 			if (i + 1 > end - start)
 				return (NULL);
 			i++;
-			infile = ft_strdup(tokens[i + start]); // TODO check heredoc priority
+			infile = ft_strdup(tokens[i]); // TODO check heredoc priority
 		}
 		else if (!strcmp(tok, "<<"))
 		{
@@ -283,13 +299,19 @@ static t_node	*parse_parent(t_minishell *msh, char **tokens, size_t start, size_
 		apply_out(msh, node, outfile, append);
 	if (infile != NULL)
 		apply_in(msh, node, infile);
-	return (node);
+
+	t_node	*parent = ft_calloc(1, sizeof(t_node));
+	parent->type = TY_PARENT;
+	parent->parent.node = node;
+
+	return (parent);
 }
 
 t_node	*parse_expr(t_minishell *msh, char **tokens, size_t start, size_t end)
 {
 	int			pos;
 	t_node	*node;
+
 
 	pos = get_op(tokens, start, end);
 	if (pos == -1)
