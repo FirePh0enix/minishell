@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/13 20:13:07 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/15 15:15:52 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,4 +68,24 @@ int	exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 			return (create_child(msh, node, parent_in, parent_out));
 	}
 	return (handle_if_not_cmd(msh, node, parent_in, parent_out));
+}
+
+int	wait_for_children(t_minishell *msh)
+{
+	size_t	i;
+	int		status;
+
+	while (wait(&status) > 0)
+	{
+		i = 0;
+		if (g_signum != -1)
+		{
+			while (i < ft_vector_size(msh->child_pids))
+			{
+				kill(msh->child_pids[i], g_signum);
+				i++;
+			}
+			g_signum = -1;
+		}
+	}
 }

@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/28 15:13:31 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/12 13:25:40 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/15 14:38:25 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,11 @@ int	builtin_env(t_minishell *msh, int parent_in, int parent_out, t_node *node)
 	{
 		i = -1;
 		while (msh->env[++i])
-			ft_putendl_fd(msh->env[i], file);
+		{
+			if (*(ft_strchr(msh->env[i], '=') + 1) != '\0')
+				ft_putendl_fd(msh->env[i], file);
+		}
+		ft_putendl_fd("_=/usr/bin/env", file);
 	}
 	if (node->cmd.outfile)
 		close(file);

@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 16:22:50 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/15 00:49:28 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/15 12:03:45 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,13 @@ static int	execute_line(t_minishell *msh, char *line)
 	if (msh->exit_code != 0)
 		return (-1);
 	while (wait(&msh->exit_code) > 0) 
-		;
+	{
+		/*if (g_signum != -1)
+		{
+			kill(pid, g_signum);
+			g_signum = -1;
+		}*/
+	}
 	msh->exit_code = WEXITSTATUS(msh->exit_code);
 	free_node(node);
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/28 15:26:05 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/12 16:38:17 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/15 14:43:31 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,11 @@ int	builtin_export(t_minishell *msh, int ac, char *av[], int in, int out, t_node
 		// TODO:
 		i = 0;
 		while (msh->env[i])
-			ft_fprintf(file, "declare -x %s\n", msh->env[i++]);
+		{
+			if (*(ft_strchr(msh->env[i], '=') + 1) != '\0')
+				ft_fprintf(file, "declare -x %s\n", msh->env[i]);
+			i++;
+		}
 		return (exit_code);
 	}
 	if (in != -1 || out != -1)

@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 14:41:09 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/15 01:27:06 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/15 14:34:11 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,11 +60,11 @@ int	main(int argc, char *argv[], char *envp[])
 
 	if (ft_vector_size(msh.env) == 1)
 	{
+		setourenv(&msh, "OLDPWD", "");
 		s2 = getcwd(NULL, 0);
 		setourenv(&msh, "PWD", s2);
 		free(s2);
 		setourenv(&msh, "SHLVL", "1");
-		setourenv(&msh, "_", "/usr/bin/env"); // TODO: could be better
 	}
 	else
 	{
