@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 14:41:09 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/15 01:27:06 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/15 14:03:14 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,8 +54,8 @@ int	main(int argc, char *argv[], char *envp[])
 
 	(void) argc;
 	(void) argv;
+	ft_bzero(&msh, sizeof(t_minishell));
 	msh.exit_code = 0;
-	msh.open_fds = ft_vector(sizeof(int), 0);
 	copy_env(&msh, envp);
 
 	if (ft_vector_size(msh.env) == 1)

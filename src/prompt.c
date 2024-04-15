@@ -6,10 +6,11 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 16:22:50 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/15 00:49:28 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/15 14:02:30 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stddef.h>
 #include <stdio.h>
 #include <readline/readline.h>
 #include <readline/history.h>
@@ -63,11 +64,33 @@ bool	isemptycmd(char *s)
 	return (true);
 }
 
+void	kill_children(t_minishell *msh)
+{
+	size_t	i;
+
+	i = 0;
+	if (g_signum != -1)
+	{
+		while (i < ft_vector_size(msh->child_pids))
+		{
+			kill(msh->child_pids[i], g_signum);
+			i++;
+		}
+		g_signum = -1;
+	}
+}
+
 static int	execute_line(t_minishell *msh, char *line)
 {
 	t_node	*node;
 	char	*line2;
 
+	if (msh->open_fds)
+		ft_vector_free(msh->open_fds);
+	msh->open_fds = ft_vector(sizeof(int), 0);
+	if (msh->child_pids)
+		ft_vector_free(msh->child_pids);
+	msh->child_pids = ft_vector(sizeof(pid_t), 1);
 	line2 = expand_str(msh, line).data;
 	printf("Line after expansion `%s`\n", line2);
 	if (isemptycmd(line2))
@@ -92,7 +115,7 @@ static int	execute_line(t_minishell *msh, char *line)
 	if (msh->exit_code != 0)
 		return (-1);
 	while (wait(&msh->exit_code) > 0) 
-		;
+		kill_children(msh);
 	msh->exit_code = WEXITSTATUS(msh->exit_code);
 	free_node(node);
 	return (0);
@@ -106,7 +129,6 @@ void	prompt(t_minishell *msh)
 	rl_event_hook = event;
 	while (1)
 	{
-		ft_vector_clear(msh->open_fds);
 		if (g_signum == SIGINT)
 		{
 			g_signum = -1;

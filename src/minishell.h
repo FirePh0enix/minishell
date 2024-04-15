@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:24:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/14 00:23:55 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/15 13:42:30 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ typedef struct s_minishell
 	size_t	heredocs;
 
 	int		*open_fds;
+	pid_t	*child_pids;
 }	t_minishell;
 
 extern int	g_signum;
