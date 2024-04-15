@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:24:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/15 14:29:28 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/15 15:19:44 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ typedef struct s_minishell
 	size_t	heredocs;
 
 	int		*open_fds;
+	pid_t	*child_pids;
 }	t_minishell;
 
 # define EXIT_ERRNUM "msh: exit: `%s' is not a numeric argument\n"

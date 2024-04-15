@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 14:41:09 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/15 14:34:11 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/15 15:19:36 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@ int	exec_single_cmd(t_minishell *msh, char *argv[])
 	int		status;
 	char	*line;
 
+	msh->open_fds = ft_vector(sizeof(int), 0);
+	msh->child_pids = ft_vector(sizeof(pid_t), 1);
 	line = argv[1];
 	line = expand_str(msh, line).data;
 	if (isemptycmd(line))
@@ -40,7 +42,7 @@ int	exec_single_cmd(t_minishell *msh, char *argv[])
 	status = exec_cmd(msh, node, -1, -1);
 	if (status != 0)
 		exit(status);
-	while (wait(&status) > 0) 
+	while (wait(&status) > 0)
 		;
 	status = WEXITSTATUS(status);
 	free_node(node);
@@ -54,8 +56,8 @@ int	main(int argc, char *argv[], char *envp[])
 
 	(void) argc;
 	(void) argv;
+	ft_bzero(&msh, sizeof(t_minishell));
 	msh.exit_code = 0;
-	msh.open_fds = ft_vector(sizeof(int), 0);
 	copy_env(&msh, envp);
 
 	if (ft_vector_size(msh.env) == 1)
