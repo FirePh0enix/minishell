@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 14:33:06 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/12 13:43:12 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/15 18:17:01 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,62 +14,89 @@
 #include "minishell.h"
 #include <unistd.h>
 
-int	builtin_cd(t_minishell *msh, int ac, char **av, int parent_in, int parent_out, t_node *node)
+int	create_outfile(t_node *node)
+{
+	int	flags;
+	int	file;
+
+	flags = O_WRONLY | O_CREAT;
+	if (node->cmd.append)
+		flags |= O_APPEND;
+	else
+		flags |= O_TRUNC;
+	file = open(node->cmd.outfile, flags, 0666);
+	return (file);
+}
+
+int	no_arg(t_minishell *msh)
+{
+	char	*home;
+	char	*pwd;
+
+	home = getourenv(msh, "HOME");
+	if (!home)
+		return (msh_builtin_error("cd", "HOME not set"), 1);
+	pwd = getcwd(NULL, 0);
+	setourenv(msh, "OLDPWD", pwd);
+	chdir(home);
+	pwd = getcwd(NULL, 0);
+	setourenv(msh, "PWD", pwd);
+	if (errno != 0)
+		perror("cd");
+	free(home);
+	return (0);
+}
+
+int	no_minus(t_minishell *msh, int file)
 {
 	char	*oldpwd;
 	char	*pwd;
-	int		flags;
+
+	oldpwd = getourenv(msh, "OLDPWD");
+	pwd = getcwd(NULL, 0);
+	chdir(oldpwd);
+	setourenv(msh, "OLDPWD", pwd);
+	pwd = getcwd(NULL, 0);
+	setourenv(msh, "PWD", pwd);
+	ft_putendl_fd(pwd, file);
+	if (errno != 0)
+		perror("cd");
+	return (0);
+}
+
+int	minus(t_minishell *msh, t_node *node)
+{
+	char	*pwd;
+
+	pwd = getcwd(NULL, 0);
+	setourenv(msh, "OLDPWD", pwd);
+	chdir(node->cmd.argv[1]);
+	pwd = getcwd(NULL, 0);
+	setourenv(msh, "PWD", pwd);
+	if (errno != 0)
+		perror("cd");
+	return (0);
+}
+
+int	builtin_cd(t_minishell *msh, int parent_in, int parent_out, t_node *node)
+{
 	int		file;
 
-	if (ac > 2)
+	if (node->cmd.argc > 2)
 		return (msh_builtin_error("msh", "too many arguments"), 1);
 	if (parent_out != -1 || parent_in != -1)
 		return (0);
-	flags = O_WRONLY | O_CREAT;
 	file = STDOUT_FILENO;
 	if (node->cmd.outfile)
 	{
-		if (node->cmd.append)
-			flags |= O_APPEND;
-		else
-			flags |= O_TRUNC;
-		file = open(node->cmd.outfile, flags, 0666);
+		file = create_outfile(node);
+		close (file);
 	}
-	if (ac == 1)
-	{
-		char	*home = getourenv(msh, "HOME");
-		if (!home)
-			return (msh_builtin_error("cd", "HOME not set"), 1);
-		pwd = getcwd(NULL, 0);
-		setourenv(msh, "OLDPWD", pwd);
-		chdir(home);
-		pwd = getcwd(NULL, 0);
-		setourenv(msh, "PWD", pwd);
-		if (errno != 0)
-			perror("cd");
-		free(home);
-	}
-	else if (!strcmp(av[1], "-"))
-	{
-		oldpwd = getourenv(msh, "OLDPWD");
-		pwd = getcwd(NULL, 0);
-		chdir(oldpwd);
-		setourenv(msh, "OLDPWD", pwd);
-		pwd = getcwd(NULL, 0);
-		setourenv(msh, "PWD", pwd);
-		ft_putendl_fd(pwd, file);
-		if (errno != 0)
-			perror("cd");
-	}
+	if (node->cmd.argc == 1)
+		no_arg(msh);
+	else if (!strcmp(node->cmd.argv[1], "-"))
+		no_minus(msh, file);
 	else
-	{
-		pwd = getcwd(NULL, 0);
-		setourenv(msh, "OLDPWD", pwd);
-		chdir(av[1]);
-		pwd = getcwd(NULL, 0);
-		setourenv(msh, "PWD", pwd);
-		if (errno != 0)
-			perror("cd");
-	}
+		minus(msh, node);
 	return (0);
 }
