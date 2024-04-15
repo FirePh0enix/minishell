@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 14:41:09 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/15 14:03:14 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/15 14:16:25 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@ int	exec_single_cmd(t_minishell *msh, char *argv[])
 	int		status;
 	char	*line;
 
+	msh->open_fds = ft_vector(sizeof(int), 0);
+	msh->child_pids = ft_vector(sizeof(pid_t), 1);
 	line = argv[1];
 	line = expand_str(msh, line).data;
 	if (isemptycmd(line))
