@@ -45,6 +45,21 @@ run-test-err()
 	fi
 }
 
+run-test-status()
+{
+	OUTPUT=`./minishell "$1" 2>&1`
+	CMD_STATUS=$?
+
+	if [[ "$CMD_STATUS" == "$2" ]]; then
+		echo -e "Test err \`$BOLD$1$RESET\` is a ${GREEN}Success${RESET}"
+	else
+		echo -e "Test err \`$BOLD$1$RESET\` is a ${RED}Failure${RESET}"
+		echo -e "Expected \`$BOLD$2$RESET\` but got \`$BOLD$CMD_STATUS$RESET\`"
+		echo
+		EXIT_CODE=1
+	fi
+}
+
 #
 # parser
 #
@@ -58,6 +73,10 @@ run-test-err "\"\"e\"'c'ho 'b'\"o\"nj\"o\"'u'r\"" "msh: cannot find command \`e'
 # Too specific
 # run-test-err '?$HOME' "msh: cannot find command \`?/home/phoenixdev\`" 127
 run-test-err '$' 'msh: cannot find command `$`' 127
+
+export HOLA="s -la"
+run-test-status 'l$HOLA' 0
+run-test-err 'l"$HOLA"' "msh: cannot find command \`ls -la\`" 127
 
 #
 # exec

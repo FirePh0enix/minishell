@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 14:41:09 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/15 15:27:49 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/16 13:14:01 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,9 @@ int	main(int argc, char *argv[], char *envp[])
 		setourenv(&msh, "PWD", s2);
 		free(s2);
 		setourenv(&msh, "SHLVL", "1");
+		// FIXME: This could be better:
+		//        valgrind seems to set it to /usr/bin/valgrind when running it
+		setourenv(&msh, "_", "/usr/bin/env");
 	}
 	else
 	{

@@ -6,25 +6,12 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/27 14:24:38 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/04 13:49:03 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/16 13:09:37 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #include "minishell.h"
-
-static bool	is_valid(char *name)
-{
-	if (ft_strlen(name) == 0)
-		return (false);
-	while (*name)
-	{
-		if (!ft_isalnum(*name))
-			return (false);
-		name++;
-	}
-	return (true);
-}
 
 static int	set_exit_code(int *exit_code, int exit_code2)
 {
@@ -38,7 +25,7 @@ static int	unset_env(t_minishell *msh, char *name, int *exit_code)
 	const size_t	size = ft_strlen(name);
 	int				i;
 
-	if (!is_valid(name))
+	if (!is_valid_var_name(name))
 	{
 		msh_builtin_error("unset", "invalid parameter name");
 		set_exit_code(exit_code, 1);
@@ -81,7 +68,7 @@ int	builtin_unset(t_minishell *msh, int argc, char *argv[], t_node *node)
 			flags |= O_TRUNC;
 		file = open(node->cmd.outfile, flags, 0666);
 		if (file == -1)
-			return (msh_builtin_error("unset", "unable to open outfile"), -1);
+			return (msh_errno("unset"), -1);
 		close(file);
 	}
 	i = 0;
