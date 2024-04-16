@@ -6,15 +6,13 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 14:33:06 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/15 18:17:01 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/16 13:08:30 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
 #include "minishell.h"
-#include <unistd.h>
 
-int	create_outfile(t_node *node)
+static int	create_outfile(t_node *node)
 {
 	int	flags;
 	int	file;
@@ -28,7 +26,7 @@ int	create_outfile(t_node *node)
 	return (file);
 }
 
-int	no_arg(t_minishell *msh)
+static int	no_arg(t_minishell *msh)
 {
 	char	*home;
 	char	*pwd;
@@ -47,7 +45,7 @@ int	no_arg(t_minishell *msh)
 	return (0);
 }
 
-int	no_minus(t_minishell *msh, int file)
+static int	no_minus(t_minishell *msh, int file)
 {
 	char	*oldpwd;
 	char	*pwd;
@@ -64,7 +62,7 @@ int	no_minus(t_minishell *msh, int file)
 	return (0);
 }
 
-int	minus(t_minishell *msh, t_node *node)
+static int	minus(t_minishell *msh, t_node *node)
 {
 	char	*pwd;
 

@@ -6,13 +6,11 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/28 15:13:31 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/15 14:38:25 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/16 13:20:05 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "exec.h"
 #include "minishell.h"
-#include "parser.h"
 
 static t_node	*create_node(t_minishell *msh, t_node *node)
 {
@@ -40,10 +38,37 @@ static t_node	*create_node(t_minishell *msh, t_node *node)
 	return (node2);
 }
 
+static	int	create_outfile(t_node *node)
+{
+	int	flags;
+	int	file;
+
+	flags = O_WRONLY | O_CREAT;
+	if (node->cmd.append)
+		flags |= O_APPEND;
+	else
+		flags |= O_TRUNC;
+	file = open(node->cmd.outfile, flags, 0666);
+	if (file == -1)
+		return (msh_error("unable to open outfile"), -1);
+	return (file);
+}
+
+static	void	no_arg(t_minishell *msh, int file)
+{
+	int	i;
+
+	i = -1;
+	while (msh->env[++i])
+	{
+		if (*(ft_strchr(msh->env[i], '=') + 1) != '\0')
+			ft_putendl_fd(msh->env[i], file);
+	}
+	ft_putendl_fd("_=/usr/bin/env", file);
+}
+
 int	builtin_env(t_minishell *msh, int parent_in, int parent_out, t_node *node)
 {
-	int		i;
-	int		flags;
 	int		file;
 	int		exit_code;
 	t_node	*node2;
@@ -55,30 +80,13 @@ int	builtin_env(t_minishell *msh, int parent_in, int parent_out, t_node *node)
 		return (exit_code);
 	}
 	file = STDOUT_FILENO;
-	flags = O_WRONLY | O_CREAT;
 	exit_code = 0;
 	if (parent_out != -1)
 		file = parent_out;
 	if (node->cmd.outfile)
-	{
-		if (node->cmd.append)
-			flags |= O_APPEND;
-		else
-			flags |= O_TRUNC;
-		file = open(node->cmd.outfile, flags, 0666);
-		if (file == -1)
-			return (msh_error("unable to open outfile"), -1);
-	}
+		file = create_outfile(node);
 	if (node->cmd.argc == 1)
-	{
-		i = -1;
-		while (msh->env[++i])
-		{
-			if (*(ft_strchr(msh->env[i], '=') + 1) != '\0')
-				ft_putendl_fd(msh->env[i], file);
-		}
-		ft_putendl_fd("_=/usr/bin/env", file);
-	}
+		no_arg(msh, file);
 	if (node->cmd.outfile)
 		close(file);
 	return (exit_code);
