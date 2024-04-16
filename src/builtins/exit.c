@@ -6,19 +6,20 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 15:02:43 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/15 15:04:51 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/16 12:23:25 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include <ctype.h>
+#include <limits.h>
 
 static bool	isnumeric(char *s)
 {
 	size_t	i;
 
 	i = 0;
-	while (isspace(s[i]))
+	while (s[i] && isspace(s[i]))
 		i++;
 	if (s[i] == '-' || s[i] == '+')
 		i++;
@@ -31,29 +32,51 @@ static bool	isnumeric(char *s)
 	return (true);
 }
 
-static int	exit_shell(char *s)
+static bool	does_overflow_long(char *s)
+{
+	int			i;
+	__int128	n;
+	int			sign;
+
+	i = 0;
+	while (s[i] && isspace(s[i]))
+		i++;
+	sign = 1;
+	if (s[i] == '-')
+	{
+		i++;
+		sign = -1;
+	}
+	else if (s[i] == '+')
+		i++;
+	n = 0;
+	while (ft_isdigit(s[i]))
+	{
+		n = n * 10 + (s[i] - '0');
+		if (n * sign < LONG_MIN || n * sign > LONG_MAX)
+			return (true);
+		i++;
+	}
+	return (false);
+}
+
+static int	exit_shell(char *s, bool fake)
 {
 	long	i;
 
-	if (!isnumeric(s))
+	if (!isnumeric(s) || does_overflow_long(s))
 		return (ft_fprintf(2, EXIT_ERRNUM, s), 2);
 	i = ft_atoi(s);
-	exit(i);
+	if (!fake)
+		exit(i);
+	return (i);
 }
 
-int	builtin_exit(int ac, char **av, int parent_in, int parent_out, t_node *node)
+int	builtin_exit(int in, int out, t_node *node)
 {
 	int		flags;
 	int		file;
 
-	if (parent_out != -1 || parent_in != -1)
-	{
-		// FIXME: Check errors and other stuff
-		if (ac == 2)
-			return (ft_atoi(av[1]));
-		else
-			return (0);
-	}
 	flags = O_WRONLY | O_CREAT;
 	file = 1;
 	if (node->cmd.outfile)
@@ -66,10 +89,10 @@ int	builtin_exit(int ac, char **av, int parent_in, int parent_out, t_node *node)
 		close(file);
 	}
 	ft_fprintf(1, "exit\n");
-	if (ac == 2)
-		return (exit_shell(av[1]));
-	else if (ac == 1)
-		return (exit_shell("0"));
+	if (node->cmd.argc == 2)
+		return (exit_shell(node->cmd.argv[1], in != -1 || out != -1));
+	else if (node->cmd.argc == 1)
+		return (exit_shell("0", in != -1 || out != -1));
 	else
 		return (msh_builtin_error("exit", "too many arguments"), -1);
 }

@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/13 19:10:48 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/15 18:08:15 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/16 12:25:08 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ int	exec_builtin(t_minishell *msh, t_node *node, int in, int out)
 	else if (strcmp(node->cmd.argv[0], "echo") == 0)
 		return (builtin_echo(ac, node->cmd.argv, out, node));
 	else if (strcmp(node->cmd.argv[0], "exit") == 0)
-		return (builtin_exit(ac, node->cmd.argv, in, out, node));
+		return (builtin_exit(in, out, node));
 	else if (strcmp(node->cmd.argv[0], "unset") == 0)
 		return (builtin_unset(msh, ac, node->cmd.argv, node));
 	else if (strcmp(node->cmd.argv[0], "env") == 0)

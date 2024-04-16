@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:24:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/15 18:06:51 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/16 12:23:42 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ void	msh_errno(char *cmd);
 int		builtin_cd(t_minishell *msh, int parent_in, int parent_out, t_node *node);
 int		builtin_pwd(int ac, char **av, int parent_out, t_node *node);
 int		builtin_echo(int ac, char **av, int parent_out, t_node *node);
-int		builtin_exit(int ac, char **av, int parent_in, int parent_out, t_node *node);
+int		builtin_exit(int parent_in, int parent_out, t_node *node);
 int		builtin_unset(t_minishell *msh, int ac, char **av, t_node *node);
 int		builtin_env(t_minishell *msh, int parent_in, int parent_out, t_node *node);
 int		builtin_export(t_minishell *msh, int ac, char *av[], int in, int out, t_node *node);
