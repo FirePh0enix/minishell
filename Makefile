@@ -6,35 +6,35 @@
 #    By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/22 14:41:53 by ledelbec          #+#    #+#              #
-#    Updated: 2024/04/14 12:13:47 by ledelbec         ###   ########.fr        #
+#    Updated: 2024/04/17 13:49:21 by vopekdas         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 SRCS=\
 	src/prompt.c \
 	src/signal.c \
+	src/history.c \
+	src/error.c \
+	src/env.c \
 	src/parser.c \
 	src/parser/tokenizer.c \
 	src/parser/expr.c \
 	src/parser/free_node.c \
 	src/parser/expand_tokens.c \
-	src/wildcard.c \
-	src/env.c \
-	src/exec_utils.c \
-	src/exec.c \
-	src/history.c \
-	src/error.c \
+	src/parser/wildcard.c \
+	src/exec/exec_utils.c \
+	src/exec/exec.c \
+	src/exec/close_fd.c \
+	src/exec/dup.c \
+	src/exec/handle_type.c \
+	src/exec/builtins_utils.c \
 	src/builtins/cd.c \
 	src/builtins/echo.c \
 	src/builtins/env.c \
 	src/builtins/exit.c \
 	src/builtins/export.c \
 	src/builtins/pwd.c \
-	src/builtins/unset.c \
-	src/close_fd.c\
-	src/dup.c\
-	src/handle_type.c\
-	src/builtins_utils.c\
+	src/builtins/unset.c
 
 MAIN_SRCS=src/main.c $(SRCS)
 
