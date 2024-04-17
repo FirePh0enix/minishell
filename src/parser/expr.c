@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:34:59 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/15 16:06:06 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/17 00:36:52 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,22 +38,22 @@ static int	get_op(char **tokens, size_t start, size_t end)
 	int		parent;
 
 	pos = -1;
-	i = end;
+	i = start;
 	hprio = 0;
 	parent = 0;
-	while (i >= (int) start)
+	while (i <= (int) end)
 	{
 		tok = tokens[i];
 		if (!strcmp(tok, ")"))
-			parent++;
-		else if (!strcmp(tok, "("))
 			parent--;
+		else if (!strcmp(tok, "("))
+			parent++;
 		else if (parent == 0 && isop(tok) && get_op_priority(tok) > hprio)
 		{
 			hprio = get_op_priority(tok);
 			pos = i;
 		}
-		i--;
+		i++;
 	}
 	return (pos);
 }
@@ -79,7 +79,7 @@ static char	*heredoc(t_minishell *msh, char *eof)
 		else if (!line)
 		{
 			ft_fprintf(2, "msh: warning: here-document delimited by eof"
-				"(wanted`%s')", eof);
+				"(wanted `%s')", eof);
 			break ;
 		}
 		ft_putendl_fd(line, fd);
@@ -96,13 +96,59 @@ static bool	isvalidfile(char *s)
 		|| !strcmp(s, "&") || !strcmp(s, "&&")));
 }
 
+int	open_redirect(char *filename, char *redirect)
+{
+	int	fd;
+
+	if (!strcmp(redirect, ">"))
+		fd = open(filename, O_CREAT | O_WRONLY | O_TRUNC, 0666);
+	else if (!strcmp(redirect, ">>"))
+		fd = open(filename, O_CREAT | O_WRONLY | O_APPEND, 0666);
+	else if (!strcmp(redirect, "<") || !strcmp(redirect, "<<"))
+		fd = open(filename, O_RDONLY);
+	else
+		return (msh_errno(""), -1); // TODO: Better error message
+	close(fd);
+	return (fd);
+}
+
+static int	handle_redirects(t_minishell *msh, t_node *node, char **tokens,
+	size_t i)
+{
+	const size_t	size = ft_vector_size(tokens);
+	char			*s;
+
+	if (i + 1 >= size)
+		return (-1);
+	if (!strcmp(tokens[i], ">") || !strcmp(tokens[i], ">>"))
+	{
+		if (!isvalidfile(tokens[i + 1]))
+			return (-1);
+		open_redirect(tokens[i + 1], tokens[i]);
+		node->cmd.outfile = ft_strdup(tokens[i + 1]);
+	}
+	else if (!strcmp(tokens[i], "<"))
+	{
+		if (!isvalidfile(tokens[i + 1]))
+			return (-1);
+		open_redirect(tokens[i + 1], tokens[i]);
+		node->cmd.infile = ft_strdup(tokens[i + 1]);
+	}
+	else if (!strcmp(tokens[i], "<<"))
+	{
+		s = heredoc(msh, tokens[i + 1]);
+		open_redirect(s, tokens[i]);
+		node->cmd.infile = s;
+	}
+	return (0);
+}
+
 static t_node	*parse_cmd(t_minishell *msh, char **tokens,
 		size_t start, size_t end)
 {
 	t_node	*node;
 	size_t	i;
 	char	*tok;
-	bool	first_out = true;
 
 	node = ft_calloc(sizeof(t_node), 1);
 	if (!node)
@@ -115,43 +161,12 @@ static t_node	*parse_cmd(t_minishell *msh, char **tokens,
 	while (i <= end)
 	{
 		tok = ft_strdup(tokens[i]);
-		if (!strcmp(tok, "<"))
+		if (!strcmp(tok, ">") || !strcmp(tok, ">>") || !strcmp(tok, "<")
+			|| !strcmp(tok, "<<"))
 		{
-			if (i + 1 > end)
+			if (handle_redirects(msh, node, tokens, i) == -1)
 				return (NULL);
 			i++;
-			node->cmd.infile = ft_strdup(tokens[i]);
-			if (!isvalidfile(node->cmd.infile))
-				return (free_node(node), NULL);
-		}
-		else if (!strcmp(tok, "<<"))
-		{
-			if (i + 1 > end - start)
-				return (NULL);
-			i++;
-			if (!isvalidfile(tokens[i]))
-				return (free_node(node), NULL);
-			if (node->cmd.infile)
-				free(node->cmd.infile);
-			node->cmd.infile = heredoc(msh, tokens[i]);
-			if (!node->cmd.infile)
-				return (free_node(node), NULL);
-		}
-		else if (!strcmp(tok, ">") || !strcmp(tok, ">>"))
-		{
-			if (i + 1 > end)
-				return (NULL);
-			i++;
-			if (!node->cmd.append && !strcmp(tok, ">>") && !first_out)
-			{
-				i++;
-				continue ;
-			}
-			node->cmd.outfile = ft_strdup(tokens[i]); // FIXME: Idk what to fix
-			if (!isvalidfile(node->cmd.outfile))
-				return (free_node(node), NULL);
-			node->cmd.append = !strcmp(tok, ">>");
-			first_out = true;
 		}
 		else if (!ft_vector_add(&node->cmd.argv, &tok))
 			return (ft_vector_deep_free(node->cmd.argv), free(node), NULL);

@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 16:22:50 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/15 15:22:57 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/17 00:44:58 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <readline/history.h>
 #include <unistd.h>
 #include <signal.h>
+#include "exec.h"
 #include "libft.h"
 #include "minishell.h"
 #include "parser.h"
@@ -79,11 +80,6 @@ static int	execute_line(t_minishell *msh, char *line)
 	printf("Line after expansion `%s`\n", line2);
 	if (isemptycmd(line2))
 		return (free(line), free(line2), 0);
-	else if (ft_strlen(line2) == 1 && line[0] == '!') // TODO: Remove this maybe ?
-	{
-		msh->exit_code = 2;
-		return (0);
-	}
 	node = parse_line(msh, line2);
 	add_our_history(msh, line);
 	free(line2);
@@ -98,7 +94,7 @@ static int	execute_line(t_minishell *msh, char *line)
 	msh->exit_code = exec_cmd(msh, node, -1, -1);
 	if (msh->exit_code != 0)
 		return (-1);
-	msh->exit_code = wait_for_children(msh);
+	wait_for_children(msh);
 	free_node(node);
 	return (0);
 }
@@ -122,8 +118,7 @@ void	prompt(t_minishell *msh)
 			break ;
 		else if (line[0] == '\0')
 			continue ;
-		if (execute_line(msh, line) == -1)
-			continue ;
+		execute_line(msh, line);
 	}
 	ft_fprintf(2, "exit\n");
 }

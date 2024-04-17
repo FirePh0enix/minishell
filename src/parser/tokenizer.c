@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:31:32 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/15 02:06:15 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/16 15:51:12 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,11 +63,14 @@ static char	*next_token(char *line, size_t *index)
 			while (line[i])
 			{
 				if ((line[i] == '"' && line[*index] == '"') || (line[i] == '\'' && line[*index] == '\''))
-				{
-					// i++;
 					break ;
+				if (line[i] == '\\' && (line[i + 1] == '"' || line[i + 1] == '\''))
+				{
+					str_append_n(&s, &line[i + 1], 1);
+					i++;
 				}
-				str_append_n(&s, &line[i], 1);
+				else
+					str_append_n(&s, &line[i], 1);
 				i++;
 			}
 		}
