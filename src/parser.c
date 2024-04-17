@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/15 01:16:08 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/17 12:07:54 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ t_node	*parse_line(t_minishell *msh, char *line)
 	tokens = expand_wildcards(tokens);
 	//for (size_t i = 0; i < ft_vector_size(tokens); i++)
 	//	ft_fprintf(2, "tok: %s\n", tokens[i]);
-	expr = parse_expr(msh, tokens, 0, ft_vector_size(tokens) - 1);
+	expr = parse_expr(msh, tokens, 0, ft_vector_size(tokens) - 1, NULL);
 	ft_vector_deep_free(tokens);
 	return (expr);
 }

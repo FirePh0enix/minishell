@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/13 15:29:38 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/17 00:38:00 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/17 12:01:22 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ int	handle_parent(t_minishell *msh, t_node *node, int in, int out)
 	if (pid == -1)
 		return (-1);
 	if (pid == 0)
-		exit(exec_cmd(msh, node->parent.node, in, out));
+		exit(exec_cmd(msh, node->pa.node, in, out));
 	return (wait_for_children(msh));
 }
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:25:25 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/16 23:44:49 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/17 12:13:52 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,10 +30,11 @@ typedef enum e_type
 
 typedef struct s_node
 {
-	t_type	type;
+	t_type			type;
+	struct s_node	*parent;
 	union
 	{
-		struct
+		struct s_cmd
 		{
 			char	**argv;
 			int		argc;
@@ -41,16 +42,18 @@ typedef struct s_node
 			char	*infile;
 			char	*outfile;
 			bool	append;
+
+			char	**env;
 		}	cmd;
-		struct
+		struct s_pipe
 		{
 			struct s_node	*left;
 			struct s_node	*right;
 		}	pipe;
-		struct
+		struct s_parent
 		{
 			struct s_node	*node;
-		}	parent;
+		}	pa;
 	};
 }	t_node;
 
@@ -59,7 +62,7 @@ void	dump_line(t_node *node);
 
 char	**split_into_tokens(char *line);
 
-t_node	*parse_expr(t_minishell *msh, char **tokens, size_t start, size_t end);
+t_node	*parse_expr(t_minishell *msh, char **tokens, size_t start, size_t end, t_node *parent);
 void	free_node(t_node *node);
 
 t_str	expand_str(t_minishell *msh, char *line);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/15 15:23:26 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/17 12:02:45 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,8 @@ int	create_child(t_minishell *msh, t_node *node, int in, int out)
 	}
 	ft_vector_add(&msh->child_pids, &pid);
 	close_fd_parent(in, out);
+	if (node->parent && node->parent->type != TY_PIPE)
+		return (wait_for_children(msh));
 	return (0);
 }
 

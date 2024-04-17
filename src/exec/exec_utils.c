@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 13:30:43 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/13 16:15:47 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/17 13:55:28 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,8 @@ int	ft_exec_cmd(char *cmd, char **av, char **envp)
 		errno = code;
 		exit(code_for_errno());
 	}
+	//ft_vector_deep_free(av);
+	//ft_vector_deep_free(envp);
 	free(cmd);
 	return (0);
 }
