@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/14 12:02:25 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/16 17:46:00 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/17 20:25:05 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -222,22 +222,22 @@ t_str	expand_str(t_minishell *msh, char *line)
 	return (stage1);
 }
 
-char	**expand_wildcards(char **tokens)
+t_tok	*expand_wildcards(t_tok *tokens)
 {
-	char	**tokens2;
+	t_tok	*tokens2;
 	size_t	i;
 	size_t	i2;
-	char	**tokens3;
+	t_tok	*tokens3;
 
-	tokens2 = ft_vector(sizeof(char *), 0);
+	tokens2 = ft_vector(sizeof(t_tok), 0);
 	if (!tokens2)
 		return (NULL);
 	i = 0;
 	while (i < ft_vector_size(tokens))
 	{
-		if (ft_strchr(tokens[i], '*'))
+		if (ft_strchr(tokens[i].s, '*'))
 		{
-			tokens3 = wildcard(tokens[i]);
+			tokens3 = wildcard(tokens[i].s);
 			if (!tokens3)
 				return (NULL);
 			if (ft_vector_size(tokens3) == 0)

@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/17 12:07:54 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/17 20:43:15 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,19 @@
 // -----------------------------------------------------------------------------
 // Line parsing
 
+static void	free_tokens(t_tok *tokens)
+{
+	size_t	i;
+
+	i = 0;
+	while (i < ft_vector_size(tokens))
+		free(tokens[i++].s);
+	ft_vector_free(tokens);
+}
+
 t_node	*parse_line(t_minishell *msh, char *line)
 {
-	char	**tokens;
+	t_tok	*tokens;
 	t_node	*expr;
 
 	msh->heredocs = 0;
@@ -32,7 +42,7 @@ t_node	*parse_line(t_minishell *msh, char *line)
 	//for (size_t i = 0; i < ft_vector_size(tokens); i++)
 	//	ft_fprintf(2, "tok: %s\n", tokens[i]);
 	expr = parse_expr(msh, tokens, 0, ft_vector_size(tokens) - 1, NULL);
-	ft_vector_deep_free(tokens);
+	free_tokens(tokens);
 	return (expr);
 }
 

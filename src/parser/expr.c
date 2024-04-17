@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:34:59 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/17 16:04:54 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/17 20:07:38 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,6 @@
 #include "minishell.h"
 #include <string.h>
 #include <readline/readline.h>
-
-static int	isop(char *s)
-{
-	return (!strcmp(s, "|") || !strcmp(s, "||") || !strcmp(s, "&&"));
-}
 
 static int	get_op_priority(char *s)
 {
@@ -29,7 +24,7 @@ static int	get_op_priority(char *s)
 	return (-1);
 }
 
-static int	get_op(char **tokens, size_t start, size_t end)
+static int	get_op(t_tok *tokens, size_t start, size_t end)
 {
 	int		i;
 	char	*tok;
@@ -43,12 +38,12 @@ static int	get_op(char **tokens, size_t start, size_t end)
 	parent = 0;
 	while (i <= (int) end)
 	{
-		tok = tokens[i];
-		if (!strcmp(tok, ")"))
+		tok = tokens[i].s;
+		if (tokens[i].type == TOK_OP && !strcmp(tok, ")"))
 			parent--;
-		else if (!strcmp(tok, "("))
+		else if (tokens[i].type == TOK_OP && !strcmp(tok, "("))
 			parent++;
-		else if (parent == 0 && isop(tok) && get_op_priority(tok) > hprio)
+		else if (parent == 0 && tokens[i].type == TOK_OP && get_op_priority(tok) > hprio)
 		{
 			hprio = get_op_priority(tok);
 			pos = i;
@@ -115,7 +110,7 @@ int	open_redirect(char *filename, char *redirect)
 	return (fd);
 }
 
-static int	handle_redirects(t_minishell *msh, t_node *node, char **tokens,
+static int	handle_redirects(t_minishell *msh, t_node *node, t_tok *tokens,
 	size_t i)
 {
 	const size_t	size = ft_vector_size(tokens);
@@ -123,30 +118,30 @@ static int	handle_redirects(t_minishell *msh, t_node *node, char **tokens,
 
 	if (i + 1 >= size)
 		return (-1);
-	if (!strcmp(tokens[i], ">") || !strcmp(tokens[i], ">>"))
+	if (!strcmp(tokens[i].s, ">") || !strcmp(tokens[i].s, ">>"))
 	{
-		if (!isvalidfile(tokens[i + 1]))
+		if (!isvalidfile(tokens[i + 1].s))
 			return (-1);
-		open_redirect(tokens[i + 1], tokens[i]);
-		node->cmd.outfile = ft_strdup(tokens[i + 1]);
+		open_redirect(tokens[i + 1].s, tokens[i].s);
+		node->cmd.outfile = ft_strdup(tokens[i + 1].s);
 	}
-	else if (!strcmp(tokens[i], "<"))
+	else if (!strcmp(tokens[i].s, "<"))
 	{
-		if (!isvalidfile(tokens[i + 1]))
+		if (!isvalidfile(tokens[i + 1].s))
 			return (-1);
-		open_redirect(tokens[i + 1], tokens[i]);
-		node->cmd.infile = ft_strdup(tokens[i + 1]);
+		open_redirect(tokens[i + 1].s, tokens[i].s);
+		node->cmd.infile = ft_strdup(tokens[i + 1].s);
 	}
-	else if (!strcmp(tokens[i], "<<"))
+	else if (!strcmp(tokens[i].s, "<<"))
 	{
-		s = heredoc(msh, tokens[i + 1]);
-		open_redirect(s, tokens[i]);
+		s = heredoc(msh, tokens[i + 1].s);
+		open_redirect(s, tokens[i].s);
 		node->cmd.infile = s;
 	}
 	return (0);
 }
 
-static t_node	*parse_cmd(t_minishell *msh, char **tokens,
+static t_node	*parse_cmd(t_minishell *msh, t_tok *tokens,
 		size_t start, size_t end, t_node *parent)
 {
 	t_node	*node;
@@ -164,9 +159,10 @@ static t_node	*parse_cmd(t_minishell *msh, char **tokens,
 	i = start;
 	while (i <= end)
 	{
-		tok = ft_strdup(tokens[i]);
-		if (!strcmp(tok, ">") || !strcmp(tok, ">>") || !strcmp(tok, "<")
-			|| !strcmp(tok, "<<"))
+		tok = ft_strdup(tokens[i].s);
+		if (tokens[i].type == TOK_OP
+			&& (!strcmp(tok, ">") || !strcmp(tok, ">>") || !strcmp(tok, "<")
+				|| !strcmp(tok, "<<")))
 		{
 			if (handle_redirects(msh, node, tokens, i) == -1)
 				return (NULL);
@@ -222,7 +218,7 @@ static void	apply_in(t_minishell *msh, t_node *node, char *infile)
 	}
 }
 
-static t_node	*parse_parent(t_minishell *msh, char **tokens, size_t start, size_t end, t_node *parent)
+static t_node	*parse_parent(t_minishell *msh, t_tok *tokens, size_t start, size_t end, t_node *parent)
 {
 	char	*outfile = NULL;
 	char	*infile = NULL;
@@ -240,14 +236,14 @@ static t_node	*parse_parent(t_minishell *msh, char **tokens, size_t start, size_
 	open_parents = 0;
 	for (size_t i = start; i <= end; i++)
 	{
-		if (!strcmp(tokens[i], "("))
+		if (tokens[i].type == TOK_OP && !strcmp(tokens[i].s, "("))
 		{
 			if (parent_start == -1)
 				parent_start = i;
 			else
 				open_parents++;
 		}
-		else if (!strcmp(tokens[i], ")"))
+		else if (tokens[i].type == TOK_OP && !strcmp(tokens[i].s, ")"))
 		{
 			if (open_parents == 0 && parent_end == -1)
 				parent_end = i;
@@ -278,36 +274,7 @@ static t_node	*parse_parent(t_minishell *msh, char **tokens, size_t start, size_
 	append = false;
 	for (size_t i = start; i <= end; i++)
 	{
-		if (i >= (size_t)parent_start && i <= (size_t)parent_end)
-			continue ;
-		tok = tokens[i];
-		if (!strcmp(tok, "<"))
-		{
-			if (i + 1 > end - start)
-				return (NULL);
-			i++;
-			infile = ft_strdup(tokens[i]); // TODO check heredoc priority
-		}
-		else if (!strcmp(tok, "<<"))
-		{
-			if (i + 1 > end - start)
-				return (NULL);
-			i++;
-			infile = heredoc(msh, tokens[i]);
-			if (!infile)
-				return (NULL); // free outfile, infile if needed
-		}
-		else if (!strcmp(tok, ">") || !strcmp(tok, ">>"))
-		{
-			if (i + 1 > end)
-				return (NULL);
-			i++;
-			if (!append && !strcmp(tok, ">>") && !first_out)
-				continue ;
-			outfile = ft_strdup(tokens[i + start]);
-			append = !strcmp(tok, ">>");
-			first_out = false;
-		}
+		// TODO:
 	}
 
 	// Finally parse what's between parenthesis and add the redirections
@@ -328,53 +295,35 @@ static t_node	*parse_parent(t_minishell *msh, char **tokens, size_t start, size_
 	return (parent);
 }
 
-t_node	*parse_expr(t_minishell *msh, char **tokens, size_t start, size_t end, t_node *parent)
+static t_type	type_for_str(char *s)
+{
+	if (!strcmp(s, "|"))
+		return (TY_PIPE);
+	else if (!strcmp(s, "||"))
+		return (TY_OR);
+	else if (!strcmp(s, "&&"))
+		return (TY_AND);
+	return (0);
+}
+
+t_node	*parse_expr(t_minishell *msh, t_tok *tokens, size_t start, size_t end,
+	t_node *parent)
 {
 	int			pos;
 	t_node	*node;
-
 
 	pos = get_op(tokens, start, end);
 	if (pos == -1)
 		return (parse_parent(msh, tokens, start, end, parent));
 	else if (pos == 0)
 		return (NULL);
-	else if (!strcmp(tokens[pos], "|"))
+	else if (!strcmp(tokens[pos].s, "|") || !strcmp(tokens[pos].s, "||")
+			|| !strcmp(tokens[pos].s, "&&"))
 	{
 		node = ft_calloc(1, sizeof(t_node));
 		if (!node)
 			return (NULL);
-		node->type = TY_PIPE;
-		node->parent = parent;
-		node->pipe.left = parse_expr(msh, tokens, start, pos - 1, node);
-		if (!node->pipe.left)
-			return (free_node(node), NULL);
-		node->pipe.right = parse_expr(msh, tokens, pos + 1, end, node);
-		if (!node->pipe.right)
-			return (free_node(node), NULL);
-		return (node);
-	}
-	else if (!strcmp(tokens[pos], "||"))
-	{
-		node = ft_calloc(1, sizeof(t_node));
-		if (!node)
-			return (NULL);
-		node->type = TY_OR;
-		node->parent = parent;
-		node->pipe.left = parse_expr(msh, tokens, start, pos - 1, node);
-		if (!node->pipe.left)
-			return (free_node(node), NULL);
-		node->pipe.right = parse_expr(msh, tokens, pos + 1, end, node);
-		if (!node->pipe.right)
-			return (free_node(node), NULL);
-		return (node);
-	}
-	else if (!strcmp(tokens[pos], "&&"))
-	{
-		node = ft_calloc(1, sizeof(t_node));
-		if (!node)
-			return (NULL);
-		node->type = TY_AND;
+		node->type = type_for_str(tokens[pos].s);
 		node->parent = parent;
 		node->pipe.left = parse_expr(msh, tokens, start, pos - 1, node);
 		if (!node->pipe.left)
