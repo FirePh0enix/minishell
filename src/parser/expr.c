@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expr.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:34:59 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/17 00:36:52 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/17 12:09:03 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,7 +144,7 @@ static int	handle_redirects(t_minishell *msh, t_node *node, char **tokens,
 }
 
 static t_node	*parse_cmd(t_minishell *msh, char **tokens,
-		size_t start, size_t end)
+		size_t start, size_t end, t_node *parent)
 {
 	t_node	*node;
 	size_t	i;
@@ -154,6 +154,7 @@ static t_node	*parse_cmd(t_minishell *msh, char **tokens,
 	if (!node)
 		return (NULL);
 	node->type = TY_CMD;
+	node->parent = parent;
 	node->cmd.argv = ft_vector(sizeof(char *), 0);
 	if (!node->cmd.argv)
 		return (free(node), NULL);
@@ -218,7 +219,7 @@ static void	apply_in(t_minishell *msh, t_node *node, char *infile)
 	}
 }
 
-static t_node	*parse_parent(t_minishell *msh, char **tokens, size_t start, size_t end)
+static t_node	*parse_parent(t_minishell *msh, char **tokens, size_t start, size_t end, t_node *parent)
 {
 	char	*outfile = NULL;
 	char	*infile = NULL;
@@ -261,7 +262,7 @@ static t_node	*parse_parent(t_minishell *msh, char **tokens, size_t start, size_
 		return (NULL);
 
 	if (parent_start == -1 && parent_end == -1)
-		return (parse_cmd(msh, tokens, start, end));
+		return (parse_cmd(msh, tokens, start, end, parent));
 	else if (parent_start == -1 || parent_end == -1)
 		return (NULL);
 
@@ -308,21 +309,23 @@ static t_node	*parse_parent(t_minishell *msh, char **tokens, size_t start, size_
 
 	// Finally parse what's between parenthesis and add the redirections
 
-	t_node	*node = parse_expr(msh, tokens, parent_start + 1, parent_end - 1);
+	t_node	*node = parse_expr(msh, tokens, parent_start + 1, parent_end - 1, NULL);
 
 	if (outfile != NULL)
 		apply_out(msh, node, outfile, append);
 	if (infile != NULL)
 		apply_in(msh, node, infile);
 
-	t_node	*parent = ft_calloc(1, sizeof(t_node));
-	parent->type = TY_PARENT;
-	parent->parent.node = node;
+	t_node	*pa = ft_calloc(1, sizeof(t_node));
+	pa->type = TY_PARENT;
+	pa->parent = parent;
+	pa->pa.node = node;
+	node->parent = pa;
 
 	return (parent);
 }
 
-t_node	*parse_expr(t_minishell *msh, char **tokens, size_t start, size_t end)
+t_node	*parse_expr(t_minishell *msh, char **tokens, size_t start, size_t end, t_node *parent)
 {
 	int			pos;
 	t_node	*node;
@@ -330,7 +333,7 @@ t_node	*parse_expr(t_minishell *msh, char **tokens, size_t start, size_t end)
 
 	pos = get_op(tokens, start, end);
 	if (pos == -1)
-		return (parse_parent(msh, tokens, start, end));
+		return (parse_parent(msh, tokens, start, end, parent));
 	else if (pos == 0)
 		return (NULL);
 	else if (!strcmp(tokens[pos], "|"))
@@ -339,10 +342,11 @@ t_node	*parse_expr(t_minishell *msh, char **tokens, size_t start, size_t end)
 		if (!node)
 			return (NULL);
 		node->type = TY_PIPE;
-		node->pipe.left = parse_expr(msh, tokens, start, pos - 1);
+		node->parent = parent;
+		node->pipe.left = parse_expr(msh, tokens, start, pos - 1, node);
 		if (!node->pipe.left)
 			return (free_node(node), NULL);
-		node->pipe.right = parse_expr(msh, tokens, pos + 1, end);
+		node->pipe.right = parse_expr(msh, tokens, pos + 1, end, node);
 		if (!node->pipe.right)
 			return (free_node(node), NULL);
 		return (node);
@@ -353,10 +357,11 @@ t_node	*parse_expr(t_minishell *msh, char **tokens, size_t start, size_t end)
 		if (!node)
 			return (NULL);
 		node->type = TY_OR;
-		node->pipe.left = parse_expr(msh, tokens, start, pos - 1);
+		node->parent = parent;
+		node->pipe.left = parse_expr(msh, tokens, start, pos - 1, node);
 		if (!node->pipe.left)
 			return (free_node(node), NULL);
-		node->pipe.right = parse_expr(msh, tokens, pos + 1, end);
+		node->pipe.right = parse_expr(msh, tokens, pos + 1, end, node);
 		if (!node->pipe.right)
 			return (free_node(node), NULL);
 		return (node);
@@ -367,10 +372,11 @@ t_node	*parse_expr(t_minishell *msh, char **tokens, size_t start, size_t end)
 		if (!node)
 			return (NULL);
 		node->type = TY_AND;
-		node->pipe.left = parse_expr(msh, tokens, start, pos - 1);
+		node->parent = parent;
+		node->pipe.left = parse_expr(msh, tokens, start, pos - 1, node);
 		if (!node->pipe.left)
 			return (free_node(node), NULL);
-		node->pipe.right = parse_expr(msh, tokens, pos + 1, end);
+		node->pipe.right = parse_expr(msh, tokens, pos + 1, end, node);
 		if (!node->pipe.right)
 			return (free_node(node), NULL);
 		return (node);
