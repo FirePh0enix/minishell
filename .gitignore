@@ -3,4 +3,4 @@
 *.a
 .vscode
 minishell
-.gitignore
+minishell.test

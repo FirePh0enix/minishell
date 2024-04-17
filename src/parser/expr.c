@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:34:59 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/17 12:09:03 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/17 16:04:54 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,7 @@ static char	*heredoc(t_minishell *msh, char *eof)
 	char		*line;
 	int			fd;
 	char		filename[256];
+	int			line_num;
 
 	ft_sprintf(filename, "/tmp/msh-miniseashell-heredoc-%zu", msh->heredocs++);
 	// TODO: Maybe increment files based on which one are available, to allow
@@ -70,19 +71,21 @@ static char	*heredoc(t_minishell *msh, char *eof)
 	fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	if (fd == -1)
 		return (NULL);
-	// printf("EOF is `%s`\n", eof);
+	line_num = 1;
 	while (1)
 	{
 		line = readline("> ");
-		if (!strcmp(line, eof))
-			break ;
-		else if (!line)
+		if (!line)
 		{
-			ft_fprintf(2, "msh: warning: here-document delimited by eof"
-				"(wanted `%s')", eof);
+			ft_fprintf(2, "msh: warning: here-document delimited at line %d by end-of-file"
+				" (wanted `%s')\n", line_num, eof);
 			break ;
 		}
+		else if (!strcmp(line, eof))
+			break ;
 		ft_putendl_fd(line, fd);
+		free(line);
+		line_num++;
 	}
 	return (close(fd), ft_strdup(filename));
 }

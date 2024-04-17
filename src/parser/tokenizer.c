@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:31:32 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/16 15:51:12 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/17 15:58:12 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static char	*next_token(char *line, size_t *index)
 	if (i >= ft_strlen(line))
 		return (NULL);
 
-	while (line[i] && (line[i] == ' ' || line[i] == '\t'))
+	while (line[i] && isspace(line[i]))
 		i++;
 
 	*index = i;

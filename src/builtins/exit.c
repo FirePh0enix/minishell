@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 15:02:43 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/16 12:23:25 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/17 16:12:34 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,8 +64,10 @@ static int	exit_shell(char *s, bool fake)
 {
 	long	i;
 
-	if (!isnumeric(s) || does_overflow_long(s))
+	if (fake && (!isnumeric(s) || does_overflow_long(s)))
 		return (ft_fprintf(2, EXIT_ERRNUM, s), 2);
+	if (!fake && (!isnumeric(s) || does_overflow_long(s)))
+		return (ft_fprintf(2, EXIT_ERRNUM, s), exit(2), 2);
 	i = ft_atoi(s);
 	if (!fake)
 		exit(i);
@@ -74,22 +76,9 @@ static int	exit_shell(char *s, bool fake)
 
 int	builtin_exit(int in, int out, t_node *node)
 {
-	int		flags;
-	int		file;
-
-	flags = O_WRONLY | O_CREAT;
-	file = 1;
-	if (node->cmd.outfile)
-	{
-		if (node->cmd.append)
-			flags |= O_APPEND;
-		else
-			flags |= O_TRUNC;
-		file = open(node->cmd.outfile, flags, 0666);
-		close(file);
-	}
 	ft_fprintf(1, "exit\n");
-	if (node->cmd.argc == 2)
+	if ((node->cmd.argc >= 2 && !isnumeric(node->cmd.argv[1]))
+		|| (node->cmd.argc == 2))
 		return (exit_shell(node->cmd.argv[1], in != -1 || out != -1));
 	else if (node->cmd.argc == 1)
 		return (exit_shell("0", in != -1 || out != -1));

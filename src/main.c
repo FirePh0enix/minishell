@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 14:41:09 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/16 13:14:01 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/17 15:50:58 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,8 @@ int	main(int argc, char *argv[], char *envp[])
 
 	(void) argc;
 	(void) argv;
+	if (!isatty(0))
+		return (1);
 	ft_bzero(&msh, sizeof(t_minishell));
 	msh.exit_code = 0;
 	copy_env(&msh, envp);
