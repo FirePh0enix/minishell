@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/27 14:24:38 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/16 13:09:37 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/17 16:20:52 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@ static int	unset_env(t_minishell *msh, char *name, int *exit_code)
 	const size_t	size = ft_strlen(name);
 	int				i;
 
+	if (!strcmp(name, "_"))
+		return (0);
 	if (!is_valid_var_name(name))
 	{
 		msh_builtin_error("unset", "invalid parameter name");
