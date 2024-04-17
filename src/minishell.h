@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:24:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/17 00:07:44 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/17 14:24:55 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,12 @@
 # define COL_LBLUE  "\e[0;34m"
 # define COL_LGREEN "\e[1;32m"
 # define COL_RESET  "\e[0m"
+
+# define NOHOME " \e[1;34m%d \e[1;32m%s \e[0;34m$\e[0m "
+# define NOHOME_ERR " \e[1;31m%d \e[1;32m%s \e[0;34m$\e[0m "
+
+# define HOME " \e[1;34m%d \e[1;32m~%s \e[0;34m$\e[0m "
+# define HOME_ERR " \e[1;31m%d \e[1;32m~%s \e[0;34m$\e[0m "
 
 typedef struct s_minishell
 {

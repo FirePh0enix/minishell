@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   prompt.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 16:22:50 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/17 00:44:58 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/17 14:26:43 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,20 +27,28 @@ void	write_prefix(t_minishell *msh, char buf[])
 	char	*home;
 	size_t	sz;
 	size_t	cwd_sz;
+	char	*s;
 
 	getcwd(cwd, 256);
 	home = getourenv(msh, "HOME");
 	if (!home)
 	{
-		ft_sprintf(buf, COL_LGREEN " %s " COL_LBLUE "$ " COL_RESET, cwd);
+		if (msh->exit_code == 0)
+			ft_sprintf(buf, NOHOME, 0, cwd);
+		else
+			ft_sprintf(buf, NOHOME_ERR, msh->exit_code, cwd);
 		return ;
 	}
 	sz = ft_strlen(home);
 	cwd_sz = ft_strlen(cwd);
-	if (cwd_sz >= sz && !ft_strncmp(home, cwd, sz))
-		ft_sprintf(buf, COL_LGREEN " ~%s " COL_LBLUE "$ " COL_RESET, cwd + sz);
+	if (msh->exit_code == 0)
+		s = HOME;
 	else
-		ft_sprintf(buf, COL_LGREEN " %s " COL_LBLUE "$ " COL_RESET, cwd);
+		s = HOME_ERR;
+	if (cwd_sz >= sz && !ft_strncmp(home, cwd, sz))
+		ft_sprintf(buf, s, msh->exit_code, cwd + sz);
+	else
+		ft_sprintf(buf, s, msh->exit_code, cwd);
 	free(home);
 }
 
@@ -94,7 +102,6 @@ static int	execute_line(t_minishell *msh, char *line)
 	msh->exit_code = exec_cmd(msh, node, -1, -1);
 	if (msh->exit_code != 0)
 		return (-1);
-	wait_for_children(msh);
 	free_node(node);
 	return (0);
 }
