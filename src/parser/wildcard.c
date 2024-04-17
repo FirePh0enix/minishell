@@ -6,12 +6,13 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 23:05:54 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/17 20:23:45 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/18 00:14:48 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "libft.h"
+#include "parser.h"
 #include <unistd.h>
 #include <sys/types.h>
 #include <dirent.h>
@@ -148,7 +149,8 @@ t_tok	*wildcard(char *s)
 				str_append(&s, "/");
 			}
 			str_append(&s, files2[i].file);
-			ft_vector_add(&files3, &s.data);
+			t_tok	tk = tok(TOK_IDENT, s.data);
+			ft_vector_add(&files3, &tk);
 		}
 		ft_vector_free(files2);
 	}

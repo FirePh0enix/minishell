@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:31:32 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/17 20:18:06 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/18 00:02:59 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,9 @@
 
 static t_tok	next_token(char *line, size_t *index)
 {
-	t_str	s;
-	size_t	i;
+	t_str		s;
+	size_t		i;
+	t_tok_type	tt;
 
 	i = *index;
 	if (i >= ft_strlen(line))
@@ -34,6 +35,7 @@ static t_tok	next_token(char *line, size_t *index)
 		return (nulltok());
 
 	s = str("");
+	tt = TOK_IDENT;
 
 	if (ft_strlen(&line[i]) >= 2
 		&& (!ft_strncmp(&line[i], "<<", 2) || !ft_strncmp(&line[i], ">>", 2)
@@ -87,7 +89,7 @@ static t_tok	next_token(char *line, size_t *index)
 	}
 
 	*index = i;
-	return (tok(TOK_STR, s.data));
+	return (tok(tt, s.data));
 }
 
 t_tok	*split_into_tokens(char *line)

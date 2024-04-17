@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:25:25 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/17 20:20:31 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/18 00:00:55 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@ typedef struct s_node
 
 typedef enum e_tok_type
 {
+	TOK_IDENT,
 	TOK_STR,
 	TOK_OP
 }	t_tok_type;
