@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/14 12:02:25 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/16 17:46:00 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/17 16:48:16 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,17 +29,11 @@ static bool	is_just_after_heredoc(char *line, size_t i)
 	{
 		if (ft_strlen(&line[i]) >= 2 && (!ft_strncmp(line, "&&", 2)
 				|| !ft_strncmp(line, ">>", 2) || !ft_strncmp(line, "||", 2)))
-		{
 			break ;
-		}
 		else if (ft_strlen(&line[i]) >= 2 && !ft_strncmp(line, "<<", 2))
-		{
 			return (true);
-		}
 		else if (ft_strlen(&line[i]) >= 1 && (line[i] == '|' || line[i] == '<' || line[i] == '>'))
-		{
 			break ;
-		}
 		if (line[i] == '"')
 		{
 			i--;
@@ -68,43 +62,25 @@ static void	append_escaped(t_str *s, char *env)
 			str_append(s, "\\\"");
 		else if (env[i] == '\'')
 			str_append(s, "\\'");
+		else if (ft_strlen(&env[i]) >= 2 && (!strncmp(&env[i], "||", 2)
+				|| !strncmp(&env[i], "&&", 2) || !strncmp(&env[i], "<<", 2)
+				|| !strncmp(&env[i], ">>", 2)))
+		{
+			str_append(s, "\\");
+			str_append_n(s, &env[i], 1);
+			i++;
+			str_append(s, "\\");
+			str_append_n(s, &env[i], 1);
+		}
+		else if (env[i] == '|' || env[i] == '>' || env[i] == '<')
+		{
+			str_append(s, "\\");
+			str_append_n(s, &env[i], 1);
+		}
 		else
 			str_append_n(s, &env[i], 1);
 		i++;
 	}
-}
-
-/*
- * TODO: Seems to be an hacky way to fix the problem.
- */
-static char	*trim_escapes(char *si, bool trim_start, bool trim_end)
-{
-	t_str	s;
-	char	prev;
-	size_t	i;
-	size_t	i2;
-
-	s = str("");
-	i = 0;
-	while (trim_start && si[i] && isspace(si[i]))
-		i++;
-	i2 = ft_strlen(si) - 1;
-	while (trim_end && si[i2] && isspace(si[i2]))
-		i2--;
-	prev = 0;
-	while (i <= i2)
-	{
-		if (isspace(prev) && isspace(si[i]) && prev == si[i])
-			i++;
-		else
-		{
-			str_append_n(&s, &si[i], 1);
-			prev = si[i];
-			i++;
-		}
-	}
-	free(si);
-	return (s.data);
 }
 
 /*
@@ -180,12 +156,12 @@ t_str	expand_str_stage1(t_minishell *msh, char *line)
 				{
 					if (!open_dquotes)
 					{
-						env = trim_escapes(env, i - env_name.size - 1 == 0 || isspace(line[i - env_name.size - 2]), isspace(line[i]));
-						if (i - env_name.size - 1 == 0 || isspace(line[i - env_name.size - 2]))
-							str_append(&s, "\"");
+						//env = trim_escapes(env, i - env_name.size - 1 == 0 || isspace(line[i - env_name.size - 2]), isspace(line[i]));
+						//if (i - env_name.size - 1 == 0 || isspace(line[i - env_name.size - 2]))
+						//	str_append(&s, "\"");
 						append_escaped(&s, env);
-						if (i - env_name.size - 1 == 0 || isspace(line[i - env_name.size - 2]))
-							str_append(&s, "\"");
+						//if (i - env_name.size - 1 == 0 || isspace(line[i - env_name.size - 2]))
+						//	str_append(&s, "\"");
 					}
 					else
 					{
