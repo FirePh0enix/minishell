@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/17 14:27:20 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/18 15:58:42 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,12 +30,37 @@ int	code_for_errno(void)
 	return (-1);
 }
 
+static void	add_env(t_minishell *msh, t_node *node)
+{
+	size_t	i;
+	char	*s;
+	char	*env;
+	char	*name;
+	char	*value;
+
+	i = 0;
+	while (i < ft_vector_size(node->cmd.env))
+	{
+		env = node->cmd.env[i];
+		s = ft_strchr(env, '=');
+		name = strndup(env, s - env);
+		value = strdup(s + 1);
+		if (strcmp(name, "_"))
+			setourenv(msh, name, value);
+		free(name);
+		free(value);
+		i++;
+	}
+}
+
 int	create_child(t_minishell *msh, t_node *node, int in, int out)
 {
 	int		pid;
 	char	*cmd;
 
 	cmd = NULL;
+	if (node->cmd.argc == 0)
+		add_env(msh, node);
 	pid = fork();
 	if (pid == -1)
 		return (msh_errno(""), -1);
@@ -48,6 +73,7 @@ int	create_child(t_minishell *msh, t_node *node, int in, int out)
 				return (msh_error_cmd(node->cmd.argv[0]), close_fd_child(msh),
 					exit(code_for_errno()), 0);
 		}
+		add_env(msh, node);
 		overall_dup(node, in, out);
 		close_fd_child(msh);
 		if (cmd)

@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:34:59 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/17 20:07:38 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/18 16:39:05 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,8 +72,8 @@ static char	*heredoc(t_minishell *msh, char *eof)
 		line = readline("> ");
 		if (!line)
 		{
-			ft_fprintf(2, "msh: warning: here-document delimited at line %d by end-of-file"
-				" (wanted `%s')\n", line_num, eof);
+			ft_fprintf(2, "msh: warning: here-document delimited at line %d by "
+				"end-of-file  (wanted `%s')\n", line_num, eof);
 			break ;
 		}
 		else if (!strcmp(line, eof))
@@ -105,8 +105,11 @@ int	open_redirect(char *filename, char *redirect)
 	else if (!strcmp(redirect, "<") || !strcmp(redirect, "<<"))
 		fd = open(filename, O_RDONLY);
 	else
-		return (msh_errno(""), -1); // TODO: Better error message
-	close(fd);
+		fd = -1;
+	if (fd != -1)
+		close(fd); // TODO: Maybe put error message here
+	else
+		msh_errno(filename);
 	return (fd);
 }
 
@@ -124,12 +127,14 @@ static int	handle_redirects(t_minishell *msh, t_node *node, t_tok *tokens,
 			return (-1);
 		open_redirect(tokens[i + 1].s, tokens[i].s);
 		node->cmd.outfile = ft_strdup(tokens[i + 1].s);
+		node->cmd.append = !strcmp(tokens[i].s, ">>");
 	}
 	else if (!strcmp(tokens[i].s, "<"))
 	{
 		if (!isvalidfile(tokens[i + 1].s))
 			return (-1);
-		open_redirect(tokens[i + 1].s, tokens[i].s);
+		if (open_redirect(tokens[i + 1].s, tokens[i].s) == -1)
+			return (-1);
 		node->cmd.infile = ft_strdup(tokens[i + 1].s);
 	}
 	else if (!strcmp(tokens[i].s, "<<"))
@@ -139,6 +144,34 @@ static int	handle_redirects(t_minishell *msh, t_node *node, t_tok *tokens,
 		node->cmd.infile = s;
 	}
 	return (0);
+}
+
+static void	read_vars(t_node *node, t_tok *tokens, size_t *index, size_t end)
+{
+	size_t	i;
+	char	*s;
+	char	*s2;
+	char	*s3;
+
+	i = *index;
+	while (i <= end)
+	{
+		s = ft_strchr(tokens[i].s, '=');
+		if (!s)
+			break ;
+		s2 = strndup(tokens[i].s, s - tokens[i].s);
+		if (!is_valid_var_name(s2))
+		{
+			free(s2);
+			break ;
+		}
+		s3 = ft_strdup(tokens[i].s);
+		printf("%s\n", s3);
+		ft_vector_add(&node->cmd.env, &s3);
+		free(s2);
+		i++;
+	}
+	*index = i;
 }
 
 static t_node	*parse_cmd(t_minishell *msh, t_tok *tokens,
@@ -154,9 +187,11 @@ static t_node	*parse_cmd(t_minishell *msh, t_tok *tokens,
 	node->type = TY_CMD;
 	node->parent = parent;
 	node->cmd.argv = ft_vector(sizeof(char *), 0);
-	if (!node->cmd.argv)
+	node->cmd.env = ft_vector(sizeof(char *), 0);
+	if (!node->cmd.argv || !node->cmd.env)
 		return (free(node), NULL);
 	i = start;
+	read_vars(node, tokens, &i, end);
 	while (i <= end)
 	{
 		tok = ft_strdup(tokens[i].s);
@@ -165,7 +200,7 @@ static t_node	*parse_cmd(t_minishell *msh, t_tok *tokens,
 				|| !strcmp(tok, "<<")))
 		{
 			if (handle_redirects(msh, node, tokens, i) == -1)
-				return (NULL);
+				return ((void *)1);
 			i++;
 		}
 		else if (!ft_vector_add(&node->cmd.argv, &tok))
@@ -176,7 +211,7 @@ static t_node	*parse_cmd(t_minishell *msh, t_tok *tokens,
 	if (!ft_vector_add(&node->cmd.argv, &tok))
 		return (ft_vector_deep_free(node->cmd.argv), free(node), NULL);
 	node->cmd.argc = ft_vector_size(node->cmd.argv) - 1;
-	if (node->cmd.argc == 0 && !node->cmd.outfile && !node->cmd.infile)
+	if (node->cmd.argc == 0 && !node->cmd.outfile && !node->cmd.infile && ft_vector_size(node->cmd.env) == 0)
 		return (free_node(node), NULL);
 	return (node);
 }
@@ -223,7 +258,6 @@ static t_node	*parse_parent(t_minishell *msh, t_tok *tokens, size_t start, size_
 	char	*outfile = NULL;
 	char	*infile = NULL;
 	bool	append;
-	bool	first_out = true;
 
 	// First find the parenthesis start and end values
 	int	parent_start;
@@ -266,7 +300,6 @@ static t_node	*parse_parent(t_minishell *msh, t_tok *tokens, size_t start, size_
 		return (NULL);
 
 	// Then parse redirections here
-	char	*tok;
 
 	// FIXME:
 	// Redirection are not allowed before the parenthesis

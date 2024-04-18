@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 14:33:06 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/16 13:08:30 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/18 15:26:39 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ static int	no_arg(t_minishell *msh)
 	return (0);
 }
 
-static int	no_minus(t_minishell *msh, int file)
+static int	minus(t_minishell *msh, int file)
 {
 	char	*oldpwd;
 	char	*pwd;
@@ -57,22 +57,32 @@ static int	no_minus(t_minishell *msh, int file)
 	pwd = getcwd(NULL, 0);
 	setourenv(msh, "PWD", pwd);
 	ft_putendl_fd(pwd, file);
-	if (errno != 0)
-		perror("cd");
 	return (0);
 }
 
-static int	minus(t_minishell *msh, t_node *node)
+static int	no_minus(t_minishell *msh, t_node *node)
 {
 	char	*pwd;
+	char	*cdpath;
+	char	*fs;
 
 	pwd = getcwd(NULL, 0);
+	cdpath = getourenv(msh, "CDPATH"); // TODO: Maybe join with `/`
 	setourenv(msh, "OLDPWD", pwd);
-	chdir(node->cmd.argv[1]);
+	free(pwd);
+	if (cdpath && cdpath[0] != '\0')
+	{
+		fs = ft_strjoin(cdpath, node->cmd.argv[1]);
+	}
+	else
+	{
+		fs = ft_strdup(node->cmd.argv[1]);
+	}
+	chdir(fs);
+	free(fs);
 	pwd = getcwd(NULL, 0);
 	setourenv(msh, "PWD", pwd);
-	if (errno != 0)
-		perror("cd");
+	free(pwd);
 	return (0);
 }
 
@@ -91,10 +101,9 @@ int	builtin_cd(t_minishell *msh, int parent_in, int parent_out, t_node *node)
 		close (file);
 	}
 	if (node->cmd.argc == 1)
-		no_arg(msh);
+		return (no_arg(msh));
 	else if (!strcmp(node->cmd.argv[1], "-"))
-		no_minus(msh, file);
+		return (minus(msh, file));
 	else
-		minus(msh, node);
-	return (0);
+		return (no_minus(msh, node));
 }

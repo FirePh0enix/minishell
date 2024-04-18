@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:24:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/17 20:21:36 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/18 15:22:09 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,10 @@
 # include <sys/uio.h>
 # include <sys/wait.h>
 # include <fcntl.h>
-# include <stdlib.h>
 # include <unistd.h>
-# include <string.h>
 # include <stdbool.h>
 # include <stdio.h>
+# include <string.h>
 # include <errno.h>
 
 # define COL_LBLUE  "\e[0;34m"
@@ -77,7 +76,7 @@ void	msh_errno(char *cmd);
 bool	is_valid_var_name(char *s);
 
 int		builtin_cd(t_minishell *msh, int parent_in, int parent_out, t_node *node);
-int		builtin_pwd(int ac, char **av, int parent_out, t_node *node);
+int		builtin_pwd(t_minishell *msh, int parent_in, int parent_out, t_node *node);
 int		builtin_echo(int ac, char **av, int parent_out, t_node *node);
 int		builtin_exit(int parent_in, int parent_out, t_node *node);
 int		builtin_unset(t_minishell *msh, int ac, char **av, t_node *node);

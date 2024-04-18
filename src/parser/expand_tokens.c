@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/14 12:02:25 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/18 12:06:54 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/18 16:02:04 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 
 static bool	is_valid_env_ch(char c)
 {
-	return (c == '-' || c == '_' || ft_isalnum(c));
+	return (c == '_' || ft_isalnum(c));
 }
 
 static bool	is_just_after_heredoc(char *line, size_t i)
@@ -72,7 +72,8 @@ static void	append_escaped(t_str *s, char *env)
 			str_append(s, "\\");
 			str_append_n(s, &env[i], 1);
 		}
-		else if (env[i] == '|' || env[i] == '>' || env[i] == '<')
+		else if (env[i] == '|' || env[i] == '>' || env[i] == '<'
+			|| env[i] == '*')
 		{
 			str_append(s, "\\");
 			str_append_n(s, &env[i], 1);
@@ -129,7 +130,9 @@ t_str	expand_str_stage1(t_minishell *msh, char *line)
 				free(env);
 			}
 			else
-				str_append(&s, "~"); // TODO: Determine what to do in that case
+			{
+				str_append(&s, ".");
+			}
 			i++;
 		}
 		else if (!open_quotes && line[i] == '$'
@@ -156,12 +159,7 @@ t_str	expand_str_stage1(t_minishell *msh, char *line)
 				{
 					if (!open_dquotes)
 					{
-						//env = trim_escapes(env, i - env_name.size - 1 == 0 || isspace(line[i - env_name.size - 2]), isspace(line[i]));
-						//if (i - env_name.size - 1 == 0 || isspace(line[i - env_name.size - 2]))
-						//	str_append(&s, "\"");
 						append_escaped(&s, env);
-						//if (i - env_name.size - 1 == 0 || isspace(line[i - env_name.size - 2]))
-						//	str_append(&s, "\"");
 					}
 					else
 					{
@@ -181,6 +179,11 @@ t_str	expand_str_stage1(t_minishell *msh, char *line)
 			i += 2;
 			str_append(&s, "$$");
 		}
+		else if ((open_dquotes || open_quotes) && line[i] == '*')
+		{
+			str_append(&s, "\'\\*\'");
+			i++;
+		}
 		else
 		{
 			str_append_n(&s, &line[i], 1);
@@ -190,97 +193,12 @@ t_str	expand_str_stage1(t_minishell *msh, char *line)
 	return (s);
 }
 
-static size_t	find_wildcard_start(char *line, size_t i)
-{
-	bool	open_dquotes;
-	bool	open_quotes;
-
-	open_dquotes = false;
-	open_quotes = false;
-	while (i >= 0)
-	{
-		if (line[i] == '"' && !open_quotes)
-			open_dquotes = !open_dquotes;
-		else if (line[i] == '\'' && !open_dquotes)
-			open_quotes = !open_quotes;
-
-		if (isspace(line[i]) && !open_quotes && !open_dquotes)
-			break ;
-		if (i == 0)
-			break ;
-		i--;
-	}
-	return (i);
-}
-
-static size_t	find_wildcard_end(char *line, size_t i)
-{
-	bool	open_dquotes;
-	bool	open_quotes;
-
-	open_dquotes = false;
-	open_quotes = false;
-	while (line[i])
-	{
-		if (line[i] == '"' && !open_quotes)
-			open_dquotes = !open_dquotes;
-		else if (line[i] == '\'' && !open_dquotes)
-			open_quotes = !open_quotes;
-
-		if (isspace(line[i]) && !open_quotes && !open_dquotes)
-			break ;
-		i++;
-	}
-	return (i);
-}
-
-/*
- * Wildcard expansion
- */
-t_str	expand_str_stage2(t_minishell *msh, char *line)
-{
-	t_str	s;
-	size_t	i;
-	bool	open_quotes;
-	bool	open_dquotes;
-
-	s = str("");
-	i = 0;
-	open_quotes = false;
-	open_dquotes = false;
-	while (i < ft_strlen(line))
-	{
-		if (line[i] == '"' && !open_quotes)
-			open_dquotes = !open_dquotes;
-		else if (line[i] == '\'' && !open_dquotes)
-			open_quotes = !open_quotes;
-
-		if (line[i] == '*' && !open_quotes && !open_dquotes)
-		{
-			size_t	start = find_wildcard_start(line, i);
-			size_t	end = find_wildcard_end(line, i);
-			t_tok	*files = wildcard(strndup(&line[start], end - start));
-			for (size_t i = 0; i < ft_vector_size(files); i++)
-			{
-				str_append(&s, files[i].s);
-				if (i + 1 < ft_vector_size(files))
-					str_append(&s, " ");
-			}
-		}
-
-		i++;
-	}
-	return (s);
-}
-
 t_str	expand_str(t_minishell *msh, char *line)
 {
 	t_str	stage1;
-	t_str	stage2;
 
 	stage1 = expand_str_stage1(msh, line);
-	stage2 = expand_str_stage2(msh, stage1.data);
-	return (stage2);
+	return (stage1);
 }
 
 t_tok	*expand_wildcards(t_tok *tokens)
@@ -289,6 +207,7 @@ t_tok	*expand_wildcards(t_tok *tokens)
 	size_t	i;
 	size_t	i2;
 	t_tok	*tokens3;
+	char	*s;
 
 	tokens2 = ft_vector(sizeof(t_tok), 0);
 	if (!tokens2)
@@ -296,7 +215,8 @@ t_tok	*expand_wildcards(t_tok *tokens)
 	i = 0;
 	while (i < ft_vector_size(tokens))
 	{
-		if (ft_strchr(tokens[i].s, '*'))
+		s = ft_strchr(tokens[i].s, '*');
+		if (s && ((i > 0 && s[-1] != '\\') || i == 0))
 		{
 			tokens3 = wildcard(tokens[i].s);
 			if (!tokens3)
@@ -315,4 +235,39 @@ t_tok	*expand_wildcards(t_tok *tokens)
 		i++;
 	}
 	return (tokens2);
+}
+
+static t_tok	clean_token(t_tok tk)
+{
+	t_str	s;
+	size_t	i;
+
+	s = str("");
+	i = 0;
+	while (tk.s[i])
+	{
+		if (tk.s[i] == '\\' && tk.s[i + 1] == '*')
+		{
+			str_append(&s, "*");
+			i++;
+		}
+		else
+			str_append_n(&s, &tk.s[i], 1);
+		i++;
+	}
+	free(tk.s);
+	return (tok(tk.type, s.data));
+}
+
+t_tok	*cleanup_tokens(t_tok *tokens)
+{
+	size_t	i;
+
+	i = 0;
+	while (i < ft_vector_size(tokens))
+	{
+		tokens[i] = clean_token(tokens[i]);
+		i++;
+	}
+	return (tokens);
 }

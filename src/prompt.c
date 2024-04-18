@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 16:22:50 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/17 14:26:43 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/18 16:39:52 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,34 +21,49 @@
 #include "minishell.h"
 #include "parser.h"
 
+static char	*cwd_or(char *s)
+{
+	if (!s)
+		return ("???");
+	return (s);
+}
+
 void	write_prefix(t_minishell *msh, char buf[])
 {
-	char	cwd[256];
+	char	*cwd;
 	char	*home;
 	size_t	sz;
 	size_t	cwd_sz;
-	char	*s;
 
-	getcwd(cwd, 256);
+	cwd = getcwd(NULL, 0);
 	home = getourenv(msh, "HOME");
 	if (!home)
 	{
 		if (msh->exit_code == 0)
-			ft_sprintf(buf, NOHOME, 0, cwd);
+			ft_sprintf(buf, NOHOME, 0, cwd_or(cwd));
 		else
-			ft_sprintf(buf, NOHOME_ERR, msh->exit_code, cwd);
+			ft_sprintf(buf, NOHOME_ERR, msh->exit_code, cwd_or(cwd));
 		return ;
 	}
 	sz = ft_strlen(home);
-	cwd_sz = ft_strlen(cwd);
-	if (msh->exit_code == 0)
-		s = HOME;
+	if (cwd)
+		cwd_sz = ft_strlen(cwd);
 	else
-		s = HOME_ERR;
-	if (cwd_sz >= sz && !ft_strncmp(home, cwd, sz))
-		ft_sprintf(buf, s, msh->exit_code, cwd + sz);
+		cwd_sz = 0;
+	if (cwd && cwd_sz >= sz && !ft_strncmp(home, cwd, sz))
+	{
+		if (msh->exit_code != 0)
+			ft_sprintf(buf, HOME_ERR, msh->exit_code, cwd + sz);
+		else
+			ft_sprintf(buf, HOME, 0, cwd + sz);
+	}
 	else
-		ft_sprintf(buf, s, msh->exit_code, cwd);
+	{
+		if (msh->exit_code != 0)
+			ft_sprintf(buf, NOHOME_ERR, msh->exit_code, cwd_or(cwd));
+		else
+			ft_sprintf(buf, NOHOME, msh->exit_code, cwd_or(cwd));
+	}
 	free(home);
 }
 
@@ -96,6 +111,11 @@ static int	execute_line(t_minishell *msh, char *line)
 	{
 		msh_error("parsing error");
 		msh->exit_code = 2;
+		return (-1);
+	}
+	else if (node == (void *) 1)
+	{
+		msh->exit_code = 1;
 		return (-1);
 	}
 	dump_line(node);

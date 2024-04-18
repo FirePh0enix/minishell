@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:25:25 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/18 00:00:55 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/18 12:24:24 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,5 +90,6 @@ void	free_node(t_node *node);
 
 t_str	expand_str(t_minishell *msh, char *line);
 t_tok	*expand_wildcards(t_tok *tokens);
+t_tok	*cleanup_tokens(t_tok *tokens);
 
 #endif
