@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/14 12:02:25 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/17 16:48:16 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/18 12:06:54 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,30 +190,115 @@ t_str	expand_str_stage1(t_minishell *msh, char *line)
 	return (s);
 }
 
+static size_t	find_wildcard_start(char *line, size_t i)
+{
+	bool	open_dquotes;
+	bool	open_quotes;
+
+	open_dquotes = false;
+	open_quotes = false;
+	while (i >= 0)
+	{
+		if (line[i] == '"' && !open_quotes)
+			open_dquotes = !open_dquotes;
+		else if (line[i] == '\'' && !open_dquotes)
+			open_quotes = !open_quotes;
+
+		if (isspace(line[i]) && !open_quotes && !open_dquotes)
+			break ;
+		if (i == 0)
+			break ;
+		i--;
+	}
+	return (i);
+}
+
+static size_t	find_wildcard_end(char *line, size_t i)
+{
+	bool	open_dquotes;
+	bool	open_quotes;
+
+	open_dquotes = false;
+	open_quotes = false;
+	while (line[i])
+	{
+		if (line[i] == '"' && !open_quotes)
+			open_dquotes = !open_dquotes;
+		else if (line[i] == '\'' && !open_dquotes)
+			open_quotes = !open_quotes;
+
+		if (isspace(line[i]) && !open_quotes && !open_dquotes)
+			break ;
+		i++;
+	}
+	return (i);
+}
+
+/*
+ * Wildcard expansion
+ */
+t_str	expand_str_stage2(t_minishell *msh, char *line)
+{
+	t_str	s;
+	size_t	i;
+	bool	open_quotes;
+	bool	open_dquotes;
+
+	s = str("");
+	i = 0;
+	open_quotes = false;
+	open_dquotes = false;
+	while (i < ft_strlen(line))
+	{
+		if (line[i] == '"' && !open_quotes)
+			open_dquotes = !open_dquotes;
+		else if (line[i] == '\'' && !open_dquotes)
+			open_quotes = !open_quotes;
+
+		if (line[i] == '*' && !open_quotes && !open_dquotes)
+		{
+			size_t	start = find_wildcard_start(line, i);
+			size_t	end = find_wildcard_end(line, i);
+			t_tok	*files = wildcard(strndup(&line[start], end - start));
+			for (size_t i = 0; i < ft_vector_size(files); i++)
+			{
+				str_append(&s, files[i].s);
+				if (i + 1 < ft_vector_size(files))
+					str_append(&s, " ");
+			}
+		}
+
+		i++;
+	}
+	return (s);
+}
+
 t_str	expand_str(t_minishell *msh, char *line)
 {
 	t_str	stage1;
+	t_str	stage2;
 
 	stage1 = expand_str_stage1(msh, line);
-	return (stage1);
+	stage2 = expand_str_stage2(msh, stage1.data);
+	return (stage2);
 }
 
-char	**expand_wildcards(char **tokens)
+t_tok	*expand_wildcards(t_tok *tokens)
 {
-	char	**tokens2;
+	t_tok	*tokens2;
 	size_t	i;
 	size_t	i2;
-	char	**tokens3;
+	t_tok	*tokens3;
 
-	tokens2 = ft_vector(sizeof(char *), 0);
+	tokens2 = ft_vector(sizeof(t_tok), 0);
 	if (!tokens2)
 		return (NULL);
 	i = 0;
 	while (i < ft_vector_size(tokens))
 	{
-		if (ft_strchr(tokens[i], '*'))
+		if (ft_strchr(tokens[i].s, '*'))
 		{
-			tokens3 = wildcard(tokens[i]);
+			tokens3 = wildcard(tokens[i].s);
 			if (!tokens3)
 				return (NULL);
 			if (ft_vector_size(tokens3) == 0)

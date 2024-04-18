@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:24:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/17 14:24:55 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/17 20:21:36 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ void	add_our_history(t_minishell *msh, char *line);
 void	load_history(t_minishell *msh);
 void	free_history(t_minishell *msh);
 
-char	**wildcard(char *suffix);
+t_tok	*wildcard(char *suffix);
 
 void	copy_env(t_minishell *minishell, char *envp[]);
 char	*getourenv(t_minishell *minishell, char *name);

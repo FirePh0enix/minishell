@@ -6,12 +6,13 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 23:05:54 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/13 22:50:51 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/18 00:14:48 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "libft.h"
+#include "parser.h"
 #include <unistd.h>
 #include <sys/types.h>
 #include <dirent.h>
@@ -85,13 +86,13 @@ static t_file	*filter_files(t_file *files, char *filter)
 	return (filtered_files);
 }
 
-char	**wildcard(char *s)
+t_tok	*wildcard(char *s)
 {
 	t_file			*files = ft_vector(sizeof(t_file), 0);
 	DIR				*dir;
 	struct dirent	*dirent;
 	char			*s2;
-	char			**files3;
+	t_tok			*files3;
 
 	int				i;
 	int				i2;
@@ -121,7 +122,7 @@ char	**wildcard(char *s)
 	}
 	dir = opendir(path);
 	if (!dir)
-		return (ft_vector(sizeof(char *), 0)); // TODO: Free stuff here
+		return (ft_vector(sizeof(t_tok), 0)); // TODO: Free stuff here
 	while (1)
 	{
 		dirent = readdir(dir);
@@ -138,7 +139,7 @@ char	**wildcard(char *s)
 	if (s[i2] == '\0')
 	{
 		t_file	*files2 = filter_files(files, ft_strdup(filter));
-		files3 = ft_vector(sizeof(char *), ft_vector_size(files2));
+		files3 = ft_vector(sizeof(t_tok), ft_vector_size(files2));
 		for (size_t i = 0; i < ft_vector_size(files2); i++)
 		{
 			t_str	s = str("");
@@ -148,14 +149,15 @@ char	**wildcard(char *s)
 				str_append(&s, "/");
 			}
 			str_append(&s, files2[i].file);
-			ft_vector_add(&files3, &s.data);
+			t_tok	tk = tok(TOK_IDENT, s.data);
+			ft_vector_add(&files3, &tk);
 		}
 		ft_vector_free(files2);
 	}
 	else
 	{
 		t_file	*files2 = filter_files(files, ft_strdup(filter));
-		files3 = ft_vector(sizeof(char *), 0);
+		files3 = ft_vector(sizeof(t_tok), 0);
 		for (size_t i = 0; i < ft_vector_size(files2); i++)
 		{
 			t_str	s2 = str("");
@@ -168,7 +170,7 @@ char	**wildcard(char *s)
 			str_append(&s2, "/");
 			str_append(&s2, &s[i2 + 1]);
 
-			char	**files4 = wildcard(s2.data);
+			t_tok	*files4 = wildcard(s2.data);
 			for (size_t i = 0; i < ft_vector_size(files4); i++)
 				ft_vector_add(&files3, &files4[i]);
 			ft_vector_free(files4);

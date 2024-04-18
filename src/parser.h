@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:25:25 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/17 12:13:52 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/18 00:00:55 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,15 +57,38 @@ typedef struct s_node
 	};
 }	t_node;
 
+typedef enum e_tok_type
+{
+	TOK_IDENT,
+	TOK_STR,
+	TOK_OP
+}	t_tok_type;
+
+typedef struct s_tok
+{
+	t_tok_type	type;
+	char	*s;
+}	t_tok;
+
+inline t_tok	nulltok()
+{
+	return ((t_tok){.type = 0, .s = NULL});
+}
+
+inline t_tok	tok(t_tok_type type, char *s)
+{
+	return ((t_tok){.type = type, .s = s});
+}
+
 t_node	*parse_line(t_minishell *minishell, char *line);
 void	dump_line(t_node *node);
 
-char	**split_into_tokens(char *line);
+t_tok	*split_into_tokens(char *line);
 
-t_node	*parse_expr(t_minishell *msh, char **tokens, size_t start, size_t end, t_node *parent);
+t_node	*parse_expr(t_minishell *msh, t_tok *tokens, size_t start, size_t end, t_node *parent);
 void	free_node(t_node *node);
 
 t_str	expand_str(t_minishell *msh, char *line);
-char	**expand_wildcards(char **tokens);
+t_tok	*expand_wildcards(t_tok *tokens);
 
 #endif
