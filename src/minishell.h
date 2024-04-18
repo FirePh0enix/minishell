@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:24:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/18 15:22:09 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/18 17:23:42 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,9 @@ void	print_prompt_prefix();
 void	init_signals(t_minishell *minishell);
 
 bool	isemptycmd(char *s);
+
+void	set_ctrlc_heredoc();
+void	set_ctrlc_default();
 
 void	add_our_history(t_minishell *msh, char *line);
 void	load_history(t_minishell *msh);

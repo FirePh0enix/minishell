@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:34:59 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/18 16:39:05 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/18 17:27:14 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ static char	*heredoc(t_minishell *msh, char *eof)
 	line_num = 1;
 	while (1)
 	{
+		//set_ctrlc_heredoc();
 		line = readline("> ");
 		if (!line)
 		{
@@ -82,6 +83,7 @@ static char	*heredoc(t_minishell *msh, char *eof)
 		free(line);
 		line_num++;
 	}
+	//set_ctrlc_default();
 	return (close(fd), ft_strdup(filename));
 }
 
