@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 14:41:09 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/19 18:36:11 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/19 18:39:08 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ int	main(int argc, char *argv[], char *envp[])
 {
 	t_minishell	msh;
 
-	if (TEST && !isatty(0))
+	if (!isatty(0) && !TEST)
 		return (1);
 	ft_bzero(&msh, sizeof(t_minishell));
 	msh.exit_code = 0;
