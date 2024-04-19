@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:24:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/19 15:00:13 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/19 18:36:39 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,10 @@
 
 # define HOME " \e[1;34m%d \e[1;32m~%s \e[0;34m$\e[0m "
 # define HOME_ERR " \e[1;31m%d \e[1;32m~%s \e[0;34m$\e[0m "
+
+# ifndef TEST
+#  define TEST 0
+# endif
 
 typedef struct s_minishell
 {

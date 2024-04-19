@@ -6,7 +6,7 @@
 #    By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/22 14:41:53 by ledelbec          #+#    #+#              #
-#    Updated: 2024/04/19 15:05:52 by ledelbec         ###   ########.fr        #
+#    Updated: 2024/04/19 18:37:31 by ledelbec         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -53,6 +53,9 @@ all: $(NAME)
 
 $(NAME): $(OBJS) libft/libft.a
 	$(CC) -o $(NAME) $(OBJS) libft/libft.a -lreadline
+
+build-test: CFLAGS+=-DTEST=1
+build-test: $(NAME)
 
 libft/libft.a:
 	make -C libft
