@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 14:41:09 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/17 16:22:38 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/19 13:43:49 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,10 @@ int	exec_single_cmd(t_minishell *msh, char *argv[])
 	{
 		msh_error("parsing error");
 		exit(2);
+	}
+	else if (node == (void *)1)
+	{
+		exit(1);
 	}
 	status = exec_cmd(msh, node, -1, -1);
 	if (status != 0)

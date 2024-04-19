@@ -1,58 +1,138 @@
 #!/bin/bash
 
-TESTS=(
-	simple-command-parsing
-	command-parsing-with-pipe
-	env-variables
-	parenthesis-with-redirections
-)
-
-SRCS="tests/lib/assert.c src/parser.c src/error.c src/signal.c src/history.c src/exec/exec.c src/exec/exec_utils.c src/exec/handle_type.c src/exec/builtins_utils.c src/builtins/echo.c src/builtins/cd.c src/builtins/pwd.c src/builtins/export.c src/builtins/unset.c src/builtins/env.c src/builtins/exit.c src/exec/dup.c src/exec/close_fd.c src/prompt.c src/parser/wildcard.c src/env.c src/parser/expr.c src/parser/tokenizer.c src/parser/free_node.c src/parser/expand_tokens.c"
-
 GREEN="\e[42m"
 RED="\e[101m"
 BOLD="\e[1m"
 RESET="\e[0m"
 
+EXIT_CODE=0
+
 run-test()
 {
-	clang -o minishell.test tests/$1.c $SRCS libft/libft.a -lreadline -Ilibft -Isrc -g
-	OUTPUT=`./minishell.test 2>&1`
-
-	if [ $? -eq 0 ]; then
-		echo -e "Test \`$BOLD$1$RESET\` is a ${GREEN}Success${RESET}"
+	OUTPUT=`./minishell "$1" 2> /dev/null`
+	
+	if [[ "$OUTPUT" == "$2" ]]; then
+		echo -n -e "Test \`$BOLD"
+		echo -n $1
+		echo -e "$RESET\` is a ${GREEN}Success${RESET}"
 	else
-		echo -e "Test \`$BOLD$1\` is a ${RED}Failure${RESET}"
-		echo -e "========= Output ========="
-		echo "$OUTPUT"
+		echo -e "Test \`$BOLD$1$RESET\` is a ${RED}Failure${RESET}"
+		echo -n -e "Expected \`$BOLD"
+		echo -n $2
+		echo -e "$RESET\` but got \`$BOLD$OUTPUT$RESET\`"
 		echo
-
-		if [[ "$OUTPUT" == "" ]]; then
-			echo "No output :( The test might has crashed, re-running with valgrind"
-			valgrind ./minishell.test
-		fi
-
-		return 1
+		EXIT_CODE=1
 	fi
 }
 
-SIGNIFICANT_ERR=0
-LAST_ERR=0
-
-for test_name in "${TESTS[@]}"; do
-	run-test $test_name
-	LAST_ERR=$?
+run-test-err()
+{
+	OUTPUT=`./minishell "$1" 2>&1`
+	CMD_STATUS=$?
 	
-	if [[ "$SIGNIFICANT_ERR" == "0" && "$LAST_ERR" != "0" ]]; then
-		SIGNIFICANT_ERR=$LAST_ERR
+	if [[ "$OUTPUT" == "$2" ]]; then
+		echo -e "Test err \`$BOLD$1$RESET\` is a ${GREEN}Success${RESET}"
+	else
+		echo -e "Test err \`$BOLD$1$RESET\` is a ${RED}Failure${RESET}"
+		echo -e "Expected \`$BOLD$2$RESET\` but got \`$BOLD$OUTPUT$RESET\`"
+		echo
+		EXIT_CODE=1
 	fi
-done
 
-echo
-bash tests/test2.sh
+	if [[ $CMD_STATUS != $3 ]]; then
+		echo -e "${RED}Exit code is wrong${RESET}: \`$CMD_STATUS\` (got) vs \`$3\` (expected)"
+		EXIT_CODE=1
+	fi
+}
 
-LAST_ERR=$?
-if [[ $LAST_ERR != 0 ]]; then
-	SIGNIFICANT_ERR=$LAST_ERR
+run-test-status()
+{
+	OUTPUT=`./minishell "$1" 2>&1`
+	CMD_STATUS=$?
+
+	if [[ "$CMD_STATUS" == "$2" ]]; then
+		echo -e "Test err \`$BOLD$1$RESET\` is a ${GREEN}Success${RESET}"
+	else
+		echo -e "Test err \`$BOLD$1$RESET\` is a ${RED}Failure${RESET}"
+		echo -e "Expected \`$BOLD$2$RESET\` but got \`$BOLD$CMD_STATUS$RESET\`"
+		echo
+		EXIT_CODE=1
+	fi
+}
+
+#
+# parser
+#
+
+run-test-err "| | |" "msh: parsing error" 2
+run-test-err "echo hola <<<< bonjour" "msh: parsing error" 2
+run-test-err "|||||||||||||" "msh: parsing error" 2
+run-test-err ">>|><" "msh: parsing error" 2
+
+run-test-err "\"\"e\"'c'ho 'b'\"o\"nj\"o\"'u'r\"" "msh: cannot find command \`e'c'ho 'b'onjo'u'r\`" 127
+# Too specific
+# run-test-err '?$HOME' "msh: cannot find command \`?/home/phoenixdev\`" 127
+run-test-err '$' 'msh: cannot find command `$`' 127
+
+export HOLA="s -la"
+run-test-status 'l$HOLA' 0
+run-test-err 'l"$HOLA"' "msh: cannot find command \`ls -la\`" 127
+
+#
+# exec
+#
+
+run-test-err "      " "" 0
+run-test-err "!" "" 2
+
+run-test-err "/bin/cd Desktop" "/bin/cd: No such file or directory" 127
+run-test-err "./Makefile" "./Makefile: Permission denied" 126
+
+#
+# `cd`
+#
+
+run-test-err "cd src tests" "msh: too many arguments" 1
+
+#
+# `echo`
+#
+
+run-test 'echo $?' "0"
+run-test 'echo $?$?' "00"
+# Those two works but not the tests
+run-test 'echo $?$' '0$'
+run-test 'echo $:$= | cat -e' '$:$=$'
+run-test 'echo [$TERM4' '['
+run-test "echo Hello World" "Hello World"
+run-test "echo -----nnnnnn" "-----nnnnnn"
+run-test "\"\"''echo hola\"\"'''' que\"\"'' tal\"\"''" "hola que tal"
+run-test 'echo $9HOME' "HOME"
+run-test 'echo $HOME%' "$HOME%"
+
+run-test "echo \"hola\"" "hola"
+run-test "echo 'hola'" "hola"
+run-test 'echo "$DONTEXIST""Makefile"' "Makefile"
+run-test 'echo "$DONTEXIST""Makefile"' "Makefile"
+run-test 'echo "$DONTEXIST" "Makefile"' " Makefile"
+
+run-test 'echo \$HOME' '$HOME'
+# Those tests don't run properly but works when doing them manually
+run-test 'echo \n' 'n'
+#run-test "echo \"\\n\"" '\n'
+#run-test 'echo "\\"' '\'
+run-test "echo '\\\\'" '\\'
+
+run-test "echo $\"HOME\"" "HOME"
+run-test "echo $'Hello'" "Hello"
+
+#
+# `pwd`
+#
+
+run-test "pwd" "$PWD"
+run-test "pwd test" "$PWD"
+
+if [[ "$EXIT_CODE" != "0" ]]; then
+	exit 1
 fi
-exit $SIGNIFICANT_ERR

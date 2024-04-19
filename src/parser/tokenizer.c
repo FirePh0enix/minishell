@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:31:32 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/19 12:03:08 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/19 13:51:04 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,9 +64,12 @@ static t_tok	next_token(char *line, size_t *index)
 			i++;
 			while (line[i])
 			{
-				if ((line[i] == '"' && line[*index] == '"') || (line[i] == '\'' && line[*index] == '\''))
+				if ((line[i] == '"' && line[*index] == '"'))
 					break ;
-				if (line[i] == '\\' && (line[i + 1] == '"' || line[i + 1] == '\''))
+				else if ((line[i] == '\'' && line[*index] == '\''))
+					break ;
+				if (line[i] == '\\' && line[*index] == '"'
+						&& (line[i + 1] == '"' || line[i + 1] == '\''))
 				{
 					str_append_n(&s, &line[i + 1], 1);
 					i++;
@@ -78,7 +81,7 @@ static t_tok	next_token(char *line, size_t *index)
 		}
 		else if (line[i] == '\\' && line[i + 1] == ' ')
 		{
-			str_append(&s, " ");
+			str_append_n(&s, &line[i + 1], 1);
 			i++;
 		}
 		else

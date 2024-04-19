@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:34:59 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/19 13:19:08 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/19 13:45:26 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,23 +126,27 @@ static int	handle_redirects(t_minishell *msh, t_node *node, t_tok *tokens,
 	if (!strcmp(tokens[i].s, ">") || !strcmp(tokens[i].s, ">>"))
 	{
 		if (!isvalidfile(tokens[i + 1].s))
+			return (-2);
+		if (open_redirect(tokens[i + 1].s, tokens[i].s) == -1)
 			return (-1);
-		open_redirect(tokens[i + 1].s, tokens[i].s);
 		node->cmd.outfile = ft_strdup(tokens[i + 1].s);
 		node->cmd.append = !strcmp(tokens[i].s, ">>");
 	}
 	else if (!strcmp(tokens[i].s, "<"))
 	{
 		if (!isvalidfile(tokens[i + 1].s))
-			return (-1);
+			return (-2);
 		if (open_redirect(tokens[i + 1].s, tokens[i].s) == -1)
 			return (-1);
 		node->cmd.infile = ft_strdup(tokens[i + 1].s);
 	}
 	else if (!strcmp(tokens[i].s, "<<"))
 	{
+		if (!isvalidfile(tokens[i + 1].s))
+			return (-2);
 		s = heredoc(msh, tokens[i + 1].s);
-		open_redirect(s, tokens[i].s);
+		if (open_redirect(s, tokens[i].s) == -1)
+			return (-1);
 		node->cmd.infile = s;
 	}
 	return (0);
@@ -181,6 +185,7 @@ static t_node	*parse_cmd(t_minishell *msh, t_tok *tokens,
 	t_node	*node;
 	size_t	i;
 	char	*tok;
+	int		err;
 
 	node = ft_calloc(sizeof(t_node), 1);
 	if (!node)
@@ -200,8 +205,11 @@ static t_node	*parse_cmd(t_minishell *msh, t_tok *tokens,
 			&& (!strcmp(tok, ">") || !strcmp(tok, ">>") || !strcmp(tok, "<")
 				|| !strcmp(tok, "<<")))
 		{
-			if (handle_redirects(msh, node, tokens, i) == -1)
+			err = handle_redirects(msh, node, tokens, i);
+			if (err == -1)
 				return ((void *)1);
+			else
+				return (NULL);
 			i++;
 		}
 		else if (!ft_vector_add(&node->cmd.argv, &tok))
@@ -230,8 +238,6 @@ static void	apply_out(t_minishell *msh, t_node *node, char *outfile, bool append
 	}
 	else if (node->type == TY_AND || node->type == TY_OR)
 	{
-		// Append mode is forced on the right node to simulate the behaviour
-		// of bash
 		apply_out(msh, node->pipe.left, outfile, append);
 		apply_out(msh, node->pipe.right, outfile, true);
 	}
@@ -369,10 +375,7 @@ t_node	*parse_expr(t_minishell *msh, t_tok *tokens, size_t start, size_t end,
 	if (pos == -1)
 		return (parse_parent(msh, tokens, start, end, parent));
 	else if (pos == 0)
-	{
-		printf("3.\n");
 		return (NULL);
-	}
 	else if (!strcmp(tokens[pos].s, "|") || !strcmp(tokens[pos].s, "||")
 			|| !strcmp(tokens[pos].s, "&&"))
 	{
