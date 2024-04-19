@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/27 14:24:38 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/19 15:00:50 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/19 16:21:23 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ static int	unset_env(t_minishell *msh, char *name, int *exit_code)
 	const size_t	size = ft_strlen(name);
 	int				i;
 
-	if (!strcmp(name, "_"))
+	if (!ft_strcmp(name, "_"))
 		return (0);
 	if (!is_valid_var_name(name))
 		return (set_exit_code(exit_code, 1),

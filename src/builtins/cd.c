@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 14:33:06 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/19 14:43:33 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/19 16:21:32 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ int	builtin_cd(t_minishell *msh, int parent_in, int parent_out, t_node *node)
 		file = open_outfile(node);
 	if (node->cmd.argc == 1)
 		return (close_outfile(file), no_arg(msh));
-	else if (!strcmp(node->cmd.argv[1], "-"))
+	else if (!ft_strcmp(node->cmd.argv[1], "-"))
 		return (close_outfile(file), minus(msh, file));
 	else
 		return (close_outfile(file), no_minus(msh, node));

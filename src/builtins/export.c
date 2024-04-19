@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/28 15:26:05 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/19 15:03:25 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/19 16:17:43 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ static int	export_variable(t_minishell *msh, char *s, int *exit_code)
 	i = 0;
 	while (s[i] && s[i] != '=' && s[i] != '+')
 		i++;
-	name = strndup(s, i);
+	name = ft_strndup(s, i);
 	if (!is_valid_var_name(name))
 		return (set_exit_code(exit_code, 1),
 			ft_fprintf(2, "msh: export: `%s' is not a valid identifier\n", s),

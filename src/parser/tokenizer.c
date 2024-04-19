@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:31:32 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/19 14:15:30 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/19 16:16:52 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ static t_tok	next_token(char *line, size_t *index)
 	i = *index;
 	if (i >= ft_strlen(line))
 		return (nulltok());
-	while (line[i] && isspace(line[i]))
+	while (line[i] && ft_isspace(line[i]))
 		i++;
 	*index = i;
 	if (line[i] == '\0')
@@ -57,7 +57,7 @@ static t_tok	next_token(char *line, size_t *index)
 		return (tok(TOK_OP, s.data));
 	}
 
-	while (i < ft_strlen(line) && !isspace(line[i]) && line[i] != '<'
+	while (i < ft_strlen(line) && !ft_isspace(line[i]) && line[i] != '<'
 		&& line[i] != '>' && line[i] != '|' && line[i] != '('
 		&& line[i] != ')' && ft_strncmp(&line[i], "&&", 2))
 	{

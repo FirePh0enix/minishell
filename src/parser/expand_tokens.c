@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand_tokens.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/14 12:02:25 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/18 16:02:04 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/19 16:18:20 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,9 +62,9 @@ static void	append_escaped(t_str *s, char *env)
 			str_append(s, "\\\"");
 		else if (env[i] == '\'')
 			str_append(s, "\\'");
-		else if (ft_strlen(&env[i]) >= 2 && (!strncmp(&env[i], "||", 2)
-				|| !strncmp(&env[i], "&&", 2) || !strncmp(&env[i], "<<", 2)
-				|| !strncmp(&env[i], ">>", 2)))
+		else if (ft_strlen(&env[i]) >= 2 && (!ft_strncmp(&env[i], "||", 2)
+				|| !ft_strncmp(&env[i], "&&", 2) || !ft_strncmp(&env[i], "<<", 2)
+				|| !ft_strncmp(&env[i], ">>", 2)))
 		{
 			str_append(s, "\\");
 			str_append_n(s, &env[i], 1);
@@ -120,7 +120,7 @@ t_str	expand_str_stage1(t_minishell *msh, char *line)
 		else if (!open_quotes && !open_dquotes
 			&& (i == 0 || line[i - 1] == ' ') && ((ft_strlen(&line[i]) >= 2
 			&& line[i] == '~' && line[i + 1] == '/')
-				|| (ft_strlen(&line[i]) >= 2 && line[i] == '~' && isspace(line[i]))
+				|| (ft_strlen(&line[i]) >= 2 && line[i] == '~' && ft_isspace(line[i]))
 				|| (ft_strlen(&line[i]) == 1 && line[i] == '~')))
 		{
 			env = getourenv(msh, "HOME");

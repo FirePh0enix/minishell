@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/19 14:41:22 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/19 16:21:28 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,9 @@ static void	add_env(t_minishell *msh, t_node *node)
 	{
 		env = node->cmd.env[i];
 		s = ft_strchr(env, '=');
-		name = strndup(env, s - env);
-		value = strdup(s + 1);
-		if (strcmp(name, "_"))
+		name = ft_strndup(env, s - env);
+		value = ft_strdup(s + 1);
+		if (ft_strcmp(name, "_"))
 			setourenv(msh, name, value);
 		free(name);
 		free(value);

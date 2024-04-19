@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:34:59 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/19 14:37:08 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/19 16:22:28 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,9 @@
 
 static int	get_op_priority(char *s)
 {
-	if (!strcmp(s, "|"))
+	if (!ft_strcmp(s, "|"))
 		return (1);
-	else if (!strcmp(s, "||") || !strcmp(s, "&&"))
+	else if (!ft_strcmp(s, "||") || !ft_strcmp(s, "&&"))
 		return (2);
 	return (-1);
 }
@@ -39,9 +39,9 @@ static int	get_op(t_tok *tokens, t_range range)
 	while (i <= (int) range.end)
 	{
 		tok = tokens[i].s;
-		if (tokens[i].type == TOK_OP && !strcmp(tok, ")"))
+		if (tokens[i].type == TOK_OP && !ft_strcmp(tok, ")"))
 			parent--;
-		else if (tokens[i].type == TOK_OP && !strcmp(tok, "("))
+		else if (tokens[i].type == TOK_OP && !ft_strcmp(tok, "("))
 			parent++;
 		else if (parent == 0 && tokens[i].type == TOK_OP && get_op_priority(tok) > hprio)
 		{
@@ -77,7 +77,7 @@ static char	*heredoc(t_minishell *msh, char *eof)
 				"end-of-file  (wanted `%s')\n", line_num, eof);
 			break ;
 		}
-		else if (!strcmp(line, eof))
+		else if (!ft_strcmp(line, eof))
 			break ;
 		if (g_signum == SIGINT)
 			break ;
@@ -91,20 +91,20 @@ static char	*heredoc(t_minishell *msh, char *eof)
 
 static bool	isvalidfile(char *s)
 {
-	return (!(!strcmp(s, "<") || !strcmp(s, ">") || !strcmp(s, "<<")
-		|| !strcmp(s, ">>") || !strcmp(s, "|") || !strcmp(s, "||")
-		|| !strcmp(s, "&") || !strcmp(s, "&&")));
+	return (!(!ft_strcmp(s, "<") || !ft_strcmp(s, ">") || !ft_strcmp(s, "<<")
+		|| !ft_strcmp(s, ">>") || !ft_strcmp(s, "|") || !ft_strcmp(s, "||")
+		|| !ft_strcmp(s, "&") || !ft_strcmp(s, "&&")));
 }
 
 int	open_redirect(char *filename, char *redirect)
 {
 	int	fd;
 
-	if (!strcmp(redirect, ">"))
+	if (!ft_strcmp(redirect, ">"))
 		fd = open(filename, O_CREAT | O_WRONLY | O_TRUNC, 0666);
-	else if (!strcmp(redirect, ">>"))
+	else if (!ft_strcmp(redirect, ">>"))
 		fd = open(filename, O_CREAT | O_WRONLY | O_APPEND, 0666);
-	else if (!strcmp(redirect, "<") || !strcmp(redirect, "<<"))
+	else if (!ft_strcmp(redirect, "<") || !ft_strcmp(redirect, "<<"))
 		fd = open(filename, O_RDONLY);
 	else
 		fd = -1;
@@ -123,16 +123,16 @@ static int	handle_redirects(t_minishell *msh, t_node *node, t_tok *tokens,
 
 	if (i + 1 >= size)
 		return (-1);
-	if (!strcmp(tokens[i].s, ">") || !strcmp(tokens[i].s, ">>"))
+	if (!ft_strcmp(tokens[i].s, ">") || !ft_strcmp(tokens[i].s, ">>"))
 	{
 		if (!isvalidfile(tokens[i + 1].s))
 			return (-2);
 		if (open_redirect(tokens[i + 1].s, tokens[i].s) == -1)
 			return (-1);
 		node->cmd.outfile = ft_strdup(tokens[i + 1].s);
-		node->cmd.append = !strcmp(tokens[i].s, ">>");
+		node->cmd.append = !ft_strcmp(tokens[i].s, ">>");
 	}
-	else if (!strcmp(tokens[i].s, "<"))
+	else if (!ft_strcmp(tokens[i].s, "<"))
 	{
 		if (!isvalidfile(tokens[i + 1].s))
 			return (-2);
@@ -140,7 +140,7 @@ static int	handle_redirects(t_minishell *msh, t_node *node, t_tok *tokens,
 			return (-1);
 		node->cmd.infile = ft_strdup(tokens[i + 1].s);
 	}
-	else if (!strcmp(tokens[i].s, "<<"))
+	else if (!ft_strcmp(tokens[i].s, "<<"))
 	{
 		if (!isvalidfile(tokens[i + 1].s))
 			return (-2);
@@ -165,7 +165,7 @@ static void	read_vars(t_node *node, t_tok *tokens, size_t *index, size_t end)
 		s = ft_strchr(tokens[i].s, '=');
 		if (!s)
 			break ;
-		s2 = strndup(tokens[i].s, s - tokens[i].s);
+		s2 = ft_strndup(tokens[i].s, s - tokens[i].s);
 		if (!is_valid_var_name(s2))
 		{
 			free(s2);
@@ -202,8 +202,8 @@ static t_node	*parse_cmd(t_minishell *msh, t_tok *tokens, t_range r,
 	{
 		tok = ft_strdup(tokens[i].s);
 		if (tokens[i].type == TOK_OP
-			&& (!strcmp(tok, ">") || !strcmp(tok, ">>") || !strcmp(tok, "<")
-				|| !strcmp(tok, "<<")))
+			&& (!ft_strcmp(tok, ">") || !ft_strcmp(tok, ">>") || !ft_strcmp(tok, "<")
+				|| !ft_strcmp(tok, "<<")))
 		{
 			err = handle_redirects(msh, node, tokens, i);
 			if (err == -1)
@@ -274,14 +274,14 @@ static t_node	*parse_parent(t_minishell *msh, t_tok *tokens, t_range r,
 	open_parents = 0;
 	for (size_t i = r.start; i <= r.end; i++)
 	{
-		if (tokens[i].type == TOK_OP && !strcmp(tokens[i].s, "("))
+		if (tokens[i].type == TOK_OP && !ft_strcmp(tokens[i].s, "("))
 		{
 			if (parent_start == -1)
 				parent_start = i;
 			else
 				open_parents++;
 		}
-		else if (tokens[i].type == TOK_OP && !strcmp(tokens[i].s, ")"))
+		else if (tokens[i].type == TOK_OP && !ft_strcmp(tokens[i].s, ")"))
 		{
 			if (open_parents == 0 && parent_end == -1)
 				parent_end = i;
@@ -321,8 +321,8 @@ static t_node	*parse_parent(t_minishell *msh, t_tok *tokens, t_range r,
 		}
 		tok = tokens[i].s;
 		if (tokens[i].type == TOK_OP
-			&& (!strcmp(tok, ">") || !strcmp(tok, ">>") || !strcmp(tok, "<")
-				|| !strcmp(tok, "<<")))
+			&& (!ft_strcmp(tok, ">") || !ft_strcmp(tok, ">>") || !ft_strcmp(tok, "<")
+				|| !ft_strcmp(tok, "<<")))
 		{
 			if (handle_redirects(msh, &n, tokens, i) == -1)
 				return ((void *) 1);
@@ -358,11 +358,11 @@ static t_node	*parse_parent(t_minishell *msh, t_tok *tokens, t_range r,
 
 static t_type	type_for_str(char *s)
 {
-	if (!strcmp(s, "|"))
+	if (!ft_strcmp(s, "|"))
 		return (TY_PIPE);
-	else if (!strcmp(s, "||"))
+	else if (!ft_strcmp(s, "||"))
 		return (TY_OR);
-	else if (!strcmp(s, "&&"))
+	else if (!ft_strcmp(s, "&&"))
 		return (TY_AND);
 	return (0);
 }
@@ -377,8 +377,8 @@ t_node	*parse_expr(t_minishell *msh, t_tok *tokens, t_range r, t_node *parent)
 		return (parse_parent(msh, tokens, r, parent));
 	else if (pos == 0)
 		return (NULL);
-	else if (!strcmp(tokens[pos].s, "|") || !strcmp(tokens[pos].s, "||")
-			|| !strcmp(tokens[pos].s, "&&"))
+	else if (!ft_strcmp(tokens[pos].s, "|") || !ft_strcmp(tokens[pos].s, "||")
+			|| !ft_strcmp(tokens[pos].s, "&&"))
 	{
 		node = ft_calloc(1, sizeof(t_node));
 		if (!node)
