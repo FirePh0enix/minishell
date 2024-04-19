@@ -6,14 +6,13 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 15:28:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/14 00:42:27 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/19 12:30:26 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parser.h"
 #include "libft.h"
 #include <stdlib.h>
-#include <stdio.h>
 
 void	free_node(t_node *node)
 {
@@ -22,6 +21,7 @@ void	free_node(t_node *node)
 	if (node->type == TY_CMD)
 	{
 		ft_vector_deep_free(node->cmd.argv);
+		ft_vector_deep_free(node->cmd.env);
 		if (node->cmd.outfile)
 			free(node->cmd.outfile);
 		if (node->cmd.infile)

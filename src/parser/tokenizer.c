@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:31:32 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/18 12:07:07 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/19 12:03:08 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,8 @@ static t_tok	next_token(char *line, size_t *index)
 	}
 
 	while (i < ft_strlen(line) && !isspace(line[i]) && line[i] != '<'
-		&& line[i] != '>' && line[i] != '|' && line[i] != '&' && line[i] != '('
-		&& line[i] != ')')
+		&& line[i] != '>' && line[i] != '|' && line[i] != '('
+		&& line[i] != ')' && ft_strncmp(&line[i], "&&", 2))
 	{
 		if (line[i] == '"' || line[i] == '\'')
 		{

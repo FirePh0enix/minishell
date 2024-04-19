@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/18 17:20:33 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/19 11:55:25 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,6 @@ int	wait_for_children(t_minishell *msh)
 	status = 0;
 	while (wait(&status) > 0)
 	{
-		printf("%d\n", g_signum);
 		i = 0;
 		if (g_signum != -1)
 		{

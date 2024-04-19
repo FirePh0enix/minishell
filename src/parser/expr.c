@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:34:59 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/18 17:27:14 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/19 13:19:08 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,9 +67,9 @@ static char	*heredoc(t_minishell *msh, char *eof)
 	if (fd == -1)
 		return (NULL);
 	line_num = 1;
+	set_ctrlc_heredoc();
 	while (1)
 	{
-		//set_ctrlc_heredoc();
 		line = readline("> ");
 		if (!line)
 		{
@@ -79,16 +79,16 @@ static char	*heredoc(t_minishell *msh, char *eof)
 		}
 		else if (!strcmp(line, eof))
 			break ;
+		if (g_signum == SIGINT)
+			break ;
 		ft_putendl_fd(line, fd);
 		free(line);
 		line_num++;
 	}
-	//set_ctrlc_default();
+	set_ctrlc_default();
 	return (close(fd), ft_strdup(filename));
 }
 
-// TODO: Adapt for HEREDOC delimiter
-//       Check if its works in all cases
 static bool	isvalidfile(char *s)
 {
 	return (!(!strcmp(s, "<") || !strcmp(s, ">") || !strcmp(s, "<<")
@@ -109,7 +109,7 @@ int	open_redirect(char *filename, char *redirect)
 	else
 		fd = -1;
 	if (fd != -1)
-		close(fd); // TODO: Maybe put error message here
+		close(fd);
 	else
 		msh_errno(filename);
 	return (fd);
@@ -168,7 +168,6 @@ static void	read_vars(t_node *node, t_tok *tokens, size_t *index, size_t end)
 			break ;
 		}
 		s3 = ft_strdup(tokens[i].s);
-		printf("%s\n", s3);
 		ft_vector_add(&node->cmd.env, &s3);
 		free(s2);
 		i++;
@@ -222,7 +221,7 @@ static void	apply_out(t_minishell *msh, t_node *node, char *outfile, bool append
 {
 	if (node->type == TY_CMD)
 	{
-		node->cmd.outfile = outfile;
+		node->cmd.outfile = ft_strdup(outfile);
 		node->cmd.append = append;
 	}
 	else if (node->type == TY_PIPE)
@@ -242,7 +241,7 @@ static void	apply_in(t_minishell *msh, t_node *node, char *infile)
 {
 	if (node->type == TY_CMD)
 	{
-		node->cmd.infile = infile;
+		node->cmd.infile = ft_strdup(infile);
 	}
 	else if (node->type == TY_PIPE)
 	{
@@ -257,10 +256,6 @@ static void	apply_in(t_minishell *msh, t_node *node, char *infile)
 
 static t_node	*parse_parent(t_minishell *msh, t_tok *tokens, size_t start, size_t end, t_node *parent)
 {
-	char	*outfile = NULL;
-	char	*infile = NULL;
-	bool	append;
-
 	// First find the parenthesis start and end values
 	int	parent_start;
 	int	parent_end;
@@ -301,33 +296,56 @@ static t_node	*parse_parent(t_minishell *msh, t_tok *tokens, size_t start, size_
 	else if (parent_start == -1 || parent_end == -1)
 		return (NULL);
 
-	// Then parse redirections here
+	if (parent_start != (int) start)
+		return (NULL);
 
-	// FIXME:
-	// Redirection are not allowed before the parenthesis
+	size_t	i;
+	t_node	n;
+	char	*tok;
 
-	append = false;
-	for (size_t i = start; i <= end; i++)
+	ft_bzero(&n, sizeof(t_node));
+	i = start;
+	while (i <= end)
 	{
-		// TODO:
+		if ((int)i >= parent_start && (int)i <= parent_end)
+		{
+			i++;
+			continue ;
+		}
+		tok = tokens[i].s;
+		if (tokens[i].type == TOK_OP
+			&& (!strcmp(tok, ">") || !strcmp(tok, ">>") || !strcmp(tok, "<")
+				|| !strcmp(tok, "<<")))
+		{
+			if (handle_redirects(msh, &n, tokens, i) == -1)
+				return ((void *) 1);
+			i++;
+		}
+		else
+			return (NULL);
+		i++;
 	}
 
 	// Finally parse what's between parenthesis and add the redirections
 
 	t_node	*node = parse_expr(msh, tokens, parent_start + 1, parent_end - 1, NULL);
+	if (!node)
+		return (NULL);
 
-	if (outfile != NULL)
-		apply_out(msh, node, outfile, append);
-	if (infile != NULL)
-		apply_in(msh, node, infile);
+	if (n.cmd.outfile != NULL)
+		apply_out(msh, node, n.cmd.outfile, n.cmd.append);
+	if (n.cmd.infile != NULL)
+		apply_in(msh, node, n.cmd.infile);
 
 	t_node	*pa = ft_calloc(1, sizeof(t_node));
+	if (!pa)
+		return (NULL);
 	pa->type = TY_PARENT;
 	pa->parent = parent;
 	pa->pa.node = node;
 	node->parent = pa;
 
-	return (parent);
+	return (pa);
 }
 
 static t_type	type_for_str(char *s)
@@ -351,7 +369,10 @@ t_node	*parse_expr(t_minishell *msh, t_tok *tokens, size_t start, size_t end,
 	if (pos == -1)
 		return (parse_parent(msh, tokens, start, end, parent));
 	else if (pos == 0)
+	{
+		printf("3.\n");
 		return (NULL);
+	}
 	else if (!strcmp(tokens[pos].s, "|") || !strcmp(tokens[pos].s, "||")
 			|| !strcmp(tokens[pos].s, "&&"))
 	{

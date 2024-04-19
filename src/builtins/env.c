@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/28 15:13:31 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/17 13:30:09 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/19 12:16:54 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,9 @@ static t_node	*create_node(t_minishell *msh, t_node *node)
 	node2->cmd.outfile = node->cmd.outfile;
 	node2->cmd.infile = node->cmd.infile;
 	node2->cmd.append = node->cmd.append;
+	node2->cmd.env = ft_vector(sizeof(char *), 0);
+	s = "_=/usr/bin/env";
+	ft_vector_add(&node2->cmd.env, &s);
 	i = 1;
 	while (i < node->cmd.argc)
 	{
@@ -49,8 +52,6 @@ static	int	create_outfile(t_node *node)
 	else
 		flags |= O_TRUNC;
 	file = open(node->cmd.outfile, flags, 0666);
-	if (file == -1)
-		return (msh_error("unable to open outfile"), -1);
 	return (file);
 }
 
@@ -63,9 +64,9 @@ int	builtin_env(t_minishell *msh, int parent_in, int parent_out, t_node *node)
 
 	if (node->cmd.argc >= 2)
 	{
-		// Add _=/usr/bin/env
 		node2 = create_node(msh, node);
 		exit_code = exec_cmd(msh, node2, parent_in, parent_out);
+		free_node(node2);
 		return (exit_code);
 	}
 	file = STDOUT_FILENO;
