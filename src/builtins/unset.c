@@ -6,19 +6,12 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/27 14:24:38 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/17 16:20:52 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/19 15:00:50 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #include "minishell.h"
-
-static int	set_exit_code(int *exit_code, int exit_code2)
-{
-	if (*exit_code == 0)
-		*exit_code = exit_code2;
-	return (0);
-}
 
 static int	unset_env(t_minishell *msh, char *name, int *exit_code)
 {
@@ -28,11 +21,8 @@ static int	unset_env(t_minishell *msh, char *name, int *exit_code)
 	if (!strcmp(name, "_"))
 		return (0);
 	if (!is_valid_var_name(name))
-	{
-		msh_builtin_error("unset", "invalid parameter name");
-		set_exit_code(exit_code, 1);
-		return (1);
-	}
+		return (set_exit_code(exit_code, 1),
+			msh_builtin_error("unset", "invalid parameter name"), 1);
 	i = 0;
 	while (msh->env[i])
 	{

@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 23:45:53 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/17 16:25:18 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/19 14:24:08 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ char	*getourenv(t_minishell *minishell, char *name)
 	}
 	if (!strcmp(name, "PATH"))
 		return (ft_strdup("/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:"
-			"/sbin:/bin"));
+				"/sbin:/bin"));
 	return (NULL);
 }
 

@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:54:47 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/15 15:22:36 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/19 14:25:21 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,9 @@ int		ft_exec_cmd(char *cmd, char **av, char **envp);
 
 int		dup_infile(t_node *node);
 int		dup_outfile(t_node *node);
-int		dup_in(int	in);
+int		dup_in(int in);
 void	overall_dup(t_node *node, int in, int out);
-int		dup_out(int	in);
+int		dup_out(int in);
 void	overall_dup(t_node *node, int in, int out);
 
 bool	is_builtin(t_node *node);

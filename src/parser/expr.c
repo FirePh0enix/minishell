@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:34:59 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/19 13:45:26 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/19 14:37:08 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ static int	get_op_priority(char *s)
 	return (-1);
 }
 
-static int	get_op(t_tok *tokens, size_t start, size_t end)
+static int	get_op(t_tok *tokens, t_range range)
 {
 	int		i;
 	char	*tok;
@@ -33,10 +33,10 @@ static int	get_op(t_tok *tokens, size_t start, size_t end)
 	int		parent;
 
 	pos = -1;
-	i = start;
+	i = range.start;
 	hprio = 0;
 	parent = 0;
-	while (i <= (int) end)
+	while (i <= (int) range.end)
 	{
 		tok = tokens[i].s;
 		if (tokens[i].type == TOK_OP && !strcmp(tok, ")"))
@@ -179,8 +179,8 @@ static void	read_vars(t_node *node, t_tok *tokens, size_t *index, size_t end)
 	*index = i;
 }
 
-static t_node	*parse_cmd(t_minishell *msh, t_tok *tokens,
-		size_t start, size_t end, t_node *parent)
+static t_node	*parse_cmd(t_minishell *msh, t_tok *tokens, t_range r,
+		t_node *parent)
 {
 	t_node	*node;
 	size_t	i;
@@ -196,9 +196,9 @@ static t_node	*parse_cmd(t_minishell *msh, t_tok *tokens,
 	node->cmd.env = ft_vector(sizeof(char *), 0);
 	if (!node->cmd.argv || !node->cmd.env)
 		return (free(node), NULL);
-	i = start;
-	read_vars(node, tokens, &i, end);
-	while (i <= end)
+	i = r.start;
+	read_vars(node, tokens, &i, r.end);
+	while (i <= r.end)
 	{
 		tok = ft_strdup(tokens[i].s);
 		if (tokens[i].type == TOK_OP
@@ -260,7 +260,8 @@ static void	apply_in(t_minishell *msh, t_node *node, char *infile)
 	}
 }
 
-static t_node	*parse_parent(t_minishell *msh, t_tok *tokens, size_t start, size_t end, t_node *parent)
+static t_node	*parse_parent(t_minishell *msh, t_tok *tokens, t_range r,
+		t_node *parent)
 {
 	// First find the parenthesis start and end values
 	int	parent_start;
@@ -271,7 +272,7 @@ static t_node	*parse_parent(t_minishell *msh, t_tok *tokens, size_t start, size_
 	parent_start = - 1;
 	parent_end = -1;
 	open_parents = 0;
-	for (size_t i = start; i <= end; i++)
+	for (size_t i = r.start; i <= r.end; i++)
 	{
 		if (tokens[i].type == TOK_OP && !strcmp(tokens[i].s, "("))
 		{
@@ -298,11 +299,11 @@ static t_node	*parse_parent(t_minishell *msh, t_tok *tokens, size_t start, size_
 		return (NULL);
 
 	if (parent_start == -1 && parent_end == -1)
-		return (parse_cmd(msh, tokens, start, end, parent));
+		return (parse_cmd(msh, tokens, r, parent));
 	else if (parent_start == -1 || parent_end == -1)
 		return (NULL);
 
-	if (parent_start != (int) start)
+	if (parent_start != (int) r.start)
 		return (NULL);
 
 	size_t	i;
@@ -310,8 +311,8 @@ static t_node	*parse_parent(t_minishell *msh, t_tok *tokens, size_t start, size_
 	char	*tok;
 
 	ft_bzero(&n, sizeof(t_node));
-	i = start;
-	while (i <= end)
+	i = r.start;
+	while (i <= r.end)
 	{
 		if ((int)i >= parent_start && (int)i <= parent_end)
 		{
@@ -334,7 +335,8 @@ static t_node	*parse_parent(t_minishell *msh, t_tok *tokens, size_t start, size_
 
 	// Finally parse what's between parenthesis and add the redirections
 
-	t_node	*node = parse_expr(msh, tokens, parent_start + 1, parent_end - 1, NULL);
+	t_node	*node = parse_expr(msh, tokens,
+			range(parent_start + 1, parent_end - 1), NULL);
 	if (!node)
 		return (NULL);
 
@@ -365,15 +367,14 @@ static t_type	type_for_str(char *s)
 	return (0);
 }
 
-t_node	*parse_expr(t_minishell *msh, t_tok *tokens, size_t start, size_t end,
-	t_node *parent)
+t_node	*parse_expr(t_minishell *msh, t_tok *tokens, t_range r, t_node *parent)
 {
 	int			pos;
 	t_node	*node;
 
-	pos = get_op(tokens, start, end);
+	pos = get_op(tokens, r);
 	if (pos == -1)
-		return (parse_parent(msh, tokens, start, end, parent));
+		return (parse_parent(msh, tokens, r, parent));
 	else if (pos == 0)
 		return (NULL);
 	else if (!strcmp(tokens[pos].s, "|") || !strcmp(tokens[pos].s, "||")
@@ -384,10 +385,10 @@ t_node	*parse_expr(t_minishell *msh, t_tok *tokens, size_t start, size_t end,
 			return (NULL);
 		node->type = type_for_str(tokens[pos].s);
 		node->parent = parent;
-		node->pipe.left = parse_expr(msh, tokens, start, pos - 1, node);
+		node->pipe.left = parse_expr(msh, tokens, range(r.start, pos - 1), node);
 		if (!node->pipe.left)
 			return (free_node(node), NULL);
-		node->pipe.right = parse_expr(msh, tokens, pos + 1, end, node);
+		node->pipe.right = parse_expr(msh, tokens, range(pos + 1, r.end), node);
 		if (!node->pipe.right)
 			return (free_node(node), NULL);
 		return (node);

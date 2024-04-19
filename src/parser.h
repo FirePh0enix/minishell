@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:25:25 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/18 12:24:24 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/19 14:34:23 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,10 +67,21 @@ typedef enum e_tok_type
 typedef struct s_tok
 {
 	t_tok_type	type;
-	char	*s;
+	char		*s;
 }	t_tok;
 
-inline t_tok	nulltok()
+typedef struct s_range
+{
+	size_t	start;
+	size_t	end;
+}	t_range;
+
+inline t_range	range(size_t start, size_t end)
+{
+	return ((t_range){start, end});
+}
+
+inline t_tok	nulltok(void)
 {
 	return ((t_tok){.type = 0, .s = NULL});
 }
@@ -85,7 +96,8 @@ void	dump_line(t_node *node);
 
 t_tok	*split_into_tokens(char *line);
 
-t_node	*parse_expr(t_minishell *msh, t_tok *tokens, size_t start, size_t end, t_node *parent);
+t_node	*parse_expr(t_minishell *msh, t_tok *tokens, t_range range,
+					t_node *parent);
 void	free_node(t_node *node);
 
 t_str	expand_str(t_minishell *msh, char *line);

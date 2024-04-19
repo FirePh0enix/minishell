@@ -6,25 +6,11 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 14:33:06 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/19 12:28:36 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/19 14:43:33 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-static int	create_outfile(t_node *node)
-{
-	int	flags;
-	int	file;
-
-	flags = O_WRONLY | O_CREAT;
-	if (node->cmd.append)
-		flags |= O_APPEND;
-	else
-		flags |= O_TRUNC;
-	file = open(node->cmd.outfile, flags, 0666);
-	return (file);
-}
 
 static int	no_arg(t_minishell *msh)
 {
@@ -67,7 +53,7 @@ static int	no_minus(t_minishell *msh, t_node *node)
 	char	*fs;
 
 	pwd = getcwd(NULL, 0);
-	cdpath = getourenv(msh, "CDPATH"); // TODO: Maybe join with `/`
+	cdpath = getourenv(msh, "CDPATH");
 	setourenv(msh, "OLDPWD", pwd);
 	free(pwd);
 	if (cdpath && cdpath[0] != '\0')
@@ -98,7 +84,7 @@ int	builtin_cd(t_minishell *msh, int parent_in, int parent_out, t_node *node)
 		return (0);
 	file = STDOUT_FILENO;
 	if (node->cmd.outfile)
-		file = create_outfile(node);
+		file = open_outfile(node);
 	if (node->cmd.argc == 1)
 		return (close_outfile(file), no_arg(msh));
 	else if (!strcmp(node->cmd.argv[1], "-"))

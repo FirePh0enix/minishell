@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 14:51:56 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/16 13:07:14 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/19 14:44:45 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,22 +27,6 @@ static int	strcmpn(char *s)
 		i++;
 	}
 	return (0);
-}
-
-static int	open_outfile(t_node *node)
-{
-	int	flags;
-	int	fd;
-
-	flags = O_WRONLY | O_CREAT;
-	if (node->cmd.append)
-		flags |= O_APPEND;
-	else
-		flags |= O_TRUNC;
-	fd = open(node->cmd.outfile, flags, 0666);
-	if (fd == -1)
-		return (msh_builtin_error("echo", "unable to open outfile"), -1);
-	return (fd);
 }
 
 static void	print(char **av, int i, int fd, bool nl)

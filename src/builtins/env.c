@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/28 15:13:31 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/19 12:16:54 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/19 14:50:16 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,18 +41,15 @@ static t_node	*create_node(t_minishell *msh, t_node *node)
 	return (node2);
 }
 
-static	int	create_outfile(t_node *node)
+static int	exec_env(t_minishell *msh, t_node *node, int in, int out)
 {
-	int	flags;
-	int	file;
+	t_node	*node2;
+	int		exit_code;
 
-	flags = O_WRONLY | O_CREAT;
-	if (node->cmd.append)
-		flags |= O_APPEND;
-	else
-		flags |= O_TRUNC;
-	file = open(node->cmd.outfile, flags, 0666);
-	return (file);
+	node2 = create_node(msh, node);
+	exit_code = exec_cmd(msh, node2, in, out);
+	free_node(node2);
+	return (exit_code);
 }
 
 int	builtin_env(t_minishell *msh, int parent_in, int parent_out, t_node *node)
@@ -60,21 +57,15 @@ int	builtin_env(t_minishell *msh, int parent_in, int parent_out, t_node *node)
 	int		i;
 	int		file;
 	int		exit_code;
-	t_node	*node2;
 
 	if (node->cmd.argc >= 2)
-	{
-		node2 = create_node(msh, node);
-		exit_code = exec_cmd(msh, node2, parent_in, parent_out);
-		free_node(node2);
-		return (exit_code);
-	}
+		exec_env(msh, node, parent_in, parent_out);
 	file = STDOUT_FILENO;
 	exit_code = 0;
 	if (parent_out != -1)
 		file = parent_out;
 	if (node->cmd.outfile)
-		file = create_outfile(node);
+		file = open_outfile(node);
 	if (node->cmd.argc == 1)
 	{
 		i = -1;

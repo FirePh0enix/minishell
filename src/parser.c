@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/18 12:23:18 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/19 14:37:40 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,9 +40,7 @@ t_node	*parse_line(t_minishell *msh, char *line)
 	tokens = split_into_tokens(line);
 	tokens = expand_wildcards(tokens);
 	tokens = cleanup_tokens(tokens);
-	//for (size_t i = 0; i < ft_vector_size(tokens); i++)
-	//	ft_fprintf(2, "tok: %s\n", tokens[i]);
-	expr = parse_expr(msh, tokens, 0, ft_vector_size(tokens) - 1, NULL);
+	expr = parse_expr(msh, tokens, range(0, ft_vector_size(tokens) - 1), NULL);
 	free_tokens(tokens);
 	return (expr);
 }
@@ -50,7 +48,7 @@ t_node	*parse_line(t_minishell *msh, char *line)
 // -----------------------------------------------------------------------------
 // Debugging
 
-static void	_print_spaces(int layer)
+/*static void	_print_spaces(int layer)
 {
 	int	i;
 
@@ -122,4 +120,4 @@ static void	_rec_dump_line(t_node *node, int layer)
 void	dump_line(t_node *node)
 {
 	_rec_dump_line(node, 0);
-}
+}*/

@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/19 11:55:25 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/19 14:41:22 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,15 +20,6 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
-
-int	code_for_errno(void)
-{
-	if (errno == EACCES)
-		return (126);
-	else if (errno == ENOENT)
-		return (127);
-	return (-1);
-}
 
 static void	add_env(t_minishell *msh, t_node *node)
 {
@@ -53,33 +44,37 @@ static void	add_env(t_minishell *msh, t_node *node)
 	}
 }
 
-int	create_child(t_minishell *msh, t_node *node, int in, int out)
+static int	exec_child(t_minishell *msh, t_node *node, int in, int out)
 {
-	int		pid;
 	char	*cmd;
 
 	cmd = NULL;
+	if (node->cmd.argc > 0)
+	{
+		cmd = ft_create_path(msh, node->cmd.argv[0]);
+		if (!cmd)
+			return (msh_error_cmd(node->cmd.argv[0]), close_fd_child(msh),
+				exit(code_for_errno()), 0);
+	}
+	add_env(msh, node);
+	overall_dup(node, in, out);
+	close_fd_child(msh);
+	if (cmd)
+		ft_exec_cmd(cmd, node->cmd.argv, msh->env);
+	exit(0);
+}
+
+int	create_child(t_minishell *msh, t_node *node, int in, int out)
+{
+	int		pid;
+
 	if (node->cmd.argc == 0)
 		add_env(msh, node);
 	pid = fork();
 	if (pid == -1)
 		return (msh_errno(""), -1);
 	if (pid == 0)
-	{
-		if (node->cmd.argc > 0)
-		{
-			cmd = ft_create_path(msh, node->cmd.argv[0]);
-			if (!cmd)
-				return (msh_error_cmd(node->cmd.argv[0]), close_fd_child(msh),
-					exit(code_for_errno()), 0);
-		}
-		add_env(msh, node);
-		overall_dup(node, in, out);
-		close_fd_child(msh);
-		if (cmd)
-			ft_exec_cmd(cmd, node->cmd.argv, msh->env);
-		exit(0);
-	}
+		exec_child(msh, node, in, out);
 	ft_vector_add(&msh->child_pids, &pid);
 	close_fd_parent(in, out);
 	if (!node->parent || node->parent->type != TY_PIPE)

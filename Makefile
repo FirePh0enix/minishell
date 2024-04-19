@@ -6,13 +6,15 @@
 #    By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/22 14:41:53 by ledelbec          #+#    #+#              #
-#    Updated: 2024/04/17 13:49:21 by vopekdas         ###   ########.fr        #
+#    Updated: 2024/04/19 15:05:52 by ledelbec         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 SRCS=\
 	src/prompt.c \
+	src/prompt_utils.c \
 	src/signal.c \
+	src/signal_utils.c \
 	src/history.c \
 	src/error.c \
 	src/env.c \
@@ -33,8 +35,10 @@ SRCS=\
 	src/builtins/env.c \
 	src/builtins/exit.c \
 	src/builtins/export.c \
+	src/builtins/export_utils.c \
 	src/builtins/pwd.c \
-	src/builtins/unset.c
+	src/builtins/unset.c \
+	src/builtins/utils.c
 
 MAIN_SRCS=src/main.c $(SRCS)
 
