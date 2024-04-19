@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   wildcard.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 23:05:54 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/18 00:14:48 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/19 16:21:03 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,14 +46,14 @@ static t_file	*filter_files(t_file *files, char *filter)
 	i = 0;
 	while (filter[i] && filter[i] != '*')
 		i++;
-	prefix = strndup(filter, i);
+	prefix = ft_strndup(filter, i);
 
 	i2 = i;
 	while (filter[i2])
 		i2++;
-	suffix = strndup(filter + i + 1, i2 - i);
+	suffix = ft_strndup(filter + i + 1, i2 - i);
 
-	suf2 = strndup(suffix, ft_strchr(suffix, '*') - suffix);
+	suf2 = ft_strndup(suffix, ft_strchr(suffix, '*') - suffix);
 
 	i = 0;
 	while (i < ft_vector_size(files))
@@ -110,10 +110,10 @@ t_tok	*wildcard(char *s)
 
 	char	*path;
 	if (i >= 0 && s[i] == '/')
-		path = strndup(s, i);
+		path = ft_strndup(s, i);
 	else
 		path = ft_strdup("");
-	char	*filter = strndup(s + i + 1, i2 - i - 1);
+	char	*filter = ft_strndup(s + i + 1, i2 - i - 1);
 
 	if (*path == '\0')
 	{
@@ -143,7 +143,7 @@ t_tok	*wildcard(char *s)
 		for (size_t i = 0; i < ft_vector_size(files2); i++)
 		{
 			t_str	s = str("");
-			if (strcmp(path, ".")) // TODO: this will probably also pickup `./*`, we don't want to remove the `./` here
+			if (ft_strcmp(path, ".")) // TODO: this will probably also pickup `./*`, we don't want to remove the `./` here
 			{
 				str_append(&s, path);
 				str_append(&s, "/");
@@ -161,7 +161,7 @@ t_tok	*wildcard(char *s)
 		for (size_t i = 0; i < ft_vector_size(files2); i++)
 		{
 			t_str	s2 = str("");
-			if (strcmp(path, ".")) // TODO: See top TODO
+			if (ft_strcmp(path, ".")) // TODO: See top TODO
 			{
 				str_append(&s2, path);
 				str_append(&s2, "/");

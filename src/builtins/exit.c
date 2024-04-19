@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 15:02:43 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/17 16:12:34 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/19 16:16:38 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ static bool	isnumeric(char *s)
 	size_t	i;
 
 	i = 0;
-	while (s[i] && isspace(s[i]))
+	while (s[i] && ft_isspace(s[i]))
 		i++;
 	if (s[i] == '-' || s[i] == '+')
 		i++;
@@ -39,7 +39,7 @@ static bool	does_overflow_long(char *s)
 	int			sign;
 
 	i = 0;
-	while (s[i] && isspace(s[i]))
+	while (s[i] && ft_isspace(s[i]))
 		i++;
 	sign = 1;
 	if (s[i] == '-')

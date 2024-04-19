@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 23:45:53 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/19 14:24:08 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/19 16:21:12 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,9 @@ char	*getourenv(t_minishell *minishell, char *name)
 	const size_t	size = ft_strlen(name);
 	size_t			i;
 
-	if (strcmp(name, "?") == 0)
+	if (ft_strcmp(name, "?") == 0)
 		return (ft_itoa(minishell->exit_code));
-	if (strcmp(name, "*") == 0)
+	if (ft_strcmp(name, "*") == 0)
 		return (ft_strdup(""));
 	i = 0;
 	while (i < ft_vector_size(minishell->env) - 1)
@@ -52,7 +52,7 @@ char	*getourenv(t_minishell *minishell, char *name)
 			return (ft_strdup(ft_strchr(minishell->env[i], '=') + 1));
 		i++;
 	}
-	if (!strcmp(name, "PATH"))
+	if (!ft_strcmp(name, "PATH"))
 		return (ft_strdup("/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:"
 				"/sbin:/bin"));
 	return (NULL);
