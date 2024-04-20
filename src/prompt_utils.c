@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/19 14:21:41 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/19 14:22:41 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/20 19:17:50 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,8 +59,10 @@ void	write_prefix(t_minishell *msh, char buf[])
 			ft_sprintf(buf, NOHOME, 0, cwd_or(cwd));
 		else
 			ft_sprintf(buf, NOHOME_ERR, msh->exit_code, cwd_or(cwd));
+		free(cwd);
 		return ;
 	}
 	write_prefix2(msh, buf, home, cwd);
 	free(home);
+	free(cwd);
 }

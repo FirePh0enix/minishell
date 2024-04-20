@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 14:41:09 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/19 18:39:08 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/20 19:20:12 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,12 +90,14 @@ int	main(int argc, char *argv[], char *envp[])
 		init_env_else(&msh);
 	init_signals(&msh);
 	load_history(&msh);
-	if (argc == 1)
-		prompt(&msh);
-	else if (argc == 2)
+	if (TEST && argc == 2)
 		exec_single_cmd(&msh, argv);
+	else
+		prompt(&msh);
 	free_history(&msh);
 	free_env(&msh);
+	ft_vector_free(msh.child_pids);
+	ft_vector_free(msh.open_fds);
 	rl_clear_history();
 	return (msh.exit_code);
 }
