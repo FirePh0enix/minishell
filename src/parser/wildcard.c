@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 23:05:54 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/19 16:21:03 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/20 17:12:57 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,112 +17,75 @@
 #include <sys/types.h>
 #include <dirent.h>
 
-static bool	starts_with(char *s, char *start)
-{
-	const size_t	size = ft_strlen(s);
-	const size_t	start_size = ft_strlen(start);
+t_tok			*wildcard(char *s);
 
-	return (start_size == 0
-		|| (size >= start_size && !ft_strncmp(s, start, start_size)));
-}
-
-typedef struct s_file
+static void	recurse_wildcard2(t_str *s2, t_tok **files3, char *file,
+	char *suffix)
 {
-	char	*file;
-	size_t	start;
-}	t_file;
-
-static t_file	*filter_files(t_file *files, char *filter)
-{
-	t_file	*filtered_files;
-	char	*prefix;
-	char	*suffix;
-	char	*suf2;
-	size_t	i;
 	size_t	i2;
+	t_tok	*files4;
 
-	filtered_files = ft_vector(sizeof(t_file), 0);
-
-	i = 0;
-	while (filter[i] && filter[i] != '*')
-		i++;
-	prefix = ft_strndup(filter, i);
-
-	i2 = i;
-	while (filter[i2])
-		i2++;
-	suffix = ft_strndup(filter + i + 1, i2 - i);
-
-	suf2 = ft_strndup(suffix, ft_strchr(suffix, '*') - suffix);
-
-	i = 0;
-	while (i < ft_vector_size(files))
-	{
-		char	*s3 = strstr(files[i].file + files[i].start, suf2);
-		if (starts_with(files[i].file + files[i].start, prefix) && s3)
-		{
-			t_file	file = { files[i].file, s3 - files[i].file + 1 };
-			ft_vector_add(&filtered_files, &file);
-		}
-		else
-		{
-			free(files[i].file);
-		}
-		i++;
-	}
-
-	t_file	*filtered_files2;
-
-	if (ft_strchr(suffix, '*'))
-	{
-		filtered_files2 = filter_files(filtered_files, ft_strdup(suffix + 1));
-		ft_vector_free(filtered_files);
-		filtered_files = filtered_files2;
-	}
-	free(prefix);
-	free(suffix);
-	free(suf2);
-	free(filter);
-	return (filtered_files);
+	str_append(s2, file);
+	str_append(s2, "/");
+	str_append(s2, suffix);
+	files4 = wildcard(s2->data);
+	i2 = 0;
+	while (i2 < ft_vector_size(files4))
+		ft_vector_add(files3, &files4[i2++]);
+	ft_vector_free(files4);
 }
 
-t_tok	*wildcard(char *s)
+static void	add_file(t_str *s2, t_tok **files3, char *file)
 {
-	t_file			*files = ft_vector(sizeof(t_file), 0);
+	t_tok	tk;
+
+	str_append(s2, file);
+	tk = tok(TOK_IDENT, s2->data);
+	ft_vector_add(files3, &tk);
+}
+
+static t_tok	*wildcard2(char *wc, char *filter, t_file *files, char *path)
+{
+	t_file	*files2;
+	t_tok	*files3;
+	size_t	i;
+	t_str	s2;
+
+	files2 = filter_files(files, ft_strdup(filter));
+	files3 = ft_vector(sizeof(t_tok), 0);
+	i = 0;
+	while (i < ft_vector_size(files2))
+	{
+		s2 = str("");
+		if (*path != '.')
+		{
+			str_append(&s2, path);
+			str_append(&s2, "/");
+		}
+		if (wc[0] != '\0')
+			recurse_wildcard2(&s2, &files3, files2[i].file, &wc[1]);
+		else
+			add_file(&s2, &files3, files2[i].file);
+		i++;
+	}
+	ft_vector_free(files2);
+	return (free(path), free(filter), files3);
+}
+
+// TODO:
+// - Check for leaks if directory does not exists.
+static t_file	*read_directory(char *path)
+{
 	DIR				*dir;
 	struct dirent	*dirent;
+	t_file			*files;
 	char			*s2;
-	t_tok			*files3;
+	t_file			file;
 
-	int				i;
-	int				i2;
-
-	i = 0;
-	while (s[i] && s[i] != '*')
-		i++;
-
-	while (i >= 0 && s[i] != '/')
-		i--;
-
-	i2 = i + 1;
-	while (s[i2] && s[i2] != '/')
-		i2++;
-
-	char	*path;
-	if (i >= 0 && s[i] == '/')
-		path = ft_strndup(s, i);
-	else
-		path = ft_strdup("");
-	char	*filter = ft_strndup(s + i + 1, i2 - i - 1);
-
-	if (*path == '\0')
-	{
-		free(path);
-		path = ft_strdup(".");
-	}
+	files = ft_vector(sizeof(t_file), 0);
 	dir = opendir(path);
 	if (!dir)
-		return (ft_vector(sizeof(t_tok), 0)); // TODO: Free stuff here
+		return (ft_vector(sizeof(t_tok), 0));
 	while (1)
 	{
 		dirent = readdir(dir);
@@ -131,53 +94,37 @@ t_tok	*wildcard(char *s)
 		if (dirent->d_name[0] == '.')
 			continue ;
 		s2 = ft_strdup(dirent->d_name);
-		t_file file = { s2, 0 };
+		file = (t_file){s2, 0};
 		ft_vector_add(&files, &file);
 	}
 	closedir(dir);
+	return (files);
+}
 
-	if (s[i2] == '\0')
-	{
-		t_file	*files2 = filter_files(files, ft_strdup(filter));
-		files3 = ft_vector(sizeof(t_tok), ft_vector_size(files2));
-		for (size_t i = 0; i < ft_vector_size(files2); i++)
-		{
-			t_str	s = str("");
-			if (ft_strcmp(path, ".")) // TODO: this will probably also pickup `./*`, we don't want to remove the `./` here
-			{
-				str_append(&s, path);
-				str_append(&s, "/");
-			}
-			str_append(&s, files2[i].file);
-			t_tok	tk = tok(TOK_IDENT, s.data);
-			ft_vector_add(&files3, &tk);
-		}
-		ft_vector_free(files2);
-	}
+t_tok	*wildcard(char *s)
+{
+	int				i;
+	int				i2;
+	char			*path;
+	char			*filter;
+
+	i = 0;
+	while (s[i] && s[i] != '*')
+		i++;
+	while (i >= 0 && s[i] != '/')
+		i--;
+	i2 = i + 1;
+	while (s[i2] && s[i2] != '/')
+		i2++;
+	if (i >= 0 && s[i] == '/')
+		path = ft_strndup(s, i);
 	else
+		path = ft_strdup("");
+	filter = ft_strndup(s + i + 1, i2 - i - 1);
+	if (*path == '\0')
 	{
-		t_file	*files2 = filter_files(files, ft_strdup(filter));
-		files3 = ft_vector(sizeof(t_tok), 0);
-		for (size_t i = 0; i < ft_vector_size(files2); i++)
-		{
-			t_str	s2 = str("");
-			if (ft_strcmp(path, ".")) // TODO: See top TODO
-			{
-				str_append(&s2, path);
-				str_append(&s2, "/");
-			}
-			str_append(&s2, files2[i].file);
-			str_append(&s2, "/");
-			str_append(&s2, &s[i2 + 1]);
-
-			t_tok	*files4 = wildcard(s2.data);
-			for (size_t i = 0; i < ft_vector_size(files4); i++)
-				ft_vector_add(&files3, &files4[i]);
-			ft_vector_free(files4);
-		}
-		ft_vector_free(files2);
+		free(path);
+		path = ft_strdup(".");
 	}
-	free(path);
-	free(filter);
-	return (files3);
+	return (wildcard2(&s[i2], filter, read_directory(path), path));
 }

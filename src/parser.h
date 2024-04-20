@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:25:25 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/19 14:34:23 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/20 18:32:18 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,12 +96,20 @@ void	dump_line(t_node *node);
 
 t_tok	*split_into_tokens(char *line);
 
-t_node	*parse_expr(t_minishell *msh, t_tok *tokens, t_range range,
-					t_node *parent);
+t_node	*parse_expr(t_tok *tokens, t_range range, t_node *parent);
 void	free_node(t_node *node);
 
 t_str	expand_str(t_minishell *msh, char *line);
+void	expand_env(t_minishell *msh, t_str *s, char *line, size_t *index);
+
+bool	can_expand_env(char *line, size_t i);
+
 t_tok	*expand_wildcards(t_tok *tokens);
 t_tok	*cleanup_tokens(t_tok *tokens);
+
+bool	is_single_op(char c);
+bool	is_dual_op(char *line);
+
+bool	is_valid_env_ch(char c);
 
 #endif

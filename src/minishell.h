@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:24:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/19 18:36:39 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/20 17:13:16 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,14 @@ void	add_our_history(t_minishell *msh, char *line);
 void	load_history(t_minishell *msh);
 void	free_history(t_minishell *msh);
 
+typedef struct s_file
+{
+	char	*file;
+	size_t	start;
+}	t_file;
+
 t_tok	*wildcard(char *suffix);
+t_file	*filter_files(t_file *files, char *filter);
 
 void	copy_env(t_minishell *minishell, char *envp[]);
 char	*getourenv(t_minishell *minishell, char *name);

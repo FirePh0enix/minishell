@@ -6,7 +6,7 @@
 #    By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/22 14:41:53 by ledelbec          #+#    #+#              #
-#    Updated: 2024/04/19 18:37:31 by ledelbec         ###   ########.fr        #
+#    Updated: 2024/04/20 19:15:22 by ledelbec         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,10 +20,22 @@ SRCS=\
 	src/env.c \
 	src/parser.c \
 	src/parser/tokenizer.c \
+	src/parser/tokenizer_utils.c \
 	src/parser/expr.c \
+	src/parser/expr_utils.c \
+	src/parser/expr_utils2.c \
+	src/parser/heredoc.c \
+	src/parser/handle_redirects_parent.c \
+	src/parser/parse_cmd.c \
 	src/parser/free_node.c \
 	src/parser/expand_tokens.c \
+	src/parser/expand_tokens_utils.c \
+	src/parser/expand_env.c \
+	src/parser/expand_env_utils.c \
+	src/parser/expand_wildcards.c \
 	src/parser/wildcard.c \
+	src/parser/wildcard_utils.c \
+	src/parser/clean.c \
 	src/exec/exec_utils.c \
 	src/exec/exec.c \
 	src/exec/close_fd.c \

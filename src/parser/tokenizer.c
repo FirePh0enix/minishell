@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:31:32 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/19 16:16:52 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/20 11:16:07 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,17 +15,46 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
 
-static bool	is_single_op(char c)
+void	read_string(t_str *s, char *line, size_t *index)
 {
-	return (c == '<' || c == '>' || c == '|' || c == '(' || c == ')');
+	size_t	i;
+
+	i = *index;
+	i++;
+	while (line[i])
+	{
+		if ((line[i] == '"' && line[*index] == '"'))
+			break ;
+		else if ((line[i] == '\'' && line[*index] == '\''))
+			break ;
+		if (line[i] == '\\' && line[*index] == '"'
+			&& (line[i + 1] == '"' || line[i + 1] == '\''))
+			str_append_n(s, &line[i++ + 1], 1);
+		else
+			str_append_n(s, &line[i], 1);
+		i++;
+	}
+	*index = i;
 }
 
-static bool	is_dual_op(char *line)
+void	read_token(t_str *s, char *line, size_t *index)
 {
-	return (!ft_strncmp(line, "<<", 2) || !ft_strncmp(line, ">>", 2)
-		|| !ft_strncmp(line, "&&", 2) || !ft_strncmp(line, "||", 2));
+	size_t	i;
+
+	i = *index;
+	while (i < ft_strlen(line) && !ft_isspace(line[i]) && !is_single_op(line[i])
+		&& ft_strncmp(&line[i], "&&", 2))
+	{
+		if (line[i] == '"' || line[i] == '\'')
+			read_string(s, line, &i);
+		else if (line[i] == '\\' && line[i + 1] == ' ')
+			str_append_n(s, &line[i++ + 1], 1);
+		else
+			str_append_n(s, &line[i], 1);
+		i++;
+	}
+	*index = i;
 }
 
 static t_tok	next_token(char *line, size_t *index)
@@ -45,55 +74,12 @@ static t_tok	next_token(char *line, size_t *index)
 	s = str("");
 	tt = TOK_IDENT;
 	if (ft_strlen(&line[i]) >= 2 && is_dual_op(&line[i]))
-	{
-		str_append_n(&s, &line[i], 2);
-		*index = i + 2;
-		return (tok(TOK_OP, s.data));
-	}
+		return (str_append_n(&s, &line[i], 2), *index = i + 2,
+			tok(TOK_OP, s.data));
 	else if (ft_strlen(&line[i]) >= 1 && is_single_op(line[i]))
-	{
-		str_append_n(&s, &line[i], 1);
-		*index = i + 1;
-		return (tok(TOK_OP, s.data));
-	}
-
-	while (i < ft_strlen(line) && !ft_isspace(line[i]) && line[i] != '<'
-		&& line[i] != '>' && line[i] != '|' && line[i] != '('
-		&& line[i] != ')' && ft_strncmp(&line[i], "&&", 2))
-	{
-		if (line[i] == '"' || line[i] == '\'')
-		{
-			*index = i;
-			i++;
-			while (line[i])
-			{
-				if ((line[i] == '"' && line[*index] == '"'))
-					break ;
-				else if ((line[i] == '\'' && line[*index] == '\''))
-					break ;
-				if (line[i] == '\\' && line[*index] == '"'
-						&& (line[i + 1] == '"' || line[i + 1] == '\''))
-				{
-					str_append_n(&s, &line[i + 1], 1);
-					i++;
-				}
-				else
-					str_append_n(&s, &line[i], 1);
-				i++;
-			}
-		}
-		else if (line[i] == '\\' && line[i + 1] == ' ')
-		{
-			str_append_n(&s, &line[i + 1], 1);
-			i++;
-		}
-		else
-		{
-			str_append_n(&s, &line[i], 1);
-		}
-		i++;
-	}
-
+		return (str_append_n(&s, &line[i], 1), *index = i + 1,
+			tok(TOK_OP, s.data));
+	read_token(&s, line, &i);
 	*index = i;
 	return (tok(tt, s.data));
 }
@@ -113,7 +99,7 @@ t_tok	*split_into_tokens(char *line)
 		tok = next_token(line, &index);
 		if (!tok.s)
 			break ;
-		if(!ft_vector_add(&tokens, &tok))
+		if (!ft_vector_add(&tokens, &tok))
 			return (ft_vector_deep_free(tokens), NULL);
 	}
 	return (tokens);
