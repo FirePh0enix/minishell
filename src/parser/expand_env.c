@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 12:22:25 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/20 13:17:23 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/21 13:14:10 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ static void	expand_env2(t_minishell *msh, t_str *s, char *line, size_t *index)
 	while (line[i] && (line[i] == '_' || ft_isalnum(line[i])))
 		str_append_n(&env_name, &line[i++], 1);
 	env = getourenv(msh, env_name.data);
+	str_free(&env_name);
 	if (env)
 	{
 		append_escaped(s, env);
