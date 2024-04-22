@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 17:06:09 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/20 17:13:22 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/22 13:24:49 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ static void	add_file_if_valid(t_file *files, t_file **filtered_files,
 	i = 0;
 	while (i < ft_vector_size(files))
 	{
-		s3 = strstr(files[i].file + files[i].start, suf2);
+		s3 = ft_strstr(files[i].file + files[i].start, suf2);
 		if (starts_with(files[i].file + files[i].start, prefix) && s3)
 		{
 			file = (t_file){files[i].file, s3 - files[i].file + 1};
