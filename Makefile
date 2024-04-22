@@ -6,7 +6,7 @@
 #    By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/22 14:41:53 by ledelbec          #+#    #+#              #
-#    Updated: 2024/04/20 19:15:22 by ledelbec         ###   ########.fr        #
+#    Updated: 2024/04/22 12:01:40 by ledelbec         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -58,7 +58,7 @@ OBJS=$(MAIN_SRCS:.c=.o)
 DEPS=$(OBJS:.o=.d)
 
 CC=clang
-CFLAGS=-Ilibft -Isrc -MMD -O2 -fno-builtin -g -Wall -Wextra #-Werror
+CFLAGS=-Ilibft -Isrc -MMD -O2 -fno-builtin -g3 -Wall -Wextra -Werror
 NAME=minishell
 
 all: $(NAME)

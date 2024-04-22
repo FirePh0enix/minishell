@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 14:37:05 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/18 15:22:21 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/22 12:02:13 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,11 @@ int	builtin_pwd(t_minishell *msh, int parent_in, int parent_out, t_node *node)
 	int		flags;
 	int		file;
 
+	(void) parent_in;
 	flags = O_WRONLY | O_CREAT;
 	s = getourenv(msh, "PWD");
+	if (!s)
+		s = "";
 	if (parent_out != -1)
 		ft_putendl_fd(s, parent_out);
 	else if (node->cmd.outfile)

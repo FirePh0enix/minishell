@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 14:41:09 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/20 19:20:12 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/22 11:56:54 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,15 @@
 #include <readline/readline.h>
 #include <stdio.h>
 #include <unistd.h>
+
+void __attribute__((noreturn))	exit_n_free(t_minishell *msh, int exit_code)
+{
+	ft_vector_free(msh->child_pids);
+	ft_vector_free(msh->open_fds);
+	free_history(msh);
+	free_env(msh);
+	exit(exit_code);
+}
 
 int	exec_single_cmd(t_minishell *msh, char *argv[])
 {
@@ -29,20 +38,21 @@ int	exec_single_cmd(t_minishell *msh, char *argv[])
 	line = argv[1];
 	line = expand_str(msh, line).data;
 	if (isemptycmd(line))
-		exit(0);
+		exit_n_free(msh, 0);
 	else if (ft_strlen(line) == 1 && line[0] == '!')
-		exit(2);
+		exit_n_free(msh, 2);
 	node = parse_line(msh, line);
+	free(line);
 	if (node == NULL)
 		return (msh_error("parsing error"), exit(2), 2);
 	else if (node == (void *)1)
-		exit(1);
+		exit_n_free(msh, 1);
 	status = exec_cmd(msh, node, -1, -1);
 	if (status != 0)
-		exit(status);
+		exit_n_free(msh, status);
 	status = wait_for_children(msh);
 	free_node(node);
-	exit(status);
+	exit_n_free(msh, status);
 }
 
 static void	init_env_if_i(t_minishell *msh)
