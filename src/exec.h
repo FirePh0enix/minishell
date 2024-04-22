@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:54:47 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/19 14:25:21 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/22 16:09:38 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,9 @@ int		code_for_errno(void);
 int		exec_cmd(t_minishell *msh, t_node *node, int pipe_in, int pipe_out);
 char	**ft_get_path(t_minishell *msh);
 char	*ft_create_path(t_minishell *msh, char *command);
-int		ft_exec_cmd(char *cmd, char **av, char **envp);
+int		ft_exec_cmd(t_minishell *msh, char *cmd, char **av, char **envp);
+
+int		create_child(t_minishell *msh, t_node *node, int in, int out);
 
 int		dup_infile(t_node *node);
 int		dup_outfile(t_node *node);

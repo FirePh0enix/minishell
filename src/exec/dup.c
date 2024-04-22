@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/13 15:17:13 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/19 11:41:33 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/22 16:54:32 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,6 @@ int	dup_infile(t_node *node)
 		return (msh_errno(node->cmd.infile), exit(1), 1);
 	if (node->cmd.argc > 0 && dup2(file, STDIN_FILENO) == -1)
 		return (msh_errno(""), exit(1), 1);
-	else if (node->cmd.argc == 0 && !node->cmd.outfile)
-	{
-		close(file);
-		exit(0);
-	}
 	close(file);
 	return (0);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 17:41:56 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/20 17:51:59 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/22 16:35:38 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,16 +38,15 @@ static void	print_and_free(char *line, int fd)
 }
 
 #define A "msh: warning: here-document delimited at line %d by "
-#define B "end-of-file  (wanted `%s')\n"
+#define B "end-of-file (wanted `%s')\n"
 
-char	*heredoc(t_minishell *msh, char *eof)
+char	*heredoc(char *eof)
 {
 	char		*line;
 	int			fd;
 	char		filename[256];
 	int			line_num;
 
-	(void) msh;
 	fd = open_heredoc_inc(filename);
 	if (fd == -1)
 		return (NULL);
