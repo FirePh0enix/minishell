@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   handle_redirects_parent.c                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 19:02:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/20 19:03:58 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/22 16:51:59 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #include "../minishell.h"
+#include <stdio.h>
 
 char	*heredoc(char *eof);
 
@@ -82,6 +83,7 @@ int	handle_redirects(t_node *node, t_tok *tokens, size_t i)
 		if (!isvalidfile(tokens[i + 1].s))
 			return (-2);
 		s = heredoc(tokens[i + 1].s);
+		node->cmd.heredoc = true;
 		if (!s)
 			return (-2);
 		if (node->cmd.infile)

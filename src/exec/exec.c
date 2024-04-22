@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/19 16:21:28 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/22 16:49:38 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "minishell.h"
 #include "parser.h"
 #include <fcntl.h>
+#include <readline/readline.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -47,20 +48,38 @@ static void	add_env(t_minishell *msh, t_node *node)
 static int	exec_child(t_minishell *msh, t_node *node, int in, int out)
 {
 	char	*cmd;
+	char	**av;
 
 	cmd = NULL;
 	if (node->cmd.argc > 0)
 	{
 		cmd = ft_create_path(msh, node->cmd.argv[0]);
 		if (!cmd)
-			return (msh_error_cmd(node->cmd.argv[0]), close_fd_child(msh),
-				exit(code_for_errno()), 0);
+		{
+			free_env(msh);
+			free_history(msh);
+			ft_vector_free(msh->child_pids);
+			close_fd_child(msh);
+			rl_clear_history();
+			msh_error_cmd(node->cmd.argv[0]);
+			free_node(node);
+			return (exit(code_for_errno()), 0);
+		}
 	}
 	add_env(msh, node);
 	overall_dup(node, in, out);
 	close_fd_child(msh);
 	if (cmd)
-		ft_exec_cmd(cmd, node->cmd.argv, msh->env);
+	{
+		av = node->cmd.argv;
+		free_node_in_child(node);
+		ft_exec_cmd(msh, cmd, av, msh->env);
+	}
+	free_env(msh);
+	free_history(msh);
+	ft_vector_free(msh->child_pids);
+	rl_clear_history();
+	free_node(node);
 	exit(0);
 }
 

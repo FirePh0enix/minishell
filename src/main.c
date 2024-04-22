@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 14:41:09 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/22 11:56:54 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/22 15:43:01 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@ void __attribute__((noreturn))	exit_n_free(t_minishell *msh, int exit_code)
 {
 	ft_vector_free(msh->child_pids);
 	ft_vector_free(msh->open_fds);
-	free_history(msh);
 	free_env(msh);
 	exit(exit_code);
 }
@@ -94,20 +93,22 @@ int	main(int argc, char *argv[], char *envp[])
 	ft_bzero(&msh, sizeof(t_minishell));
 	msh.exit_code = 0;
 	copy_env(&msh, envp);
+	load_history(&msh);
 	if (ft_vector_size(msh.env) == 1)
 		init_env_if_i(&msh);
 	else
 		init_env_else(&msh);
 	init_signals(&msh);
-	load_history(&msh);
 	if (TEST && argc == 2)
 		exec_single_cmd(&msh, argv);
 	else
 		prompt(&msh);
-	free_history(&msh);
 	free_env(&msh);
-	ft_vector_free(msh.child_pids);
-	ft_vector_free(msh.open_fds);
+	if (msh.child_pids)
+		ft_vector_free(msh.child_pids);
+	if (msh.open_fds)
+		ft_vector_free(msh.open_fds);
+	free_history(&msh);
 	rl_clear_history();
 	return (msh.exit_code);
 }

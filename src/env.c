@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 23:45:53 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/19 16:21:12 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/22 15:17:00 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,9 +76,9 @@ static int	try_replace_env(t_minishell *msh, char *name, char *value)
 			if (!s)
 				return (-1);
 			s2 = ft_strjoin(s, value);
-			if (!s2)
-				return (free(s), -1);
 			free(s);
+			if (!s2)
+				return (-1);
 			msh->env[i] = s2;
 			return (-1);
 		}
@@ -99,12 +99,9 @@ void	setourenv(t_minishell *msh, char *name, char *value)
 	if (!s)
 		return ;
 	s2 = ft_strjoin(s, value);
-	if (!s2)
-	{
-		free(s);
-		return ;
-	}
 	free(s);
+	if (!s2)
+		return ;
 	msh->env[i] = s2;
 	s2 = NULL;
 	ft_vector_add(&msh->env, &s2);

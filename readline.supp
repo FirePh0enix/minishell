@@ -16,3 +16,15 @@
 	...
 	obj:/usr/bin/grep
 }
+{
+	ignore_cat_leaks
+	Memcheck:Leak
+	...
+	obj:/usr/bin/cat
+}
+{
+	ignore env leaks
+	Memcheck:Leak
+	...
+	obj:/usr/bin/env
+}
