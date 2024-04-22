@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:24:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/22 15:33:46 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/22 23:04:23 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,10 @@ typedef struct s_minishell
 }	t_minishell;
 
 # define EXIT_ERRNUM "msh: exit: `%s' is not a numeric argument\n"
+
+# define CWDERA "%s: error retrieving current directory: getcwd: cannot acccess"
+# define CWDERB " parent directories: %s\n"
+# define CWDERR CWDERA CWDERB
 
 extern int	g_signum;
 

@@ -6,13 +6,12 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 19:02:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/22 16:51:59 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/22 23:09:43 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #include "../minishell.h"
-#include <stdio.h>
 
 char	*heredoc(char *eof);
 

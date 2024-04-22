@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 14:33:06 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/19 16:21:32 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/22 23:08:20 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,13 @@ static int	no_arg(t_minishell *msh)
 	home = getourenv(msh, "HOME");
 	if (!home)
 		return (msh_builtin_error("cd", "HOME not set"), 1);
-	pwd = getcwd(NULL, 0);
+	pwd = getourenv(msh, "PWD");
 	setourenv(msh, "OLDPWD", pwd);
+	free(pwd);
 	chdir(home);
 	pwd = getcwd(NULL, 0);
 	setourenv(msh, "PWD", pwd);
-	if (errno != 0)
-		perror("cd");
+	free(pwd);
 	free(home);
 	return (0);
 }
@@ -37,24 +37,31 @@ static int	minus(t_minishell *msh, int file)
 	char	*pwd;
 
 	oldpwd = getourenv(msh, "OLDPWD");
-	pwd = getcwd(NULL, 0);
+	pwd = getourenv(msh, "PWD");
 	chdir(oldpwd);
 	setourenv(msh, "OLDPWD", pwd);
+	free(pwd);
 	pwd = getcwd(NULL, 0);
 	setourenv(msh, "PWD", pwd);
 	ft_putendl_fd(pwd, file);
+	free(pwd);
 	return (0);
 }
 
 static int	no_minus(t_minishell *msh, t_node *node)
 {
 	char	*pwd;
+	char	*pwd2;
 	char	*cdpath;
 	char	*fs;
 
 	pwd = getcwd(NULL, 0);
+	if (!pwd)
+		return (ft_fprintf(2, CWDERR, "chdir", strerror(errno)), 1);
 	cdpath = getourenv(msh, "CDPATH");
-	setourenv(msh, "OLDPWD", pwd);
+	pwd2 = getourenv(msh, "PWD");
+	setourenv(msh, "OLDPWD", pwd2);
+	free(pwd2);
 	free(pwd);
 	if (cdpath && cdpath[0] != '\0')
 		fs = ft_strjoin(cdpath, node->cmd.argv[1]);

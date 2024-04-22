@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:34:59 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/20 19:14:54 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/22 23:11:14 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,10 +45,10 @@ static t_node	*handle_all_redirects(t_tok *tokens, t_range r,
 		if (is_redirect(tok, tokens[i].type))
 		{
 			if (handle_redirects(n, tokens, i++) == -1)
-				return ((void *) 1);
+				return (free(n), (void *) 1);
 		}
 		else
-			return (NULL);
+			return (free(n), NULL);
 		i++;
 	}
 	return (n);
@@ -66,7 +66,7 @@ static t_node	*make_parent_node(t_tok *tokens, t_range r, t_range pr,
 		return (NULL);
 	node = parse_expr(tokens, range(pr.start + 1, pr.end - 1), NULL);
 	if (!node)
-		return (NULL);
+		return (free(n), NULL);
 	if (n->cmd.outfile != NULL)
 		apply_out(node, n->cmd.outfile, n->cmd.append);
 	if (n->cmd.infile != NULL)

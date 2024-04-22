@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 14:37:05 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/22 16:23:58 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/22 23:02:19 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,11 @@ int	builtin_pwd(t_minishell *msh, int parent_in, int parent_out, t_node *node)
 	char	*s;
 	int		file;
 
+	(void) msh;
 	(void) parent_in;
-	s = getourenv(msh, "PWD");
+	s = getcwd(NULL, 0);
 	if (!s)
-		s = "";
+		return (ft_fprintf(2, CWDERR, "pwd", strerror(errno)), 1);
 	file = 1;
 	if (parent_out != -1)
 		ft_putendl_fd(s, parent_out);
