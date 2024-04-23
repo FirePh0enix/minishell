@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 23:05:54 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/20 17:12:57 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/23 14:59:32 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,8 @@ static void	add_file(t_str *s2, t_tok **files3, char *file)
 	ft_vector_add(files3, &tk);
 }
 
+void	free_files(t_file *files);
+
 static t_tok	*wildcard2(char *wc, char *filter, t_file *files, char *path)
 {
 	t_file	*files2;
@@ -68,12 +70,10 @@ static t_tok	*wildcard2(char *wc, char *filter, t_file *files, char *path)
 			add_file(&s2, &files3, files2[i].file);
 		i++;
 	}
-	ft_vector_free(files2);
+	free_files(files2);
 	return (free(path), free(filter), files3);
 }
 
-// TODO:
-// - Check for leaks if directory does not exists.
 static t_file	*read_directory(char *path)
 {
 	DIR				*dir;
@@ -82,10 +82,10 @@ static t_file	*read_directory(char *path)
 	char			*s2;
 	t_file			file;
 
-	files = ft_vector(sizeof(t_file), 0);
 	dir = opendir(path);
 	if (!dir)
 		return (ft_vector(sizeof(t_tok), 0));
+	files = ft_vector(sizeof(t_file), 0);
 	while (1)
 	{
 		dirent = readdir(dir);

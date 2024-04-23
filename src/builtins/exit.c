@@ -6,12 +6,12 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 15:02:43 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/19 16:16:38 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/23 14:35:19 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <ctype.h>
+#include "parser.h"
 #include <limits.h>
 
 static bool	isnumeric(char *s)
@@ -60,28 +60,28 @@ static bool	does_overflow_long(char *s)
 	return (false);
 }
 
-static int	exit_shell(char *s, bool fake)
+static int	exit_shell(t_minishell *msh, char *s, bool fake)
 {
 	long	i;
 
 	if (fake && (!isnumeric(s) || does_overflow_long(s)))
 		return (ft_fprintf(2, EXIT_ERRNUM, s), 2);
 	if (!fake && (!isnumeric(s) || does_overflow_long(s)))
-		return (ft_fprintf(2, EXIT_ERRNUM, s), exit(2), 2);
+		return (ft_fprintf(2, EXIT_ERRNUM, s), msh->end = true, 2);
 	i = ft_atoi(s);
 	if (!fake)
-		exit(i);
+		msh->end = true;
 	return (i);
 }
 
-int	builtin_exit(int in, int out, t_node *node)
+int	builtin_exit(t_minishell *msh, int in, int out, t_node *node)
 {
 	ft_fprintf(1, "exit\n");
 	if ((node->cmd.argc >= 2 && !isnumeric(node->cmd.argv[1]))
 		|| (node->cmd.argc == 2))
-		return (exit_shell(node->cmd.argv[1], in != -1 || out != -1));
+		return (exit_shell(msh, node->cmd.argv[1], in != -1 || out != -1));
 	else if (node->cmd.argc == 1)
-		return (exit_shell("0", in != -1 || out != -1));
+		return (exit_shell(msh, "0", in != -1 || out != -1));
 	else
 		return (msh_builtin_error("exit", "too many arguments"), -1);
 }

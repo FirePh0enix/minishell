@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 17:06:09 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/22 13:24:49 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/23 14:58:59 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,18 +23,10 @@ static bool	starts_with(char *s, char *start)
 
 static t_file	*filter_recurse(t_file *filtered_files, char *suffix)
 {
-	t_file	*filtered_files2;
-
 	if (ft_strchr(suffix, '*'))
-	{
-		filtered_files2 = filter_files(filtered_files, ft_strdup(suffix + 1));
-		ft_vector_free(filtered_files);
-		return (filtered_files2);
-	}
+		return (filter_files(filtered_files, ft_strdup(suffix + 1)));
 	else
-	{
 		return (filtered_files);
-	}
 }
 
 static void	add_file_if_valid(t_file *files, t_file **filtered_files,
@@ -55,14 +47,25 @@ static void	add_file_if_valid(t_file *files, t_file **filtered_files,
 		s3 = ft_strstr(files[i].file + files[i].start, suf2);
 		if (starts_with(files[i].file + files[i].start, prefix) && s3)
 		{
-			file = (t_file){files[i].file, s3 - files[i].file + 1};
+			file = (t_file){ft_strdup(files[i].file), s3 - files[i].file + 1};
 			ft_vector_add(filtered_files, &file);
 		}
-		else
-			free(files[i].file);
 		i++;
 	}
 	free(suf2);
+}
+
+void	free_files(t_file *files)
+{
+	size_t	i;
+
+	i = 0;
+	while (i < ft_vector_size(files))
+	{
+		free(files[i].file);
+		i++;
+	}
+	ft_vector_free(files);
 }
 
 t_file	*filter_files(t_file *files, char *filter)
@@ -86,5 +89,7 @@ t_file	*filter_files(t_file *files, char *filter)
 	filtered_files = filter_recurse(filtered_files, suffix);
 	free(prefix);
 	free(suffix);
+	free(filter);
+	free_files(files);
 	return (filtered_files);
 }

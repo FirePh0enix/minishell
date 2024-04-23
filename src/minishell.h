@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:24:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/22 23:04:23 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/23 14:34:18 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,8 @@ typedef struct s_minishell
 	int		exit_code;
 	char	**env;
 	char	**history;
-	size_t	heredocs;
+
+	bool	end;
 
 	int		*open_fds;
 	pid_t	*child_pids;
@@ -99,7 +100,7 @@ bool	is_valid_var_name(char *s);
 int		builtin_cd(t_minishell *msh, int parent_in, int out, t_node *node);
 int		builtin_pwd(t_minishell *msh, int parent_in, int out, t_node *node);
 int		builtin_echo(int ac, char **av, int parent_out, t_node *node);
-int		builtin_exit(int parent_in, int parent_out, t_node *node);
+int		builtin_exit(t_minishell *msh, int in, int out, t_node *node);
 int		builtin_unset(t_minishell *msh, int ac, char **av, t_node *node);
 int		builtin_env(t_minishell *msh, int parent_in, int out, t_node *node);
 int		builtin_export(t_minishell *msh, int in, int out, t_node *node);

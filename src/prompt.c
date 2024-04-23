@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 16:22:50 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/22 15:35:27 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/23 14:36:36 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ void	prompt(t_minishell *msh)
 	char	buf[256];
 
 	rl_event_hook = event;
-	while (1)
+	while (!msh->end)
 	{
 		if (g_signum == SIGINT)
 		{
@@ -106,5 +106,6 @@ void	prompt(t_minishell *msh)
 			continue ;
 		execute_line(msh, line);
 	}
-	ft_fprintf(2, "exit\n");
+	if (!msh->end)
+		ft_fprintf(2, "exit\n");
 }

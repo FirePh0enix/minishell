@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 12:13:03 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/20 19:28:25 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/23 14:25:26 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ t_tok	*expand_wildcards2(t_tok *tokens, t_tok *tokens2, size_t i)
 				add_dup(tokens[i], &tokens2);
 			else
 				append_array(&tokens2, tokens3);
+			ft_vector_free(tokens3);
 		}
 		else
 			add_dup(tokens[i], &tokens2);
