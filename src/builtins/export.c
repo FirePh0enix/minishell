@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/28 15:26:05 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/19 16:17:43 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/23 15:05:50 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,7 @@ static void	print_vars(t_minishell *msh, int file)
 		print_var(file, env[i]);
 		i++;
 	}
+	ft_vector_free(env);
 }
 
 int	builtin_export(t_minishell *msh, int in, int out, t_node *node)
