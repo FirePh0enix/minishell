@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 14:41:09 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/23 14:34:59 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/23 18:58:21 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ static void	init_env_if_i(t_minishell *msh)
 	free(s2);
 	setourenv(msh, "SHLVL", "1");
 	setourenv(msh, "_", "/usr/bin/env");
+	msh->no_env = true;
 }
 
 static void	init_env_else(t_minishell *msh)

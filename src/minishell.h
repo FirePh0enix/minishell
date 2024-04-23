@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:24:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/23 17:00:41 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/23 18:57:58 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,8 @@ typedef struct s_minishell
 
 	int		*open_fds;
 	pid_t	*child_pids;
+
+	bool	no_env;
 }	t_minishell;
 
 # define EXIT_ERRNUM "msh: exit: `%s' is not a numeric argument\n"

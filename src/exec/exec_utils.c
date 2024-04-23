@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 13:30:43 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/23 16:58:57 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/23 19:03:53 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ static void	free_in_exec(t_minishell *msh, char *cmd, char **av)
 	free_history(msh);
 	ft_vector_free(msh->child_pids);
 	ft_vector_deep_free(av);
-	free(cmd);
+	(void) cmd;
 }
 
 int	ft_exec_cmd(t_minishell *msh, char *cmd, char **av, char **envp)

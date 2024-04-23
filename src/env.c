@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 23:45:53 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/22 15:17:00 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/23 18:59:15 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ char	*getourenv(t_minishell *minishell, char *name)
 			return (ft_strdup(ft_strchr(minishell->env[i], '=') + 1));
 		i++;
 	}
-	if (!ft_strcmp(name, "PATH"))
+	if (!ft_strcmp(name, "PATH") && minishell->no_env)
 		return (ft_strdup("/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:"
 				"/sbin:/bin"));
 	return (NULL);
