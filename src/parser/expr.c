@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:34:59 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/22 23:11:14 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/23 15:33:10 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,8 +133,6 @@ static t_node	*parse_parent(t_tok *tokens, t_range r, t_node *parent)
 
 t_type	type_for_str(char *s);
 
-#define RG range
-
 t_node	*parse_expr(t_tok *tokens, t_range r, t_node *parent)
 {
 	int		pos;
@@ -153,7 +151,7 @@ t_node	*parse_expr(t_tok *tokens, t_range r, t_node *parent)
 			return (NULL);
 		node->type = type_for_str(tokens[pos].s);
 		node->parent = parent;
-		node->pipe.left = parse_expr(tokens, RG(r.start, pos - 1), node);
+		node->pipe.left = parse_expr(tokens, range(r.start, pos - 1), node);
 		if (!node->pipe.left)
 			return (free_node(node), NULL);
 		node->pipe.right = parse_expr(tokens, range(pos + 1, r.end), node);

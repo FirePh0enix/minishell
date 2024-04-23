@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/27 14:24:38 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/19 16:21:23 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/23 16:08:56 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ static int	unset_env(t_minishell *msh, char *name, int *exit_code)
 		}
 		if (!ft_strncmp(msh->env[i], name, size) && msh->env[i][size] == '=')
 		{
+			free(msh->env[i]);
 			ft_vector_del(&msh->env, i);
 			break ;
 		}

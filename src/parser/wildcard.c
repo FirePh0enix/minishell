@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 23:05:54 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/23 14:59:32 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/23 15:31:10 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <dirent.h>
 
 t_tok			*wildcard(char *s);
+void			free_files(t_file *files);
 
 static void	recurse_wildcard2(t_str *s2, t_tok **files3, char *file,
 	char *suffix)
@@ -43,8 +44,6 @@ static void	add_file(t_str *s2, t_tok **files3, char *file)
 	tk = tok(TOK_IDENT, s2->data);
 	ft_vector_add(files3, &tk);
 }
-
-void	free_files(t_file *files);
 
 static t_tok	*wildcard2(char *wc, char *filter, t_file *files, char *path)
 {
