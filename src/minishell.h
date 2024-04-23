@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:24:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/23 15:30:09 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/23 17:00:41 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@
 # include <stdio.h>
 # include <string.h>
 # include <errno.h>
+# include <readline/readline.h>
+# include <limits.h>
 
 # define COL_LBLUE  "\e[0;34m"
 # define COL_LGREEN "\e[1;32m"

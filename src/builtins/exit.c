@@ -6,13 +6,11 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 15:02:43 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/23 14:35:19 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/23 17:00:47 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include "parser.h"
-#include <limits.h>
 
 static bool	isnumeric(char *s)
 {

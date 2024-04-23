@@ -6,21 +6,11 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/23 16:21:31 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/23 17:00:00 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "exec.h"
-#include "libft.h"
 #include "minishell.h"
-#include "parser.h"
-#include <fcntl.h>
-#include <readline/readline.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <unistd.h>
 
 static void	add_env(t_minishell *msh, t_node *node)
 {

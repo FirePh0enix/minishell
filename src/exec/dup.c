@@ -6,19 +6,11 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/13 15:17:13 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/22 16:54:32 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/23 16:58:45 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
 #include "minishell.h"
-#include "parser.h"
-#include <fcntl.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <unistd.h>
 
 int	dup_infile(t_node *node)
 {

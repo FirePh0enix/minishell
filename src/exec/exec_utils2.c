@@ -6,21 +6,11 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 15:35:37 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/23 16:06:35 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/23 16:59:42 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "exec.h"
-#include "libft.h"
 #include "minishell.h"
-#include "parser.h"
-#include <fcntl.h>
-#include <readline/readline.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <unistd.h>
 
 void	free_split(char **s)
 {

@@ -6,20 +6,11 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/13 15:29:38 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/23 16:25:27 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/23 17:00:09 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "exec.h"
-#include "libft.h"
 #include "minishell.h"
-#include "parser.h"
-#include <fcntl.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <unistd.h>
 
 int	handle_pipe(t_minishell *msh, t_node *node, int in, int out)
 {

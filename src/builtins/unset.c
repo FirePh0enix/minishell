@@ -6,11 +6,10 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/27 14:24:38 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/23 16:08:56 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/23 17:00:55 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
 #include "minishell.h"
 
 static int	unset_env(t_minishell *msh, char *name, int *exit_code)
