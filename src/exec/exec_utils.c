@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 13:30:43 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/23 19:03:53 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/23 19:06:07 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,7 @@ int	ft_exec_cmd(t_minishell *msh, char *cmd, char **av, char **envp)
 		perror(av[0]);
 		errno = code;
 		free_in_exec(msh, cmd, av);
+		free(cmd);
 		exit(code_for_errno());
 	}
 	errno = 0;
