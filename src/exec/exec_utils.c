@@ -6,17 +6,11 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 13:30:43 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/23 16:21:24 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/23 16:58:57 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
 #include "minishell.h"
-#include "parser.h"
-#include <fcntl.h>
-#include <stddef.h>
-#include <stdio.h>
-#include <unistd.h>
 
 char	**ft_get_path(t_minishell *msh)
 {
