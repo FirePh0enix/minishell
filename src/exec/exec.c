@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/22 16:49:38 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/23 15:18:12 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,11 @@ static int	exec_child(t_minishell *msh, t_node *node, int in, int out)
 			rl_clear_history();
 			msh_error_cmd(node->cmd.argv[0]);
 			free_node(node);
+			if (msh->node_to_free)
+			{
+				free_node(msh->node_to_free);
+				msh->node_to_free = NULL;
+			}
 			return (exit(code_for_errno()), 0);
 		}
 	}

@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:24:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/23 14:34:18 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/23 15:17:38 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,8 @@ typedef struct s_minishell
 	char	**history;
 
 	bool	end;
+
+	t_node	*node_to_free;
 
 	int		*open_fds;
 	pid_t	*child_pids;

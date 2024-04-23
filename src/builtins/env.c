@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/28 15:13:31 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/22 16:20:13 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/23 15:19:01 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ static int	exec_env(t_minishell *msh, t_node *node, int in, int out)
 	int		exit_code;
 
 	node2 = create_node(msh, node);
+	msh->node_to_free = node;
 	exit_code = create_child(msh, node2, in, out);
 	free_node(node2);
 	return (exit_code);
@@ -66,9 +67,9 @@ int	builtin_env(t_minishell *msh, int parent_in, int parent_out, t_node *node)
 	int		exit_code;
 
 	if (node->cmd.argc >= 2)
-		exec_env(msh, node, parent_in, parent_out);
-	file = STDOUT_FILENO;
+		return (exec_env(msh, node, parent_in, parent_out));
 	exit_code = 0;
+	file = STDOUT_FILENO;
 	if (parent_out != -1)
 		file = parent_out;
 	if (node->cmd.outfile)
