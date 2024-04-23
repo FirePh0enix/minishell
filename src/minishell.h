@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:24:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/23 15:17:38 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/23 15:30:09 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,6 @@ typedef struct s_minishell
 
 # define CWDERA "%s: error retrieving current directory: getcwd: cannot acccess"
 # define CWDERB " parent directories: %s\n"
-# define CWDERR CWDERA CWDERB
 
 extern int	g_signum;
 

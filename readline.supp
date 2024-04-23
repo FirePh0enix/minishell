@@ -28,3 +28,15 @@
 	...
 	obj:/usr/bin/env
 }
+{
+	ignore sleep leaks
+	Memcheck:Leak
+	...
+	obj:/usr/bin/sleep
+}
+{
+	ignore expr leaks
+	Memcheck:Leak
+	...
+	obj:/usr/bin/expr
+}

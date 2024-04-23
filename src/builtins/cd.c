@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 14:33:06 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/22 23:08:20 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/23 15:30:20 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ static int	no_minus(t_minishell *msh, t_node *node)
 
 	pwd = getcwd(NULL, 0);
 	if (!pwd)
-		return (ft_fprintf(2, CWDERR, "chdir", strerror(errno)), 1);
+		return (ft_fprintf(2, CWDERA CWDERB, "chdir", strerror(errno)), 1);
 	cdpath = getourenv(msh, "CDPATH");
 	pwd2 = getourenv(msh, "PWD");
 	setourenv(msh, "OLDPWD", pwd2);

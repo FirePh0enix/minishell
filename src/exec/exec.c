@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/23 15:18:12 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/23 16:21:31 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,6 @@ static void	add_env(t_minishell *msh, t_node *node)
 static int	exec_child(t_minishell *msh, t_node *node, int in, int out)
 {
 	char	*cmd;
-	char	**av;
 
 	cmd = NULL;
 	if (node->cmd.argc > 0)
@@ -56,18 +55,7 @@ static int	exec_child(t_minishell *msh, t_node *node, int in, int out)
 		cmd = ft_create_path(msh, node->cmd.argv[0]);
 		if (!cmd)
 		{
-			free_env(msh);
-			free_history(msh);
-			ft_vector_free(msh->child_pids);
-			close_fd_child(msh);
-			rl_clear_history();
-			msh_error_cmd(node->cmd.argv[0]);
-			free_node(node);
-			if (msh->node_to_free)
-			{
-				free_node(msh->node_to_free);
-				msh->node_to_free = NULL;
-			}
+			free_when_no_cmd(msh, node);
 			return (exit(code_for_errno()), 0);
 		}
 	}
@@ -75,17 +63,8 @@ static int	exec_child(t_minishell *msh, t_node *node, int in, int out)
 	overall_dup(node, in, out);
 	close_fd_child(msh);
 	if (cmd)
-	{
-		av = node->cmd.argv;
-		free_node_in_child(node);
-		ft_exec_cmd(msh, cmd, av, msh->env);
-	}
-	free_env(msh);
-	free_history(msh);
-	ft_vector_free(msh->child_pids);
-	rl_clear_history();
-	free_node(node);
-	exit(0);
+		exec_cmd_when_cmd_ok(msh, cmd, node);
+	free_at_end(msh, node);
 }
 
 int	create_child(t_minishell *msh, t_node *node, int in, int out)

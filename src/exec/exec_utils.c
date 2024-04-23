@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 13:30:43 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/22 16:00:31 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/23 16:21:24 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,16 +33,6 @@ char	**ft_get_path(t_minishell *msh)
 		return (path);
 	}
 	return (NULL);
-}
-
-static void	free_split(char **s)
-{
-	size_t	i;
-
-	i = 0;
-	while (s[i])
-		free(s[i++]);
-	free(s);
 }
 
 char	*ft_create_path(t_minishell *msh, char *command)

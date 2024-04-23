@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/14 12:02:25 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/20 12:57:21 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/23 15:32:14 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 void	expand_tilde(t_minishell *msh, t_str *s, size_t *index);
 bool	can_expand_tilde(char *line, size_t i);
 
-bool	can_expand_no_any_quotes(char *line, size_t i)
+bool	not_quotes(char *line, size_t i)
 {
 	return (can_expand_tilde(line, i) || (line[i + 1] != '\0' && line[i] == '$'
 			&& (line[i + 1] == '\'' || line[i + 1] == '"'))
@@ -60,8 +60,6 @@ void	expand_no_quotes(t_minishell *msh, t_str *s, char *line, size_t *index)
 	}
 }
 
-#define NOTQUOTES can_expand_no_any_quotes
-
 void	handle_quotes(char *line, size_t i, bool *open_quotes,
 			bool *open_dquotes);
 
@@ -81,7 +79,7 @@ t_str	expand_str(t_minishell *msh, char *line)
 		handle_quotes(line, i, &open_quotes, &open_dquotes);
 		if (!open_quotes && can_expand_no_quotes(line, i))
 			expand_no_quotes(msh, &s, line, &i);
-		else if (!open_quotes && !open_dquotes && NOTQUOTES(line, i))
+		else if (!open_quotes && !open_dquotes && not_quotes(line, i))
 			expand_no_any_quotes(msh, &s, line, &i);
 		else if ((open_dquotes || open_quotes) && line[i] == '*')
 		{
