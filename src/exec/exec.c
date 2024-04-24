@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/24 14:49:02 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/24 15:14:29 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ static int	exec_child(t_minishell *msh, t_node *node, int in, int out)
 		if (!cmd)
 		{
 			free_when_no_cmd(msh, node);
+			errno = ENOENT;
 			return (exit(code_for_errno()), 0);
 		}
 	}
