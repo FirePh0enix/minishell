@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/23 17:00:00 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/24 14:46:47 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,8 +91,10 @@ int	wait_for_children(t_minishell *msh)
 {
 	size_t	i;
 	int		status;
+	int		override_status;
 
 	status = 0;
+	override_status = -1;
 	while (wait(&status) > 0)
 	{
 		i = 0;
@@ -103,8 +105,12 @@ int	wait_for_children(t_minishell *msh)
 				kill(msh->child_pids[i], g_signum);
 				i++;
 			}
+			if (g_signum == SIGINT)
+				override_status = 130;
 			g_signum = -1;
 		}
 	}
+	if (override_status != -1)
+		return (override_status);
 	return (WEXITSTATUS(status));
 }

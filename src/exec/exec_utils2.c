@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 15:35:37 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/23 16:59:42 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/24 14:29:36 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,11 @@ void	free_when_no_cmd(t_minishell *msh, t_node *node)
 	ft_vector_free(msh->child_pids);
 	close_fd_child(msh);
 	rl_clear_history();
+	if (msh->node_to_free)
+	{
+		free_node_tree(msh->node_to_free);
+		msh->node_to_free = NULL;
+	}
 	msh_error_cmd(node->cmd.argv[0]);
 	free_node_tree(node);
 }
