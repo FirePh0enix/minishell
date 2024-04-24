@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 14:33:06 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/24 16:47:57 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/24 16:58:17 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,12 +80,8 @@ static int	no_minus(t_minishell *msh, t_node *node)
 	else
 		fs = ft_strdup(node->cmd.argv[1]);
 	if (chdir(fs) == -1)
-	{
-		msh_errno2("cd", fs);
-		free(fs);
-		return (1);
-	}
-	free(fs);
+		return (error_chdir(fs));
+	free_cd(fs, cdpath);
 	pwd = getcwd(NULL, 0);
 	setourenv(msh, "PWD", pwd);
 	free(pwd);

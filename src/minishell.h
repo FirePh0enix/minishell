@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:24:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/24 16:50:24 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/24 16:57:52 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,5 +116,6 @@ int		set_exit_code(int *exit_code, int exit_code2);
 void	sort_str_tab(char *tab[], int size);
 bool	is_valid_var_name(char *s);
 int		error_chdir(char *path);
+void	free_cd(char *fs, char *cdpath);
 
 #endif
