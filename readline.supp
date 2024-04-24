@@ -46,3 +46,9 @@
 	...
 	obj:/usr/bin/yes
 }
+{
+	ignore expr leaks
+	Memcheck:Leak
+	...
+	obj:/usr/bin/man
+}

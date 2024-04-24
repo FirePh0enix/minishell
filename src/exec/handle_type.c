@@ -6,11 +6,13 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/13 15:29:38 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/24 15:13:43 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/24 16:03:51 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "exec.h"
 #include "minishell.h"
+#include <stdio.h>
 
 int	handle_pipe(t_minishell *msh, t_node *node, int in, int out)
 {
@@ -53,23 +55,7 @@ int	handle_and(t_minishell *msh, t_node *node, int in, int out)
 
 int	handle_parent(t_minishell *msh, t_node *node, int in, int out)
 {
-	int	pid;
-	int	exit_code;
-
-	pid = fork();
-	if (pid == -1)
-		return (-1);
-	if (pid == 0)
-	{
-		exit_code = exec_cmd(msh, node->pa.node, in, out);
-		free_node_tree(node->pa.node);
-		free_history(msh);
-		free_env(msh);
-		ft_vector_free(msh->child_pids);
-		ft_vector_free(msh->open_fds);
-		exit(exit_code);
-	}
-	return (wait_for_children(msh));
+	return (exec_cmd(msh, node->pa.node, in, out));
 }
 
 int	handle_if_not_cmd(t_minishell *msh, t_node *node, int in, int out)
