@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 13:30:43 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/24 15:12:27 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/24 15:30:03 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,13 +34,17 @@ char	*ft_create_path(t_minishell *msh, char *command)
 {
 	char	**path;
 	int		i;
-	char	buf[256];
+	char	buf[512];
 
 	if (!command || !*command)
 		return (NULL);
 	if ((ft_strlen(command) >= 2 && !ft_strncmp(command, "./", 2))
 		|| command[0] == '/')
-		return (ft_strdup(command));
+	{
+		if (access(command, X_OK) == 0)
+			return (ft_strdup(command));
+		return (NULL);
+	}
 	i = 0;
 	path = ft_get_path(msh);
 	if (!path)

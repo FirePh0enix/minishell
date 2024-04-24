@@ -85,8 +85,8 @@ run-test-err 'l"$HOLA"' "msh: cannot find command \`ls -la\`" 127
 run-test-err "      " "" 0
 run-test-err "!" "" 2
 
-run-test-err "/bin/cd Desktop" "/bin/cd: No such file or directory" 127
-run-test-err "./Makefile" "./Makefile: Permission denied" 126
+run-test-err "/bin/cd Desktop" "msh: /bin/cd: No such file or directory" 127
+run-test-err "./Makefile" "msh: ./Makefile: Permission denied" 126
 
 #
 # `cd`
