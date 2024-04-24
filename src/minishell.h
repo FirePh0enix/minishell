@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:24:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/23 18:57:58 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/24 16:50:24 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,7 @@ void	msh_error(char *msg);
 void	msh_builtin_error(char *builtin, char *msg);
 void	msh_error_cmd(char *cmd);
 void	msh_errno(char *cmd);
+void	msh_errno2(char *cmd, char *msg);
 
 bool	is_valid_var_name(char *s);
 
@@ -114,5 +115,6 @@ int		open_outfile(t_node *node);
 int		set_exit_code(int *exit_code, int exit_code2);
 void	sort_str_tab(char *tab[], int size);
 bool	is_valid_var_name(char *s);
+int		error_chdir(char *path);
 
 #endif

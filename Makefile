@@ -6,7 +6,7 @@
 #    By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/22 14:41:53 by ledelbec          #+#    #+#              #
-#    Updated: 2024/04/24 16:22:32 by vopekdas         ###   ########.fr        #
+#    Updated: 2024/04/24 16:50:50 by vopekdas         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -45,6 +45,7 @@ SRCS=\
 	src/exec/handle_type.c \
 	src/exec/builtins_utils.c \
 	src/builtins/cd.c \
+	src/builtins/cd_utils.c \
 	src/builtins/echo.c \
 	src/builtins/env.c \
 	src/builtins/exit.c \

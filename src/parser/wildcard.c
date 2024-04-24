@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 23:05:54 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/23 15:31:10 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/24 16:41:33 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ static void	add_file(t_str *s2, t_tok **files3, char *file)
 	t_tok	tk;
 
 	str_append(s2, file);
-	tk = tok(TOK_IDENT, s2->data);
+	tk = tok(TOK_IDENT, ft_strdup(s2->data));
 	ft_vector_add(files3, &tk);
 }
 
@@ -67,6 +67,7 @@ static t_tok	*wildcard2(char *wc, char *filter, t_file *files, char *path)
 			recurse_wildcard2(&s2, &files3, files2[i].file, &wc[1]);
 		else
 			add_file(&s2, &files3, files2[i].file);
+		str_free(&s2);
 		i++;
 	}
 	free_files(files2);

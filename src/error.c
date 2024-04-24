@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   error.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/28 11:50:42 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/12 15:11:51 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/24 16:33:40 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,4 +42,9 @@ void	msh_errno(char *cmd)
 		ft_fprintf(2, "msh: %s: %s\n", cmd, strerror(errno));
 	else
 		ft_fprintf(2, "msh: %s\n", strerror(errno));
+}
+
+void	msh_errno2(char *cmd, char *msg)
+{
+	ft_fprintf(2, "msh: %s: %s: %s\n", cmd, msg, strerror(errno));
 }
