@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/24 14:46:47 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/24 14:49:02 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,6 +107,8 @@ int	wait_for_children(t_minishell *msh)
 			}
 			if (g_signum == SIGINT)
 				override_status = 130;
+			else if (g_signum == SIGQUIT)
+				override_status = 131;
 			g_signum = -1;
 		}
 	}
