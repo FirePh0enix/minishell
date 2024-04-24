@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/13 15:29:38 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/24 16:03:51 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/24 22:37:37 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,15 @@ int	handle_and(t_minishell *msh, t_node *node, int in, int out)
 
 int	handle_parent(t_minishell *msh, t_node *node, int in, int out)
 {
-	return (exec_cmd(msh, node->pa.node, in, out));
+	int			status;
+	t_minishell	*msh2;
+
+	msh2 = dup_msh(msh);
+	if (!msh2)
+		return (-1);
+	status = exec_cmd(msh2, node->pa.node, in, out);
+	restore_msh(msh2);
+	return (status);
 }
 
 int	handle_if_not_cmd(t_minishell *msh, t_node *node, int in, int out)

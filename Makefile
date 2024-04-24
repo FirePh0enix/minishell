@@ -6,7 +6,7 @@
 #    By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/22 14:41:53 by ledelbec          #+#    #+#              #
-#    Updated: 2024/04/24 16:50:50 by vopekdas         ###   ########.fr        #
+#    Updated: 2024/04/24 22:32:01 by ledelbec         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,6 +18,7 @@ SRCS=\
 	src/history.c \
 	src/error.c \
 	src/env.c \
+	src/context.c \
 	src/parser.c \
 	src/parser/tokenizer.c \
 	src/parser/tokenizer_utils.c \
