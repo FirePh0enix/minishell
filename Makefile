@@ -6,7 +6,7 @@
 #    By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/22 14:41:53 by ledelbec          #+#    #+#              #
-#    Updated: 2024/04/23 15:51:07 by vopekdas         ###   ########.fr        #
+#    Updated: 2024/04/23 18:46:23 by vopekdas         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -52,7 +52,6 @@ SRCS=\
 	src/builtins/pwd.c \
 	src/builtins/unset.c \
 	src/builtins/utils.c
-
 MAIN_SRCS=src/main.c $(SRCS)
 
 OBJS=$(MAIN_SRCS:.c=.o)

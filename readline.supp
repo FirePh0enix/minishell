@@ -40,3 +40,9 @@
 	...
 	obj:/usr/bin/expr
 }
+{
+	ignore expr leaks
+	Memcheck:Leak
+	...
+	obj:/usr/bin/yes
+}

@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 13:30:43 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/23 19:06:07 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/24 13:58:38 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,26 +70,21 @@ static void	free_in_exec(t_minishell *msh, char *cmd, char **av)
 int	ft_exec_cmd(t_minishell *msh, char *cmd, char **av, char **envp)
 {
 	int	fd;
-	int	code;
 
 	fd = open(cmd, O_DIRECTORY | O_RDONLY);
 	if (fd != -1)
 	{
 		close(fd);
 		errno = EISDIR;
-		code = errno;
-		perror(av[0]);
-		errno = code;
+		msh_errno(cmd);
 		free_in_exec(msh, cmd, av);
 		free(cmd);
-		exit(code_for_errno());
+		exit(126);
 	}
 	errno = 0;
 	if (execve(cmd, av, envp) == -1)
 	{
-		code = errno;
-		perror(av[0]);
-		errno = code;
+		msh_errno(cmd);
 		free_in_exec(msh, cmd, av);
 		exit(code_for_errno());
 	}
