@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:54:47 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/23 16:57:54 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/24 16:22:01 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,13 @@ typedef struct s_minishell	t_minishell;
 typedef struct s_node		t_node;
 
 int		code_for_errno(void);
+int		code_for_cmd(char *cmd);
+
 void	free_split(char **s);
 
 char	**ft_get_path(t_minishell *msh);
 char	*ft_create_path(t_minishell *msh, char *command);
+char	*check_access(char *command);
 
 int		exec_cmd(t_minishell *msh, t_node *node, int pipe_in, int pipe_out);
 int		ft_exec_cmd(t_minishell *msh, char *cmd, char **av, char **envp);

@@ -6,7 +6,7 @@
 #    By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/22 14:41:53 by ledelbec          #+#    #+#              #
-#    Updated: 2024/04/23 18:46:23 by vopekdas         ###   ########.fr        #
+#    Updated: 2024/04/24 16:22:32 by vopekdas         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,6 +38,7 @@ SRCS=\
 	src/parser/clean.c \
 	src/exec/exec_utils.c \
 	src/exec/exec_utils2.c \
+	src/exec/exec_utils3.c \
 	src/exec/exec.c \
 	src/exec/close_fd.c \
 	src/exec/dup.c \

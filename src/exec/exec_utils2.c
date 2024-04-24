@@ -6,11 +6,12 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 15:35:37 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/24 14:29:36 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/24 16:18:44 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include <unistd.h>
 
 void	free_split(char **s)
 {
@@ -34,7 +35,6 @@ void	free_when_no_cmd(t_minishell *msh, t_node *node)
 		free_node_tree(msh->node_to_free);
 		msh->node_to_free = NULL;
 	}
-	msh_error_cmd(node->cmd.argv[0]);
 	free_node_tree(node);
 }
 
@@ -55,4 +55,13 @@ void	exec_cmd_when_cmd_ok(t_minishell *msh, char *cmd, t_node *node)
 	av = node->cmd.argv;
 	free_node_in_child(node);
 	ft_exec_cmd(msh, cmd, av, msh->env);
+}
+
+char	*check_access(char *command)
+{
+	if (access(command, F_OK) != 0)
+		return ((void *) 2);
+	if (access(command, X_OK) == 0)
+		return (ft_strdup(command));
+	return ((void *) 1);
 }

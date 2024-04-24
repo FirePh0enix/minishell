@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/24 15:14:29 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/24 16:21:40 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,15 @@ static int	exec_child(t_minishell *msh, t_node *node, int in, int out)
 		cmd = ft_create_path(msh, node->cmd.argv[0]);
 		if (!cmd)
 		{
+			msh_error_cmd(node->cmd.argv[0]);
 			free_when_no_cmd(msh, node);
 			errno = ENOENT;
 			return (exit(code_for_errno()), 0);
+		}
+		else if (cmd == (void *) 1 || cmd == (void *) 2)
+		{
+			msh_errno(node->cmd.argv[0]);
+			return (free_when_no_cmd(msh, node), exit(code_for_cmd(cmd)), 0);
 		}
 	}
 	add_env(msh, node);
@@ -90,7 +96,7 @@ int	exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 
 int	wait_for_children(t_minishell *msh)
 {
-	size_t	i;
+	int		i;
 	int		status;
 	int		override_status;
 
@@ -98,14 +104,11 @@ int	wait_for_children(t_minishell *msh)
 	override_status = -1;
 	while (wait(&status) > 0)
 	{
-		i = 0;
 		if (g_signum != -1)
 		{
-			while (i < ft_vector_size(msh->child_pids))
-			{
+			i = 0;
+			while (++i < (int)ft_vector_size(msh->child_pids))
 				kill(msh->child_pids[i], g_signum);
-				i++;
-			}
 			if (g_signum == SIGINT)
 				override_status = 130;
 			else if (g_signum == SIGQUIT)
