@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/19 14:21:41 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/20 19:17:50 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/25 17:35:00 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,16 +33,16 @@ static void	write_prefix2(t_minishell *msh, char buf[], char *home, char *cwd)
 	if (cwd && cwd_sz >= sz && !ft_strncmp(home, cwd, sz))
 	{
 		if (msh->exit_code != 0)
-			ft_sprintf(buf, HOME_ERR, msh->exit_code, cwd + sz);
+			ft_sprintf(buf, fhome_err(), msh->exit_code, cwd + sz);
 		else
-			ft_sprintf(buf, HOME, 0, cwd + sz);
+			ft_sprintf(buf, fhome(), 0, cwd + sz);
 	}
 	else
 	{
 		if (msh->exit_code != 0)
-			ft_sprintf(buf, NOHOME_ERR, msh->exit_code, cwd_or(cwd));
+			ft_sprintf(buf, fnohome_err(), msh->exit_code, cwd_or(cwd));
 		else
-			ft_sprintf(buf, NOHOME, msh->exit_code, cwd_or(cwd));
+			ft_sprintf(buf, fnohome(), msh->exit_code, cwd_or(cwd));
 	}
 }
 
@@ -56,9 +56,9 @@ void	write_prefix(t_minishell *msh, char buf[])
 	if (!home)
 	{
 		if (msh->exit_code == 0)
-			ft_sprintf(buf, NOHOME, 0, cwd_or(cwd));
+			ft_sprintf(buf, fnohome(), 0, cwd_or(cwd));
 		else
-			ft_sprintf(buf, NOHOME_ERR, msh->exit_code, cwd_or(cwd));
+			ft_sprintf(buf, fnohome_err(), msh->exit_code, cwd_or(cwd));
 		free(cwd);
 		return ;
 	}

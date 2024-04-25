@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:24:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/25 11:42:26 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/25 17:36:32 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,15 +28,35 @@
 # include <readline/readline.h>
 # include <limits.h>
 
-# define COL_LBLUE  "\e[0;34m"
-# define COL_LGREEN "\e[1;32m"
-# define COL_RESET  "\e[0m"
+inline char	*fnohome()
+{
+	return (" \001\e[1;34m\002%d \001\e[1;32m\002%s "
+		"\001\e[0;34m\002$\001\e[0m\002 ");
+}
 
-# define NOHOME " \e[1;34m%d \e[1;32m%s \e[0;34m$\e[0m "
-# define NOHOME_ERR " \e[1;31m%d \e[1;32m%s \e[0;34m$\e[0m "
+inline char	*fnohome_err()
+{
+	return (" \001\e[1;31m\002%d \001\e[1;32m\002%s "
+		"\001\e[0;34m\002$\001\e[0m\002 ");
+}
 
-# define HOME " \e[1;34m%d \e[1;32m~%s \e[0;34m$\e[0m "
-# define HOME_ERR " \e[1;31m%d \e[1;32m~%s \e[0;34m$\e[0m "
+inline char	*fhome()
+{
+	return (" \001\e[1;34m\002%d \001\e[1;32m\002~%s "
+		"\001\e[0;34m\002$\001\e[0m\002 ");
+}
+
+inline char	*fhome_err()
+{
+	return (" \001\e[1;31m\002%d \001\e[1;32m\002~%s "
+		"\001\e[0;34m\002$\001\e[0m\002 ");
+}
+
+// # define NOHOME " %d %s $ "
+// # define NOHOME_ERR " %d %s $ "
+
+// # define HOME " %d ~%s $ "
+// # define HOME_ERR " %d ~%s $ "
 
 # ifndef TEST
 #  define TEST 0
