@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expr_utils2.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 19:13:33 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/25 11:43:08 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/25 17:04:00 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,4 +50,10 @@ void	apply_redirects(t_node *n, t_node *node)
 		apply_in(node, n->cmd.infile);
 		free(n->cmd.infile);
 	}
+}
+
+void	cons(t_node **tmp, t_node **node)
+{
+	*tmp = *node;
+	*node = NULL;
 }

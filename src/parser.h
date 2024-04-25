@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:25:25 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/23 16:03:45 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/25 17:01:30 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ void	dump_line(t_node *node);
 
 t_tok	*split_into_tokens(char *line);
 
-t_node	*parse_expr(t_tok *tokens, t_range range, t_node *parent);
+t_node	*parse_expr(t_tok *tokens, t_range range, t_node *parent, int pos);
 void	free_node(t_node *node);
 void	free_node_in_child(t_node *node);
 void	free_node_tree(t_node *node);

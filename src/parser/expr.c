@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   expr.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:34:59 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/25 11:47:03 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/25 17:04:28 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parser.h"
 #include "minishell.h"
+#include <stdio.h>
 #include <string.h>
 #include <readline/readline.h>
 
@@ -63,9 +64,9 @@ static t_node	*make_parent_node(t_tok *tokens, t_range r, t_range pr,
 	n = handle_all_redirects(tokens, r, pr.start, pr.end);
 	if (!n)
 		return (NULL);
-	node = parse_expr(tokens, range(pr.start + 1, pr.end - 1), NULL);
-	if (!node)
-		return (free(n), NULL);
+	node = parse_expr(tokens, range(pr.start + 1, pr.end - 1), NULL, 0);
+	if (!node || node == (void *) 1)
+		return (free(n), node);
 	apply_redirects(n, node);
 	free(n);
 	pa = ft_calloc(1, sizeof(t_node));
@@ -128,11 +129,12 @@ static t_node	*parse_parent(t_tok *tokens, t_range r, t_node *parent)
 }
 
 t_type	type_for_str(char *s);
+void	cons(t_node **tmp, t_node **node);
 
-t_node	*parse_expr(t_tok *tokens, t_range r, t_node *parent)
+t_node	*parse_expr(t_tok *tokens, t_range r, t_node *parent, int pos)
 {
-	int		pos;
 	t_node	*node;
+	t_node	*tmp;
 
 	pos = get_op(tokens, r);
 	if (pos == -1)
@@ -147,12 +149,12 @@ t_node	*parse_expr(t_tok *tokens, t_range r, t_node *parent)
 			return (NULL);
 		node->type = type_for_str(tokens[pos].s);
 		node->parent = parent;
-		node->pipe.left = parse_expr(tokens, range(r.start, pos - 1), node);
-		if (!node->pipe.left)
-			return (free_node(node), NULL);
-		node->pipe.right = parse_expr(tokens, range(pos + 1, r.end), node);
-		if (!node->pipe.right)
-			return (free_node(node), NULL);
+		node->pipe.left = parse_expr(tokens, range(r.start, pos - 1), node, 0);
+		if (!node->pipe.left || node->pipe.left == (void *) 1)
+			return (cons(&tmp, &node->pipe.left), free_node(node), tmp);
+		node->pipe.right = parse_expr(tokens, range(pos + 1, r.end), node, 0);
+		if (!node->pipe.right || node->pipe.right == (void *) 1)
+			return (cons(&tmp, &node->pipe.right), free_node(node), tmp);
 		return (node);
 	}
 	return (NULL);

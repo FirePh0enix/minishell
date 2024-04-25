@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/23 14:30:29 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/25 17:04:46 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ t_node	*parse_line(t_minishell *msh, char *line)
 	tokens2 = expand_wildcards(tokens);
 	free_tokens(tokens);
 	tokens3 = cleanup_tokens(tokens2);
-	expr = parse_expr(tokens3, range(0, ft_vector_size(tokens3) - 1), NULL);
+	expr = parse_expr(tokens3, range(0, ft_vector_size(tokens3) - 1), NULL, 0);
 	free_tokens(tokens3);
 	return (expr);
 }
