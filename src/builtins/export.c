@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/28 15:26:05 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/25 17:11:47 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/25 17:46:58 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,9 +38,7 @@ static int	export_variable(t_minishell *msh, char *s, int *exit_code)
 	char	*name;
 	char	*value;
 
-	i = 0;
-	while (s[i] && s[i] != '=' && s[i] != '+')
-		i++;
+	goto_end(s, &i);
 	name = ft_strndup(s, i);
 	if (!ft_strcmp(name, "_"))
 		return (0);

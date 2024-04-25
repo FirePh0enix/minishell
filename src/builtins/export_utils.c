@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/19 14:58:56 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/19 15:03:49 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/25 17:47:03 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,4 +51,11 @@ void	sort_str_tab(char *tab[], int size)
 		}
 		i++;
 	}
+}
+
+void	goto_end(char *s, size_t *i)
+{
+	*i = 0;
+	while (s[*i] && s[*i] != '=' && s[*i] != '+')
+		*i += 1;
 }

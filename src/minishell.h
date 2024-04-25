@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:24:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/25 17:36:32 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/25 17:47:27 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,25 +28,25 @@
 # include <readline/readline.h>
 # include <limits.h>
 
-inline char	*fnohome()
+inline char	*fnohome(void)
 {
 	return (" \001\e[1;34m\002%d \001\e[1;32m\002%s "
 		"\001\e[0;34m\002$\001\e[0m\002 ");
 }
 
-inline char	*fnohome_err()
+inline char	*fnohome_err(void)
 {
 	return (" \001\e[1;31m\002%d \001\e[1;32m\002%s "
 		"\001\e[0;34m\002$\001\e[0m\002 ");
 }
 
-inline char	*fhome()
+inline char	*fhome(void)
 {
 	return (" \001\e[1;34m\002%d \001\e[1;32m\002~%s "
 		"\001\e[0;34m\002$\001\e[0m\002 ");
 }
 
-inline char	*fhome_err()
+inline char	*fhome_err(void)
 {
 	return (" \001\e[1;31m\002%d \001\e[1;32m\002~%s "
 		"\001\e[0;34m\002$\001\e[0m\002 ");
@@ -134,6 +134,7 @@ int		builtin_exit(t_minishell *msh, int in, int out, t_node *node);
 int		builtin_unset(t_minishell *msh, int ac, char **av, t_node *node);
 int		builtin_env(t_minishell *msh, int parent_in, int out, t_node *node);
 int		builtin_export(t_minishell *msh, int in, int out, t_node *node);
+void	goto_end(char *s, size_t *i);
 
 int		open_outfile(t_node *node);
 int		set_exit_code(int *exit_code, int exit_code2);
