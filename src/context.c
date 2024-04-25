@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   context.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/24 22:20:11 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/25 11:11:00 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/25 11:42:44 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ t_minishell	*dup_msh(t_minishell *msh)
 
 void	restore_msh(t_minishell *msh)
 {
-	size_t i;
+	size_t	i;
 
 	if (msh->init_path)
 	{

@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 19:05:20 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/22 16:55:41 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/25 11:54:57 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,11 +49,10 @@ static bool	is_redirect(char *tok)
 		|| !ft_strcmp(tok, "<") || !ft_strcmp(tok, "<<"));
 }
 
-static void	*_parse_cmd2(t_node *node, t_tok *tokens, t_range r)
+static void	*_parse_cmd2(t_node *node, t_tok *tokens, t_range r, int err)
 {
 	size_t	i;
 	char	*tok;
-	int		err;
 
 	i = r.start;
 	read_vars(node, tokens, &i, r.end);
@@ -62,6 +61,8 @@ static void	*_parse_cmd2(t_node *node, t_tok *tokens, t_range r)
 		tok = ft_strdup(tokens[i].s);
 		if (tokens[i].type == TOK_OP && is_redirect(tok))
 		{
+			if (i + 1 > r.end)
+				return (free(tok), NULL);
 			err = handle_redirects(node, tokens, i);
 			if (err == -1)
 				return (free(tok), (void *)1);
@@ -71,7 +72,7 @@ static void	*_parse_cmd2(t_node *node, t_tok *tokens, t_range r)
 			free(tok);
 		}
 		else if (!ft_vector_add(&node->cmd.argv, &tok))
-			return (free_node(node), free(tok), NULL);
+			return (free(tok), NULL);
 		i++;
 	}
 	return (node);
@@ -92,7 +93,7 @@ t_node	*parse_cmd(t_tok *tokens, t_range r, t_node *parent)
 	node->cmd.env = ft_vector(sizeof(char *), 0);
 	if (!node->cmd.argv || !node->cmd.env)
 		return (free(node), NULL);
-	p = _parse_cmd2(node, tokens, r);
+	p = _parse_cmd2(node, tokens, r, 0);
 	if (p == NULL || p == (void *)1)
 		return (free_node(node), p);
 	tok = NULL;

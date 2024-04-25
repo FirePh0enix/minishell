@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   wildcard_utils.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 17:06:09 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/23 14:58:59 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/25 12:13:17 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include <stddef.h>
 
 static bool	starts_with(char *s, char *start)
 {
@@ -36,6 +37,7 @@ static void	add_file_if_valid(t_file *files, t_file **filtered_files,
 	char	*suf2;
 	char	*s3;
 	t_file	file;
+	size_t	nstart;
 
 	if (ft_strchr(suffix, '*'))
 		suf2 = ft_strndup(suffix, ft_strchr(suffix, '*') - suffix);
@@ -47,7 +49,10 @@ static void	add_file_if_valid(t_file *files, t_file **filtered_files,
 		s3 = ft_strstr(files[i].file + files[i].start, suf2);
 		if (starts_with(files[i].file + files[i].start, prefix) && s3)
 		{
-			file = (t_file){ft_strdup(files[i].file), s3 - files[i].file + 1};
+			nstart = s3 - files[i].file + 1;
+			if (nstart >= ft_strlen(files[i].file))
+				nstart = ft_strlen(files[i].file) - 1;
+			file = (t_file){ft_strdup(files[i].file), nstart};
 			ft_vector_add(filtered_files, &file);
 		}
 		i++;
@@ -84,7 +89,10 @@ t_file	*filter_files(t_file *files, char *filter)
 	i2 = i;
 	while (filter[i2])
 		i2++;
-	suffix = ft_strndup(filter + i + 1, i2 - i);
+	if (filter[i] != '\0')
+		suffix = ft_strndup(filter + i + 1, i2 - i);
+	else
+		suffix = ft_strndup(filter + i, i2 - i);
 	add_file_if_valid(files, &filtered_files, prefix, suffix);
 	filtered_files = filter_recurse(filtered_files, suffix);
 	free(prefix);

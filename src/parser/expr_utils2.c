@@ -3,14 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   expr_utils2.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 19:13:33 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/20 19:14:46 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/25 11:43:08 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../parser.h"
+
+void	apply_out(t_node *node, char *outfile, bool append);
+void	apply_in(t_node *node, char *infile);
 
 bool	is_redirect(char *tok, t_tok_type type)
 {
@@ -33,4 +36,18 @@ t_type	type_for_str(char *s)
 	else if (!ft_strcmp(s, "&&"))
 		return (TY_AND);
 	return (0);
+}
+
+void	apply_redirects(t_node *n, t_node *node)
+{
+	if (n->cmd.outfile != NULL)
+	{
+		apply_out(node, n->cmd.outfile, n->cmd.append);
+		free(n->cmd.outfile);
+	}
+	if (n->cmd.infile != NULL)
+	{
+		apply_in(node, n->cmd.infile);
+		free(n->cmd.infile);
+	}
 }

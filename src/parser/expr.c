@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:34:59 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/23 15:33:10 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/25 11:47:03 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,7 @@ int		get_op(t_tok *tokens, t_range range);
 int		handle_redirects(t_node *node, t_tok *tokens, size_t i);
 t_node	*parse_cmd(t_tok *tokens, t_range r, t_node *parent);
 
-void	apply_out(t_node *node, char *outfile, bool append);
-void	apply_in(t_node *node, char *infile);
+void	apply_redirects(t_node *n, t_node *node);
 
 bool	is_redirect(char *tok, t_tok_type type);
 bool	is_invalid(int parent_start, int parent_end, t_range r);
@@ -42,7 +41,7 @@ static t_node	*handle_all_redirects(t_tok *tokens, t_range r,
 			continue ;
 		}
 		tok = tokens[i].s;
-		if (is_redirect(tok, tokens[i].type))
+		if (is_redirect(tok, tokens[i].type) && i + 1 <= r.end)
 		{
 			if (handle_redirects(n, tokens, i++) == -1)
 				return (free(n), (void *) 1);
@@ -67,10 +66,7 @@ static t_node	*make_parent_node(t_tok *tokens, t_range r, t_range pr,
 	node = parse_expr(tokens, range(pr.start + 1, pr.end - 1), NULL);
 	if (!node)
 		return (free(n), NULL);
-	if (n->cmd.outfile != NULL)
-		apply_out(node, n->cmd.outfile, n->cmd.append);
-	if (n->cmd.infile != NULL)
-		apply_in(node, n->cmd.infile);
+	apply_redirects(n, node);
 	free(n);
 	pa = ft_calloc(1, sizeof(t_node));
 	if (!pa)
