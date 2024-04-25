@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/24 22:20:11 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/25 11:06:16 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/25 11:11:00 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ void	restore_msh(t_minishell *msh)
 
 	if (msh->init_path)
 	{
+		chdir(msh->init_path);
 		free(msh->init_path);
 	}
 	ft_vector_free(msh->child_pids);
