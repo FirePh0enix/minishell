@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/24 22:20:11 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/24 22:44:59 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/25 11:06:16 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ t_minishell	*dup_msh(t_minishell *msh)
 	new_msh->env = dup_envs(msh->env);
 	if (!new_msh->env)
 		return (ft_vector_free(new_msh->child_pids), free(new_msh), NULL);
-	new_msh->init_path = getcwd(NULL, 0);
+	new_msh->init_path = getourenv(msh, "PWD");
 	return (new_msh);
 }
 
@@ -55,8 +55,10 @@ void	restore_msh(t_minishell *msh)
 {
 	size_t i;
 
-	chdir(msh->init_path);
-	free(msh->init_path);
+	if (msh->init_path)
+	{
+		free(msh->init_path);
+	}
 	ft_vector_free(msh->child_pids);
 	ft_vector_free(msh->open_fds);
 	i = 0;
