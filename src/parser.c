@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/25 17:04:46 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/28 12:22:03 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,7 @@
 #include <string.h>
 #include <readline/readline.h>
 
-// -----------------------------------------------------------------------------
-// Line parsing
-
-static void	free_tokens(t_tok *tokens)
+void	free_tokens(t_tok *tokens)
 {
 	size_t	i;
 
@@ -40,6 +37,8 @@ t_node	*parse_line(t_minishell *msh, char *line)
 
 	(void) msh;
 	tokens = split_into_tokens(line);
+	if (!tokens)
+		return (NULL);
 	tokens2 = expand_wildcards(tokens);
 	free_tokens(tokens);
 	tokens3 = cleanup_tokens(tokens2);

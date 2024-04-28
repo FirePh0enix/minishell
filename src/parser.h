@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:25:25 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/28 11:58:22 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/28 12:20:42 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,7 @@ t_node	*parse_line(t_minishell *minishell, char *line);
 void	dump_line(t_node *node);
 
 t_tok	*split_into_tokens(char *line);
+void	free_tokens(t_tok *tokens);
 
 t_node	*parse_expr(t_tok *tokens, t_range range, t_node *parent, int pos);
 void	free_node(t_node *node);
