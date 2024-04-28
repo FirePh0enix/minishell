@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:25:25 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/25 17:01:30 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/28 11:58:22 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,19 @@ typedef enum e_type
 	TY_PARENT,
 }	t_type;
 
+typedef enum e_red_type
+{
+	RED_IN,
+	RED_OUT,
+}	t_red_type;
+
+typedef struct s_red
+{
+	char		*filename;
+	t_red_type	type;
+	bool		append;
+}	t_red;
+
 typedef struct s_node
 {
 	t_type			type;
@@ -38,6 +51,8 @@ typedef struct s_node
 		{
 			char	**argv;
 			int		argc;
+
+			t_red	*all_reds;
 
 			char	*infile;
 			char	*outfile;

@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/24 16:21:40 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/28 12:08:43 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,10 +82,40 @@ int	create_child(t_minishell *msh, t_node *node, int in, int out)
 	return (0);
 }
 
+static int	check_all_redirects(t_node *node)
+{
+	size_t	i;
+	int		fd;
+	t_red	red;
+
+	i = 0;
+	while (i < ft_vector_size(node->cmd.all_reds))
+	{
+		red = node->cmd.all_reds[i];
+		if (red.type == RED_IN)
+			fd = open(red.filename, O_RDONLY);
+		else if (red.type == RED_OUT && red.append)
+			fd = open(red.filename, O_WRONLY | O_CREAT | O_APPEND, 0666);
+		else if (red.type == RED_OUT && !red.append)
+			fd = open(red.filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+		if (fd == -1)
+		{
+			msh_errno(red.filename);
+			return (-1);
+		}
+		// TODO: Check if its a directory
+		close(fd);
+		i++;
+	}
+	return (0);
+}
+
 int	exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 {
 	if (node->type == TY_CMD)
 	{
+		if (check_all_redirects(node) == -1)
+			return (1);
 		if (is_builtin(node))
 			return (exec_builtin(msh, node, parent_in, parent_out));
 		else

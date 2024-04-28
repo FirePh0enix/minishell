@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 19:02:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/25 11:38:32 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/28 12:02:14 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,54 +22,38 @@ static bool	isvalidfile(char *s)
 			|| !ft_strcmp(s, "&") || !ft_strcmp(s, "&&")));
 }
 
-int	open_redirect(char *filename, char *redirect)
-{
-	int	fd;
-
-	if (!ft_strcmp(redirect, ">"))
-		fd = open(filename, O_CREAT | O_WRONLY | O_TRUNC, 0666);
-	else if (!ft_strcmp(redirect, ">>"))
-		fd = open(filename, O_CREAT | O_WRONLY | O_APPEND, 0666);
-	else if (!ft_strcmp(redirect, "<"))
-		fd = open(filename, O_RDONLY);
-	else
-		fd = -1;
-	if (fd != -1)
-		close(fd);
-	else
-		msh_errno(filename);
-	return (fd);
-}
-
 static int	handle_outfile(t_node *node, t_tok *tokens, size_t i)
 {
+	t_red	red;
+
 	if (!isvalidfile(tokens[i + 1].s))
 		return (-2);
-	if (open_redirect(tokens[i + 1].s, tokens[i].s) == -1)
-		return (-1);
-	if (node->cmd.outfile)
-		free(node->cmd.outfile);
-	node->cmd.outfile = ft_strdup(tokens[i + 1].s);
-	node->cmd.append = !ft_strcmp(tokens[i].s, ">>");
+	red.filename = ft_strdup(tokens[i + 1].s);
+	red.type = RED_OUT;
+	red.append = !ft_strcmp(tokens[i].s, ">>");
+	ft_vector_add(&node->cmd.all_reds, &red);
+	node->cmd.outfile = red.filename;
+	node->cmd.append = red.append;
 	return (0);
 }
 
 static int	handle_infile(t_node *node, t_tok *tokens, size_t i)
 {
+	t_red	red;
+
 	if (!isvalidfile(tokens[i + 1].s))
 		return (-2);
-	if (open_redirect(tokens[i + 1].s, tokens[i].s) == -1)
-		return (-1);
-	if (node->cmd.infile)
-		free(node->cmd.infile);
-	node->cmd.infile = ft_strdup(tokens[i + 1].s);
+	red.filename = ft_strdup(tokens[i + 1].s);
+	red.type = RED_IN;
+	ft_vector_add(&node->cmd.all_reds, &red);
+	node->cmd.infile = red.filename;
 	return (0);
 }
 
 int	handle_redirects(t_node *node, t_tok *tokens, size_t i)
 {
 	const size_t	size = ft_vector_size(tokens);
-	char			*s;
+	t_red			red;
 
 	if (i + 1 >= size)
 		return (-1);
@@ -81,13 +65,12 @@ int	handle_redirects(t_node *node, t_tok *tokens, size_t i)
 	{
 		if (!isvalidfile(tokens[i + 1].s))
 			return (-2);
-		s = heredoc(tokens[i + 1].s);
-		node->cmd.heredoc = true;
-		if (!s)
+		red.filename = heredoc(tokens[i + 1].s);
+		red.type = RED_IN;
+		if (!red.filename)
 			return (-2);
-		if (node->cmd.infile)
-			free(node->cmd.infile);
-		node->cmd.infile = s;
+		node->cmd.heredoc = true;
+		node->cmd.infile = red.filename;
 	}
 	return (0);
 }

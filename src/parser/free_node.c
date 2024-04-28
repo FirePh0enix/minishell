@@ -6,13 +6,26 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 15:28:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/25 16:56:04 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/28 12:12:45 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parser.h"
 #include "libft.h"
 #include <stdlib.h>
+
+static void	free_reds(t_red *reds)
+{
+	size_t	i;
+
+	i = 0;
+	while (i < ft_vector_size(reds))
+	{
+		free(reds[i].filename);
+		i++;
+	}
+	ft_vector_free(reds);
+}
 
 void	free_node(t_node *node)
 {
@@ -24,10 +37,8 @@ void	free_node(t_node *node)
 			ft_vector_deep_free(node->cmd.argv);
 		if (node->cmd.env)
 			ft_vector_deep_free(node->cmd.env);
-		if (node->cmd.outfile)
-			free(node->cmd.outfile);
-		if (node->cmd.infile)
-			free(node->cmd.infile);
+		if (node->cmd.all_reds)
+			free_reds(node->cmd.all_reds);
 	}
 	else if (node->type == TY_PARENT)
 	{
@@ -72,10 +83,8 @@ void	free_node_in_child(t_node *node)
 	{
 		if (node->cmd.env)
 			ft_vector_deep_free(node->cmd.env);
-		if (node->cmd.outfile)
-			free(node->cmd.outfile);
-		if (node->cmd.infile)
-			free(node->cmd.infile);
+		if (node->cmd.all_reds)
+			free_reds(node->cmd.all_reds);
 	}
 	else
 	{

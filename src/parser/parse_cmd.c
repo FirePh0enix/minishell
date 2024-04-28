@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 19:05:20 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/25 11:54:57 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/28 12:10:07 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,8 +91,9 @@ t_node	*parse_cmd(t_tok *tokens, t_range r, t_node *parent)
 	node->parent = parent;
 	node->cmd.argv = ft_vector(sizeof(char *), 0);
 	node->cmd.env = ft_vector(sizeof(char *), 0);
-	if (!node->cmd.argv || !node->cmd.env)
-		return (free(node), NULL);
+	node->cmd.all_reds = ft_vector(sizeof(t_red), 0);
+	if (!node->cmd.argv || !node->cmd.env || !node->cmd.all_reds)
+		return (free_node(node), NULL);
 	p = _parse_cmd2(node, tokens, r, 0);
 	if (p == NULL || p == (void *)1)
 		return (free_node(node), p);
