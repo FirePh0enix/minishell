@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:54:47 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/24 16:22:01 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/29 12:02:47 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,5 +59,7 @@ int		handle_pipe(t_minishell *msh, t_node *node, int in, int out);
 int		handle_or(t_minishell *msh, t_node *node, int in, int out);
 int		handle_and(t_minishell *msh, t_node *node, int in, int out);
 int		handle_if_not_cmd(t_minishell *msh, t_node *node, int in, int out);
+
+void	add_env(t_minishell *msh, t_node *node);
 
 #endif

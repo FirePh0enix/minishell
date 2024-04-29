@@ -6,34 +6,11 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 13:37:57 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/28 12:08:43 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/29 12:02:33 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-static void	add_env(t_minishell *msh, t_node *node)
-{
-	size_t	i;
-	char	*s;
-	char	*env;
-	char	*name;
-	char	*value;
-
-	i = 0;
-	while (i < ft_vector_size(node->cmd.env))
-	{
-		env = node->cmd.env[i];
-		s = ft_strchr(env, '=');
-		name = ft_strndup(env, s - env);
-		value = ft_strdup(s + 1);
-		if (ft_strcmp(name, "_"))
-			setourenv(msh, name, value);
-		free(name);
-		free(value);
-		i++;
-	}
-}
 
 static int	exec_child(t_minishell *msh, t_node *node, int in, int out)
 {
@@ -103,7 +80,6 @@ static int	check_all_redirects(t_node *node)
 			msh_errno(red.filename);
 			return (-1);
 		}
-		// TODO: Check if its a directory
 		close(fd);
 		i++;
 	}

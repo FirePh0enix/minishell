@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 13:31:32 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/28 12:20:59 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/29 12:05:33 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,13 @@ int	read_token(t_str *s, char *line, size_t *index)
 	return (0);
 }
 
+t_tok	token_error(t_str *s, int *err)
+{
+	str_free(s);
+	*err = 1;
+	return (nulltok());
+}
+
 static t_tok	next_token(char *line, size_t *index, int *err)
 {
 	t_str		s;
@@ -87,11 +94,7 @@ static t_tok	next_token(char *line, size_t *index, int *err)
 		return (str_append_n(&s, &line[i], 1), *index = i + 1,
 			tok(TOK_OP, s.data));
 	if (read_token(&s, line, &i) == -1)
-	{
-		str_free(&s);
-		*err = 1;
-		return (nulltok());
-	}
+		return (token_error(&s, err));
 	*index = i;
 	return (tok(tt, s.data));
 }

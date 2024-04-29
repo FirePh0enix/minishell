@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 14:41:09 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/29 11:37:51 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/29 12:01:20 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,6 @@ int	exec_single_cmd(t_minishell *msh, char *argv[])
 	exit_n_free(msh, status);
 }
 
-
 static void	init_env_else(t_minishell *msh)
 {
 	int		lvl;
@@ -80,10 +79,13 @@ static void	init_env_if_i(t_minishell *msh)
 	s2 = getourenv(msh, "PATH");
 	if (!s2)
 		msh->no_env = true;
+	else
+		free(s2);
 	s2 = getourenv(msh, "TERM");
 	if (!s2)
 		msh->no_color = true;
-	free(s2);
+	else
+		free(s2);
 	setourenv2(msh, "OLDPWD", "");
 	s2 = getcwd(NULL, 0);
 	setourenv2(msh, "PWD", s2);
