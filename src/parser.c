@@ -6,7 +6,7 @@
 /*   By: ledelbec <ledelbec@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 19:20:21 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/28 12:22:03 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/29 11:08:59 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,12 @@ t_node	*parse_line(t_minishell *msh, char *line)
 	if (!tokens)
 		return (NULL);
 	tokens2 = expand_wildcards(tokens);
+	if (!tokens2)
+		return (free_tokens(tokens), NULL);
 	free_tokens(tokens);
 	tokens3 = cleanup_tokens(tokens2);
+	if (!tokens3)
+		return (free_tokens(tokens2), NULL);
 	expr = parse_expr(tokens3, range(0, ft_vector_size(tokens3) - 1), NULL, 0);
 	free_tokens(tokens3);
 	return (expr);

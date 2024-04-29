@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 13:30:43 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/24 16:11:58 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/29 11:32:33 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ char	*ft_create_path(t_minishell *msh, char *command)
 
 static void	free_in_exec(t_minishell *msh, char *cmd, char **av)
 {
-	free_env(msh);
+	ft_vector_deep_free(msh->env);
 	free_history(msh);
 	ft_vector_free(msh->child_pids);
 	ft_vector_deep_free(av);

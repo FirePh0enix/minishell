@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:24:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/25 17:47:27 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/29 11:38:34 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,29 +28,6 @@
 # include <readline/readline.h>
 # include <limits.h>
 
-inline char	*fnohome(void)
-{
-	return (" \001\e[1;34m\002%d \001\e[1;32m\002%s "
-		"\001\e[0;34m\002$\001\e[0m\002 ");
-}
-
-inline char	*fnohome_err(void)
-{
-	return (" \001\e[1;31m\002%d \001\e[1;32m\002%s "
-		"\001\e[0;34m\002$\001\e[0m\002 ");
-}
-
-inline char	*fhome(void)
-{
-	return (" \001\e[1;34m\002%d \001\e[1;32m\002~%s "
-		"\001\e[0;34m\002$\001\e[0m\002 ");
-}
-
-inline char	*fhome_err(void)
-{
-	return (" \001\e[1;31m\002%d \001\e[1;32m\002~%s "
-		"\001\e[0;34m\002$\001\e[0m\002 ");
-}
 
 // # define NOHOME " %d %s $ "
 // # define NOHOME_ERR " %d %s $ "
@@ -76,11 +53,41 @@ typedef struct s_minishell
 	pid_t	*child_pids;
 
 	bool	no_env;
+	bool	no_color;
 	char	*init_path;
 }	t_minishell;
 
-// t_minishell	*dup_msh(t_minishell *msh);
-// void		restore_msh(t_minishell *msh);
+inline char	*fnohome(t_minishell *msh)
+{
+	if (msh->no_color)
+		return (" %d %s $ ");
+	return (" \001\e[1;34m\002%d \001\e[1;32m\002%s "
+		"\001\e[0;34m\002$\001\e[0m\002 ");
+}
+
+inline char	*fnohome_err(t_minishell *msh)
+{
+	if (msh->no_color)
+		return (" %d %s $ ");
+	return (" \001\e[1;31m\002%d \001\e[1;32m\002%s "
+		"\001\e[0;34m\002$\001\e[0m\002 ");
+}
+
+inline char	*fhome(t_minishell *msh)
+{
+	if (msh->no_color)
+		return (" %d ~%s $ ");
+	return (" \001\e[1;34m\002%d \001\e[1;32m\002~%s "
+		"\001\e[0;34m\002$\001\e[0m\002 ");
+}
+
+inline char	*fhome_err(t_minishell *msh)
+{
+	if (msh->no_color)
+		return (" %d ~%s $ ");
+	return (" \001\e[1;31m\002%d \001\e[1;32m\002~%s "
+		"\001\e[0;34m\002$\001\e[0m\002 ");
+}
 
 # define EXIT_ERRNUM "msh: exit: `%s' is not a numeric argument\n"
 
@@ -117,7 +124,7 @@ t_file	*filter_files(t_file *files, char *filter);
 void	copy_env(t_minishell *minishell, char *envp[]);
 char	*getourenv(t_minishell *minishell, char *name);
 void	setourenv(t_minishell *msh, char *name, char *value);
-void	free_env(t_minishell *msh);
+void	setourenv2(t_minishell *msh, char *name, char *value);
 
 void	msh_error(char *msg);
 void	msh_builtin_error(char *builtin, char *msg);

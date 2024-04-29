@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 14:41:09 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/23 18:58:21 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/29 11:37:51 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void __attribute__((noreturn))	exit_n_free(t_minishell *msh, int exit_code)
 {
 	ft_vector_free(msh->child_pids);
 	ft_vector_free(msh->open_fds);
-	free_env(msh);
+	ft_vector_deep_free(msh->env);
 	exit(exit_code);
 }
 
@@ -54,18 +54,6 @@ int	exec_single_cmd(t_minishell *msh, char *argv[])
 	exit_n_free(msh, status);
 }
 
-static void	init_env_if_i(t_minishell *msh)
-{
-	char	*s2;
-
-	setourenv(msh, "OLDPWD", "");
-	s2 = getcwd(NULL, 0);
-	setourenv(msh, "PWD", s2);
-	free(s2);
-	setourenv(msh, "SHLVL", "1");
-	setourenv(msh, "_", "/usr/bin/env");
-	msh->no_env = true;
-}
 
 static void	init_env_else(t_minishell *msh)
 {
@@ -85,6 +73,25 @@ static void	init_env_else(t_minishell *msh)
 	}
 }
 
+static void	init_env_if_i(t_minishell *msh)
+{
+	char	*s2;
+
+	s2 = getourenv(msh, "PATH");
+	if (!s2)
+		msh->no_env = true;
+	s2 = getourenv(msh, "TERM");
+	if (!s2)
+		msh->no_color = true;
+	free(s2);
+	setourenv2(msh, "OLDPWD", "");
+	s2 = getcwd(NULL, 0);
+	setourenv2(msh, "PWD", s2);
+	free(s2);
+	setourenv2(msh, "_", "/usr/bin/env");
+	init_env_else(msh);
+}
+
 int	main(int argc, char *argv[], char *envp[])
 {
 	t_minishell	msh;
@@ -95,16 +102,13 @@ int	main(int argc, char *argv[], char *envp[])
 	msh.exit_code = 0;
 	copy_env(&msh, envp);
 	load_history(&msh);
-	if (ft_vector_size(msh.env) == 1)
-		init_env_if_i(&msh);
-	else
-		init_env_else(&msh);
+	init_env_if_i(&msh);
 	init_signals(&msh);
 	if (TEST && argc == 2)
 		exec_single_cmd(&msh, argv);
 	else
 		prompt(&msh);
-	free_env(&msh);
+	ft_vector_deep_free(msh.env);
 	if (msh.child_pids)
 		ft_vector_free(msh.child_pids);
 	if (msh.open_fds)

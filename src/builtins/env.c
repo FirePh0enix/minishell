@@ -6,11 +6,21 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/28 15:13:31 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/24 14:58:07 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/29 11:24:09 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+static void	print_var(char *s, int fd)
+{
+	char	*s2;
+
+	s2 = ft_strchr(s, '=');
+	if (!s2 || *(s2 + 1) == '\0')
+		return ;
+	ft_putendl_fd(s, fd);
+}
 
 int	builtin_env(t_minishell *msh, int parent_in, int parent_out, t_node *node)
 {
@@ -29,7 +39,7 @@ int	builtin_env(t_minishell *msh, int parent_in, int parent_out, t_node *node)
 	{
 		i = -1;
 		while (msh->env[++i])
-			ft_putendl_fd(msh->env[i], file);
+			print_var(msh->env[i], file);
 	}
 	if (node->cmd.outfile)
 		close(file);

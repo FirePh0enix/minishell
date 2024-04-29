@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 15:35:37 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/24 16:18:44 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/04/29 11:32:05 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void	free_split(char **s)
 
 void	free_when_no_cmd(t_minishell *msh, t_node *node)
 {
-	free_env(msh);
+	ft_vector_deep_free(msh->env);
 	free_history(msh);
 	ft_vector_free(msh->child_pids);
 	close_fd_child(msh);
@@ -40,7 +40,7 @@ void	free_when_no_cmd(t_minishell *msh, t_node *node)
 
 void __attribute__((noreturn))	free_at_end(t_minishell *msh, t_node *node)
 {
-	free_env(msh);
+	ft_vector_deep_free(msh->env);
 	free_history(msh);
 	ft_vector_free(msh->child_pids);
 	rl_clear_history();

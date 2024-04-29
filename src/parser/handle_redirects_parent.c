@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 19:02:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/28 12:02:14 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/29 11:10:33 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ int	handle_redirects(t_node *node, t_tok *tokens, size_t i)
 		red.type = RED_IN;
 		if (!red.filename)
 			return (-2);
+		ft_vector_add(&node->cmd.all_reds, &red);
 		node->cmd.heredoc = true;
 		node->cmd.infile = red.filename;
 	}

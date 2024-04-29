@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 23:45:53 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/23 18:59:15 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/04/29 11:28:29 by ledelbec         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,15 @@ void	setourenv(t_minishell *msh, char *name, char *value)
 	ft_vector_add(&msh->env, &s2);
 }
 
-void	free_env(t_minishell *msh)
+void	setourenv2(t_minishell *msh, char *name, char *value)
 {
-	ft_vector_deep_free(msh->env);
+	char	*s2;
+
+	s2 = getourenv(msh, name);
+	if (!s2)
+	{
+		setourenv(msh, name, value);
+		return ;
+	}
+	free(s2);
 }
