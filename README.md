@@ -78,6 +78,8 @@ I was responsible for the execution part, handling the running and management of
 
 * The overall concept was initially challenging for me, as I had never worked with a tree structure before. The idea was to navigate through this tree recursively, extracting necessary information such as which file descriptor I should read/write from, whether I need to create a pipe, the command name, its options, and so on.
 
+* Until we find a command node, we won't go through the fork, dup2, and execution process.
+
 * The core of the execution process involves several steps. The first step is to check the redirections: can we open all the necessary file descriptors?
 
 * The next step is to check if the command is a builtin. If it is, we won't fork and will execute the builtin directly.
