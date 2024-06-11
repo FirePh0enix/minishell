@@ -349,9 +349,7 @@ My partner took charge of the parsing part, dealing with the interpretation of c
 
 ## Acknowledgments
 
-Once again, thanks to [CodeVault](https://www.youtube.com/@CodeVault) and [Uilly93](https://github.com/Uilly93) for the basics of multithreading.
 
-A special thanks to [Blaxx23](https://github.com/Blaxx23) who pointed out that my "lock order not consistent" error was only occurring with the first philosopher and explained the solution.
 
 ## Contribution Guidelines
 
@@ -361,7 +359,7 @@ I welcome contributions from everyone. Here are some guidelines to follow:
 
 2. **Clone the repository**: Clone the forked repository to your local machine.
 ```bash
-git clone https://github.com/Vpekdas/Philosophers.git
+git clone https://github.com/FirePh0enix/minishell
 ```
 
 3. **Create a new branch**: Create a new branch for each feature or bug fix you're working on. Do not make changes directly on the master branch
@@ -386,16 +384,13 @@ Please note that this project has a code of conduct, and contributors are expect
 
 ## License Information
 
-This project is licensed under the [MIT License](LICENSE).
 
-The MIT License is a permissive license that is short and to the point. It lets people do anything they want with your code as long as they provide attribution back to you and don’t hold you liable.
-
-For the full license text, see the [LICENSE](LICENSE) file.
 
 ## Contact Information
 
-If you have any questions, issues, or if you want to contribute, feel free to reach out to me:
+If you have any questions, issues, or if you want to contribute, feel free to reach us out:
 
+- GitHub: [@FirePh0enix](https://github.com/FirePh0enix)
 - GitHub: [@Vpekdas](https://github.com/Vpekdas)
 - Discord: Captain-Plouf#7811
 
@@ -403,23 +398,23 @@ If you have any questions, issues, or if you want to contribute, feel free to re
 
 ### Development Process
 
-The development of the "Philosophers" project began with understanding the problem and the concept of multithreading. I then researched extensively on multithreading and mutex functions.
+
 
 ### Challenges and Solutions
 
-The main challenge was ensuring fairness in threading and avoiding deadlock. After several iterations and testing, I was able to implement a solution that ensures each philosopher gets a fair chance to eat and think, thereby avoiding deadlock.
+
 
 ### Tools and Technologies Used
 
-The "Philosophers" project was developed using C.
+The "Minishell" project was developed using C.
 
 ### Lessons Learned
 
-The development of "Philosophers" taught me the intricacies of multithreading and mutex functions. It also taught me the importance of fairness in threading and how to avoid deadlock.
+
 
 ### Future Plans
 
-There are currently no plans to further improve the "Philosophers" project. The experience gained from this project has been invaluable and will be applied to future projects.
+There are currently no plans to further improve the "Minishell" project. The experience gained from this project has been invaluable and will be applied to future projects.
 
 ### Current Status
 
@@ -431,7 +426,7 @@ Plans for future development include adding more functions, improving performanc
 
 ### Known Issues
 
-There are currently no known issues. If you find a bug, please report it in the [issue tracker](https://github.com/Vpekdas/philosophers/issues).
+There are currently no known issues. If you find a bug, please report it in the [issue tracker](https://github.com/FirePh0enix/minishell/issues).
 
 ### Contributing
 
