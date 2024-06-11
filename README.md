@@ -101,7 +101,7 @@ int	exec_cmd(t_minishell *msh, t_node *node, int parent_in, int parent_out)
 }
 ```
 
-#### Checking Redirections
+#### Verifying Command Redirections
 * Here we are verifying that each infile and outfile can be opened without a problem.
 ```C
 static int	check_all_redirects(t_node *node)
@@ -132,7 +132,7 @@ static int	check_all_redirects(t_node *node)
 }
 ```
 
-#### Checking builtins
+#### Identifying and Executing Built-in Commands
 * Here, we are simply detecting whether the command needs to be executed by one of our built-in functions, or if we should fork it and then execute it.
 ```C
 int	exec_builtin(t_minishell *msh, t_node *node, int in, int out)
@@ -158,7 +158,7 @@ int	exec_builtin(t_minishell *msh, t_node *node, int in, int out)
 }
 ```
 
-#### Handling a command
+#### Processing and Executing a Command
 
 * The concept here is to create a child process for executing a command. We then add the PID (Process ID) of the child to a vector. This allows us to terminate the child process if necessary, for instance, in the case of a Ctrl + C command. In the parent process, we close unnecessary file descriptors and then wait for the child process to complete.
 ```C
@@ -260,7 +260,7 @@ int	ft_exec_cmd(t_minishell *msh, char *cmd, char **av, char **envp)
 }
 ```
 
-#### Handling other tokens
+#### Managing Special Tokens in Commands
 
 * Lets get back in time and see how i manage when the node is not a command
 
