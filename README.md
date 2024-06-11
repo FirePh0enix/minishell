@@ -280,9 +280,9 @@ int	handle_if_not_cmd(t_minishell *msh, t_node *node, int in, int out)
 }
 ```
 
-To handle pipes, I create a pipe and add the two new file descriptors given by the pipe function, so I can easily free them later. One challenge I faced was not knowing that if we encounter multiple pipe tokens, I will create pipes and these pipes will be "waiting". This means that when I encounter a command, the child process will be responsible for closing all of these pipes. Therefore, it's a good idea to store these file descriptors.
+* To handle pipes, I create a pipe and add the two new file descriptors given by the pipe function, so I can easily free them later. One challenge I faced was not knowing that if we encounter multiple pipe tokens, I will create pipes and these pipes will be "waiting". This means that when I encounter a command, the child process will be responsible for closing all of these pipes. Therefore, it's a good idea to store these file descriptors.
 
-Here's the recursive approach: when the node in the tree is a pipe, we will call the function `exec_cmd` again, this time with the left and right branches. If it encounters a new pipe, the process will be repeated. However, if the node to the left or right is a command, then we will execute it. I'm updating the status after each recursive call, and at the end, we wait as usual.
+* Here's the recursive approach: when the node in the tree is a pipe, we will call the function `exec_cmd` again, this time with the left and right branches. If it encounters a new pipe, the process will be repeated. However, if the node to the left or right is a command, then we will execute it. I'm updating the status after each recursive call, and at the end, we wait as usual.
 ```C
 int	handle_pipe(t_minishell *msh, t_node *node, int in, int out)
 {
