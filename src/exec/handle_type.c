@@ -6,13 +6,11 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/13 15:29:38 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/25 11:37:39 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/06/11 02:55:43 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "exec.h"
 #include "minishell.h"
-#include <stdio.h>
 
 int	handle_pipe(t_minishell *msh, t_node *node, int in, int out)
 {

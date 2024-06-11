@@ -6,11 +6,10 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 13:30:43 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/29 11:32:33 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/06/11 02:55:18 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "exec.h"
 #include "minishell.h"
 
 char	**ft_get_path(t_minishell *msh)

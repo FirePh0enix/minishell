@@ -6,12 +6,11 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 15:35:37 by vopekdas          #+#    #+#             */
-/*   Updated: 2024/04/29 11:32:05 by ledelbec         ###   ########.fr       */
+/*   Updated: 2024/06/11 02:55:36 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <unistd.h>
 
 void	free_split(char **s)
 {

@@ -6,7 +6,7 @@
 /*   By: vopekdas <vopekdas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 15:24:39 by ledelbec          #+#    #+#             */
-/*   Updated: 2024/04/29 12:00:03 by vopekdas         ###   ########.fr       */
+/*   Updated: 2024/06/11 02:56:59 by vopekdas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@
 # include <errno.h>
 # include <readline/readline.h>
 # include <limits.h>
+# include <signal.h>
+
 
 // # define NOHOME " %d %s $ "
 // # define NOHOME_ERR " %d %s $ "
