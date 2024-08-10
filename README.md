@@ -2,14 +2,11 @@
 
 # Table of Contents
 1. [Description](#description)
-2. [Installation Instructions](#installation-instructions)
-3. [Usage Instructions](#usage-instructions)
-4. [Key Features](#key-features)
-5. [Contribution Guidelines](#contribution-guidelines)
-6. [Acknowledgments](#acknowledgments)
-7. [License Information](#license-information)
-8. [Contact Information](#contact-information)
-9. [Project Development](#project-development)
+2. [Building from source](#installation-instructions)
+3. [Usage](#usage)
+4. [Implementation details](#implementation-details)
+5. [License Information](#license-information)
+6. [Contact Information](#contact-information)
 
 ## Description
 
@@ -21,60 +18,78 @@ Key features of Minishell include:
 - Maintaining a working history of commands.
 - Searching and launching the right executable (based on the PATH variable or using a relative or an absolute path).
 - Handling signals with minimal use of global variables.
-- Interpreting single (' ') and double (" ") quotes, with special handling for meta-characters and the $ sign.
-- Implementing redirections (<, >, <<, >>) and pipes (|).
-- Handling environment variables ($ followed by characters) and the $? variable.
-- Handling ctrl-C, ctrl-D, and ctrl-\ signals in a manner similar to bash.
-- Implementing several builtins: echo with option -n, cd with only a relative or absolute path, pwd with no options, export with no options, unset with no options, env with no options or arguments, and exit with no options.
-- Implementing logical operators (&& and ||) with parentheses for priority.
-- Implementing wildcard (*) functionality, which works not only for the current working directory but also for other directories.
+- Interpreting single (`' '`) and double (`" "`) quotes, with special handling for meta-characters and the $ sign.
+- Implementing redirections (`<`, `>`, `<<`, `>>`) and pipes (`|`).
+- Handling environment variables (`$` followed by characters) and the `$?` variable.
+- Handling Ctrl-C and Ctrl-\ signals and Ctrl-D in a manner similar to bash.
+- Implementing several builtins: echo with option -n, cd with only a relative or absolute path, pwd, export, unset, exit with no options, env with no options or arguments.
+- Implementing logical operators (`&&` and `||`) with parentheses for priority.
+- Implementing wildcard (`*`) functionality
 
 While Minishell is not as feature-rich as full-fledged shells, it provides a platform to run text-based applications and perform basic system operations. It serves as an excellent learning tool for those interested in system programming, process synchronization, and the inner workings of a command-line interface.
 
-## Installation Instructions
+## Building from source
 
-Before you begin, ensure you have met the following requirements:
+To build the project from source, you need a few dependencies: git, make and clang.
 
-1. **Download the project**: You can clone the project from GitHub using the following command in your terminal:
-```bash
-git clone https://github.com/FirePh0enix/minishell
+On debian based systems you can install them by running:
+
+```sh
+sudo apt install git make clang
 ```
 
-2. **Install a C compiler**: If you don't already have a C compiler installed, you will need one to build and use this library. You can install the [Clang compiler](https://clang.llvm.org).
-   
-- On a Mac, you should already have Clang installed as part of Xcode Command Line Tools. You can confirm this by running clang --version in your terminal. If it's not installed, you'll be prompted to install it.
+Or on Arch based systems:
 
-- On a Linux machine, use the package manager for your distribution. For example, on Ubuntu:
-```bash
-sudo apt install clang
+```sh
+sudo pacman -S git make clang
 ```
 
-## Usage Instructions
+Then you need to clone the repository:
 
-Follow these steps to use the Minishell project:
+```sh
+git clone --recurse https://github.com/FirePh0enix/minishell
+```
 
-1. **Compile the Project:** Navigate to the cloned repository and compile the project using the provided Makefile. Execute the following command in your terminal:
-```bash
+And finally you can simply compile the project by running Make:
+
+```sh
 make
 ```
 
-2. **Run the Program:**
+An executable `minishell` will be created at the root of the repository.
 
-To start the Minishell, use the following command:
-```bash
+## Usage
+
+You can simply run the executable:
+
+```sh
 ./minishell
 ```
-This will launch the Minishell command-line interface where you can start executing commands. The specific features and commands supported by Minishell are detailed in the 'Key Features' section.
 
-## Key Features
+### What's implemented ?
 
-The development of this project was divided into two main parts: Execution and Parsing.
+- "Regular" environment variables (a `$` followed by the variable name) + the special `$?` variable which returns the exit code of the last command executed.
+- The tilde `~` which is a shortcut for the `$HOME` variable.
+- Redirections (`<`, `>`, `>>`). Heredocs (`<<`) are also supported but not herestrings (`<<<`).
+- Wildcards (`*`) in nearly all situations.
+- Logical operators `&&` and `||`.
+- Parentheses `( )` (not really). While parentheses will be accepted by the parser the implementation is incorrect.<br>
+If you try to run `(cd /tmp)` in bash you will see that nothing happens, but this is incorrect as a lot of work is done under the hood. Commands in parentheses are run in a separate context this can be achieved by using forking the process before executing those commands. The previous command will actually change the working directory of the newly created context and not the main context used by bash.<br>
+For now, in our minishell parentheses are only used for execution priority.
+- Some builtin are partially implemented:
+	- `echo` with only the option `-n`
+	- `cd` with a relative or absolute path
+	- `pwd` with no options
+	- `export` with no options. It works with both `=` to set the value of a variable and `+=` to append to the variable and can accept multiple statements. Also running it without arguments will print all environment variables.
+	- `unset` with no options, it also works with multiple statements.
+	- `env` can only display the enviromnent variables.
+	- `exit` with not options
+
+## Implementation details
+
+The development of this project was divided into two main parts: Parsing and executing.
 
 ### Execution
-
-I was responsible for the execution part, handling the running and management of commands and coding some builtins.
-
-#### Overall Idea
 
 * The overall concept was initially challenging for me, as I had never worked with a tree structure before. The idea was to navigate through this tree recursively, extracting necessary information such as which file descriptor I should read/write from, whether I need to create a pipe, the command name, its options, and so on.
 
@@ -345,91 +360,16 @@ That covers most of the execution part. I didn't think discussing the closing of
 
 ### Parsing
 
-My partner took charge of the parsing part, dealing with the interpretation of command-line input.
-
-
-
-## Acknowledgments
-
-
-
-## Contribution Guidelines
-
-I welcome contributions from everyone. Here are some guidelines to follow:
-
-1. **Fork the repository**: Start by forking the repository to your own GitHub account.
-
-2. **Clone the repository**: Clone the forked repository to your local machine.
-```bash
-git clone https://github.com/FirePh0enix/minishell
-```
-
-3. **Create a new branch**: Create a new branch for each feature or bug fix you're working on. Do not make changes directly on the master branch
-```bash
-git checkout -b your-branch-name
-```
-
-4. **Make your changes**: Make your changes in the new branch. Ensure your code follows the [norminette](https://github.com/42School/norminette).
-
-5. **Commit your changes**: Commit your changes regularly with clear, descriptive commit messages.
-```bash
-git commit -m "Your commit message"
-```
-
-6. **Push your changes**: Push your changes to your forked repository on GitHub.
-```bash
-git push origin your-branch-name
-```
-
-7. **Create a pull request**: Go to your forked repository on GitHub and create a new pull request against the master branch.
-Please note that this project has a code of conduct, and contributors are expected to adhere to it. Any contributions you make are greatly appreciated.
+_**TODO**_
 
 ## License Information
 
-
+The code is available under the [MIT license](LICENSE), meaning you have the permission to use, modify and redistribute our code. But beware to those who want to copy our code and submit it, the school knows everything 👀!
 
 ## Contact Information
 
-If you have any questions, issues, or if you want to contribute, feel free to reach us out:
+If you have any questions, issues, feel free to reach us out:
 
 - GitHub: [@FirePh0enix](https://github.com/FirePh0enix)
 - GitHub: [@Vpekdas](https://github.com/Vpekdas)
 - Discord: Captain-Plouf#7811
-
-## Project Development
-
-### Development Process
-
-
-
-### Challenges and Solutions
-
-
-
-### Tools and Technologies Used
-
-The "Minishell" project was developed using C.
-
-### Lessons Learned
-
-
-
-### Future Plans
-
-There are currently no plans to further improve the "Minishell" project. The experience gained from this project has been invaluable and will be applied to future projects.
-
-### Current Status
-
-The project is currently complete and not in active development. However, maintenance and updates will be done as needed.
-
-### Future Plans
-
-Plans for future development include adding more functions, improving performance, and expanding the documentation.
-
-### Known Issues
-
-There are currently no known issues. If you find a bug, please report it in the [issue tracker](https://github.com/FirePh0enix/minishell/issues).
-
-### Contributing
-
-Contributions are always welcome! See the [Contribution Guidelines](#contribution-guidelines) for more information.
