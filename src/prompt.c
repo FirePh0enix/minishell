@@ -35,7 +35,7 @@ bool	isemptycmd(char *s)
 	i = 0;
 	while (s[i])
 	{
-		if (s[i] != ' ' && s[i] != '\t')
+		if (!ft_isspace(s[i]))
 			return (false);
 		i++;
 	}
