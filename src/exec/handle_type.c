@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "exec.h"
 #include "minishell.h"
 
 int	handle_pipe(t_minishell *msh, t_node *node, int in, int out)
@@ -53,10 +54,28 @@ int	handle_and(t_minishell *msh, t_node *node, int in, int out)
 
 int	handle_parent(t_minishell *msh, t_node *node, int in, int out)
 {
-	int			status;
+	int	fd;
+	int	status;
 
-	status = exec_cmd(msh, node->pa.node, in, out);
-	return (status);
+	fd = fork();
+	if (fd == -1)
+		return (1);
+	else if (fd == 0)
+	{
+		status = exec_cmd(msh, node->pa.node, in, out);
+		ft_vector_deep_free(msh->env);
+		free_history(msh);
+		ft_vector_free(msh->child_pids);
+		rl_clear_history();
+		free_node_tree(node);
+		close_fd_child(msh);
+		exit(status);
+	}
+	else
+	{
+		wait_for_children(msh);
+	}
+	return (0);
 }
 
 int	handle_if_not_cmd(t_minishell *msh, t_node *node, int in, int out)
