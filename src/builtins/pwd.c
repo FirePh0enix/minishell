@@ -24,7 +24,7 @@ int	builtin_pwd(t_minishell *msh, int parent_in, int parent_out, t_node *node)
 		return (ft_fprintf(2, CWDERA CWDERB, "pwd", strerror(errno)), 1);
 	file = 1;
 	if (parent_out != -1)
-		ft_putendl_fd(s, parent_out);
+		return (ft_putendl_fd(s, parent_out), free(s), 0);
 	else if (node->cmd.outfile)
 	{
 		file = open_outfile(node);
